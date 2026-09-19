@@ -1,0 +1,31 @@
+diff --git a/crates/cadence-dsp/src/lib.rs b/crates/cadence-dsp/src/lib.rs
+index fa735c7..9a25e93 100644
+--- a/crates/cadence-dsp/src/lib.rs
++++ b/crates/cadence-dsp/src/lib.rs
+@@ -112,8 +112,25 @@ impl Analyzer {
+                     let actual =
+                         (lower as f32 + shift.clamp(-0.5, 0.5)) * self.rate / WINDOW as f32;
+                     if (actual / fundamental - 1.0).abs() < 0.015 {
+-                        harmonic_energy +=
++                        let mut estimate =
+                             middle * (if harmonic == 3.0 { 1.0 } else { 2.0 }) / harmonic;
++                        // Guitar partials need not follow a fixed 1/h slope.
++                        // Interpolate the third from its neighboring even partials
++                        // when that predicts more energy than the fixed estimate.
++                        // Avoid bass candidates: body resonances and doubled upper
++                        // octaves can otherwise erase a real fifth (e.g. E in A).
++                        if harmonic == 3.0 && actual >= 120.0 {
++                            let adjacent = |multiple: f32| {
++                                let bin = (actual * multiple * WINDOW as f32 / self.rate).round()
++                                    as usize;
++                                self.spectrum[bin.saturating_sub(1)..=bin + 1]
++                                    .iter()
++                                    .map(|value| value.norm())
++                                    .fold(0.0_f32, f32::max)
++                            };
++                            estimate = estimate.max((adjacent(2.0) * adjacent(4.0)).sqrt());
++                        }
++                        harmonic_energy += estimate;
+                     }
+                 }
+             }

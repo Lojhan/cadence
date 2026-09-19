@@ -1,0 +1,388 @@
+{
+  "status": "rejected",
+  "reason": "Two previously recognized broad calibration examples become false negatives. Improved clean-strum counts do not establish absence of regressions.",
+  "baselineRevision": "4fb85d892b030c22333027af2fd7740513216175",
+  "candidate": "For fundamentals >=120 Hz, increase the estimated third harmonic to max(existing estimate, sqrt(second-partial peak * fourth-partial peak)); adjacent partial peaks are measured within one FFT bin. Other recognition rules unchanged.",
+  "candidateRustSha256": "6f635cb16c4cfb4c6fb23c2fd91cec941342f14e37e5969106419e1e00fff397",
+  "heldOutEvaluated": false,
+  "manifests": {
+    "calibration.json": "a5f173fd70452a2a37627ab3d863c6d37c83449a93e56e59e3cb852708c5da56",
+    "calibration-confusions.json": "7e97dec14ac6b4cfb41dad7faf456fed5675f83ec5916ec3b60ff14cd527210d"
+  },
+  "broadBalanced": {
+    "baseline": {
+      "truePositive": 557,
+      "falseNegative": 332,
+      "falsePositive": 5,
+      "trueNegative": 671,
+      "p95MatchMs": 1346.7573696145125
+    },
+    "candidate": {
+      "truePositive": 558,
+      "falseNegative": 331,
+      "falsePositive": 5,
+      "trueNegative": 671,
+      "p95MatchMs": 1346.7573696145125
+    },
+    "changedDecisions": [
+      {
+        "before": {
+          "id": "00_Funk3-112-C#_comp:4:correct",
+          "targetMask": 1090,
+          "split": "calibration",
+          "chord": "F#",
+          "expectedMatch": true,
+          "matched": false,
+          "latencyMs": null,
+          "sampleRate": 44100
+        },
+        "after": {
+          "id": "00_Funk3-112-C#_comp:4:correct",
+          "targetMask": 1090,
+          "split": "calibration",
+          "chord": "F#",
+          "expectedMatch": true,
+          "matched": true,
+          "latencyMs": 650.1587301587301,
+          "sampleRate": 44100
+        }
+      },
+      {
+        "before": {
+          "id": "01_BN3-119-G_comp:9:correct",
+          "targetMask": 580,
+          "split": "calibration",
+          "chord": "D",
+          "expectedMatch": true,
+          "matched": true,
+          "latencyMs": 603.7188208616781,
+          "sampleRate": 44100
+        },
+        "after": {
+          "id": "01_BN3-119-G_comp:9:correct",
+          "targetMask": 580,
+          "split": "calibration",
+          "chord": "D",
+          "expectedMatch": true,
+          "matched": false,
+          "latencyMs": null,
+          "sampleRate": 44100
+        }
+      },
+      {
+        "before": {
+          "id": "03_Jazz2-110-Bb_comp:9:correct",
+          "targetMask": 291,
+          "split": "calibration",
+          "chord": "C#maj7",
+          "expectedMatch": true,
+          "matched": true,
+          "latencyMs": 835.9183673469388,
+          "sampleRate": 44100
+        },
+        "after": {
+          "id": "03_Jazz2-110-Bb_comp:9:correct",
+          "targetMask": 291,
+          "split": "calibration",
+          "chord": "C#maj7",
+          "expectedMatch": true,
+          "matched": false,
+          "latencyMs": null,
+          "sampleRate": 44100
+        }
+      },
+      {
+        "before": {
+          "id": "03_SS3-84-Bb_comp:9:correct",
+          "targetMask": 545,
+          "split": "calibration",
+          "chord": "F",
+          "expectedMatch": true,
+          "matched": false,
+          "latencyMs": null,
+          "sampleRate": 44100
+        },
+        "after": {
+          "id": "03_SS3-84-Bb_comp:9:correct",
+          "targetMask": 545,
+          "split": "calibration",
+          "chord": "F",
+          "expectedMatch": true,
+          "matched": true,
+          "latencyMs": 1114.5578231292516,
+          "sampleRate": 44100
+        }
+      },
+      {
+        "before": {
+          "id": "03_SS3-98-C_comp:10:correct",
+          "targetMask": 529,
+          "split": "calibration",
+          "chord": "Am",
+          "expectedMatch": true,
+          "matched": false,
+          "latencyMs": null,
+          "sampleRate": 44100
+        },
+        "after": {
+          "id": "03_SS3-98-C_comp:10:correct",
+          "targetMask": 529,
+          "split": "calibration",
+          "chord": "Am",
+          "expectedMatch": true,
+          "matched": true,
+          "latencyMs": 743.0385487528345,
+          "sampleRate": 44100
+        }
+      }
+    ]
+  },
+  "continuousCoverage": {
+    "gentle": {
+      "baseline": {
+        "truePositive": 102,
+        "falseNegative": 14,
+        "falsePositive": 18,
+        "trueNegative": 638,
+        "p95MatchMs": 371.51927437641723
+      },
+      "candidate": {
+        "truePositive": 102,
+        "falseNegative": 14,
+        "falsePositive": 16,
+        "trueNegative": 640,
+        "p95MatchMs": 371.51927437641723
+      },
+      "changedDecisions": [
+        {
+          "before": {
+            "id": "00_Funk2-108-Eb_comp:10:target-G#m7",
+            "targetMask": 2376,
+            "targetChord": "G#m7",
+            "split": "calibration",
+            "chord": "B",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 417.9591836734694,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Funk2-108-Eb_comp:10:target-G#m7",
+            "targetMask": 2376,
+            "targetChord": "G#m7",
+            "split": "calibration",
+            "chord": "B",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Funk3-98-A_comp:8:target-Amaj7",
+            "targetMask": 786,
+            "targetChord": "Amaj7",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 510.83900226757373,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Funk3-98-A_comp:8:target-Amaj7",
+            "targetMask": 786,
+            "targetChord": "Amaj7",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        }
+      ]
+    },
+    "balanced": {
+      "baseline": {
+        "truePositive": 97,
+        "falseNegative": 19,
+        "falsePositive": 10,
+        "trueNegative": 646,
+        "p95MatchMs": 510.83900226757373
+      },
+      "candidate": {
+        "truePositive": 97,
+        "falseNegative": 19,
+        "falsePositive": 9,
+        "trueNegative": 647,
+        "p95MatchMs": 510.83900226757373
+      },
+      "changedDecisions": [
+        {
+          "before": {
+            "id": "00_Funk3-98-A_comp:8:target-Amaj7",
+            "targetMask": 786,
+            "targetChord": "Amaj7",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 557.2789115646258,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Funk3-98-A_comp:8:target-Amaj7",
+            "targetMask": 786,
+            "targetChord": "Amaj7",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        }
+      ]
+    },
+    "precise": {
+      "baseline": {
+        "truePositive": 72,
+        "falseNegative": 44,
+        "falsePositive": 2,
+        "trueNegative": 654,
+        "p95MatchMs": 557.2789115646258
+      },
+      "candidate": {
+        "truePositive": 77,
+        "falseNegative": 39,
+        "falsePositive": 2,
+        "trueNegative": 654,
+        "p95MatchMs": 557.2789115646258
+      },
+      "changedDecisions": [
+        {
+          "before": {
+            "id": "00_Funk3-98-A_comp:13:correct",
+            "targetMask": 530,
+            "targetChord": "A",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Funk3-98-A_comp:13:correct",
+            "targetMask": 530,
+            "targetChord": "A",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 464.39909297052156,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_SS3-98-C_comp:0:correct",
+            "targetMask": 145,
+            "targetChord": "C",
+            "split": "calibration",
+            "chord": "C",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_SS3-98-C_comp:0:correct",
+            "targetMask": 145,
+            "targetChord": "C",
+            "split": "calibration",
+            "chord": "C",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 557.2789115646258,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Rock2-142-D_comp:0:correct",
+            "targetMask": 1156,
+            "targetChord": "Gm",
+            "split": "calibration",
+            "chord": "Gm",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Rock2-142-D_comp:0:correct",
+            "targetMask": 1156,
+            "targetChord": "Gm",
+            "split": "calibration",
+            "chord": "Gm",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 464.39909297052156,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_SS3-98-C_comp:9:correct",
+            "targetMask": 2180,
+            "targetChord": "G",
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_SS3-98-C_comp:9:correct",
+            "targetMask": 2180,
+            "targetChord": "G",
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 464.39909297052156,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_SS3-98-C_comp:15:correct",
+            "targetMask": 2180,
+            "targetChord": "G",
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_SS3-98-C_comp:15:correct",
+            "targetMask": 2180,
+            "targetChord": "G",
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 510.83900226757373,
+            "sampleRate": 44100
+          }
+        }
+      ]
+    }
+  }
+}

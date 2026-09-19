@@ -198,3 +198,27 @@ local input because its audio is separately licensed.
 This establishes runtime parity, not improved recognition accuracy. Node's
 offline WASM processing measurements exclude microphone capture, browser
 scheduling and device latency. Held-out recordings remain unevaluated.
+
+## Rejected adjacent-partial correction
+
+A calibration experiment estimated third-harmonic energy from the geometric mean
+of adjacent second and fourth partials, restricted to fundamentals at or above
+120 Hz. On the current continuous-coverage subset it preserved every previous
+correct decision: Gentle false matches decreased from 18 to 16, Balanced from
+10 to 9, and Precise positive matches increased from 72 to 77.
+
+The broader Balanced check nevertheless lost two previously recognized examples:
+`01_BN3-119-G_comp:9:correct` (D) and
+`03_Jazz2-110-Bb_comp:9:correct` (C#maj7). Three other positives became matches,
+so the aggregate improved from 557 to 558 of 889 while concealing these losses.
+False matches stayed at 5 of 676. Broad labels include incomplete playing, but
+these losses have not been established as harmless; the candidate was rejected.
+
+[The comparison](evaluation/guitarset-adaptive-third-rejected.json) preserves
+manifest hashes, summaries and every changed decision. The accompanying
+[experimental patch](evaluation/guitarset-adaptive-third-rejected.patch) records
+the rejected implementation; it is not applied to the runtime. A temporary
+A-major/Amaj7 excerpt regression reproduced one improvement, and all 25 test
+suites passed with the candidate, demonstrating why the broader evaluation is
+necessary. The temporary fixture was removed with the rejected change.
+Held-out recordings were not evaluated, and the current engine is unchanged.
