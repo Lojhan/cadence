@@ -25,7 +25,8 @@
     "test:e2e": "poku test/browser --sequential",
     "container:build": "docker build -f deploy/Dockerfile -t cadence:test .",
     "test:container": "poku integration/container --sequential",
-    "build:packages": "tsx tooling/package-release.ts"
+    "build:packages": "tsx tooling/package-release.ts",
+    "eval:audio": "cargo run --quiet --locked --release -p cadence-eval --"
   },
   "devDependencies": {
     "@babel/parser": "7.29.9",

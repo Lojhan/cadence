@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/cadence-dsp", "crates/cadence-recognition", "crates/cadence-wasm"]
+members = ["crates/cadence-dsp", "crates/cadence-recognition", "crates/cadence-wasm", "crates/cadence-eval"]
 resolver = "2"
 
 [workspace.package]

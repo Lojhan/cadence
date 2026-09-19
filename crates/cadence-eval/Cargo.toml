@@ -1,0 +1,11 @@
+[package]
+name = "cadence-eval"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+cadence-recognition = { path = "../cadence-recognition" }
+hound = "=3.5.1"
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = "=1.0.149"

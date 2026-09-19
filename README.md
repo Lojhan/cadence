@@ -20,7 +20,7 @@ The private managed edition adds Clerk and Stripe; self-hosting requires neither
 
 ## Development
 
-Use Node 24.10+ (24.x), pnpm 10.32.1, and the pinned Rust toolchain.
+Use Node 24.10+ (24.x), pnpm 10.32.1, Python 3.11+, and the pinned Rust toolchain.
 
 ```sh
 pnpm install --frozen-lockfile
@@ -35,5 +35,6 @@ checks. Tests are written before behavior; CI must pass before milestone commits
 - [Product design](design/DESIGN.md)
 - [Technical architecture](design/TECHNICAL_SPEC.md)
 - [Reviewed HTML prototype](design/prototype.html)
+- [Audio evaluation and remaining accuracy gates](docs/AUDIO_EVALUATION.md)
 - [Implementation status](docs/IMPLEMENTATION.md)
 - [Container, upgrades, and backups](docs/OPERATIONS.md)

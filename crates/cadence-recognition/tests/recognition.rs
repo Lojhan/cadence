@@ -118,3 +118,24 @@ fn confusable_chords_and_deterministic_noise_are_rejected() {
     engine.arm(145).unwrap();
     assert_eq!(feed(&mut engine, &noise), 0);
 }
+
+#[test]
+fn a_different_chord_does_not_require_a_silent_gap() {
+    let mut engine = Engine::new(48000.0, Profile::Balanced).unwrap();
+    engine.arm((1 << 0) | (1 << 4) | (1 << 7)).unwrap();
+    assert_eq!(
+        feed(&mut engine, &chord(48000.0, &[48, 52, 55, 60, 64], 0.8)),
+        1
+    );
+    engine.arm((1 << 7) | (1 << 11) | (1 << 2)).unwrap();
+    assert_eq!(
+        feed(&mut engine, &chord(48000.0, &[48, 52, 55, 60, 64], 0.4)),
+        0,
+        "old C cannot confirm G"
+    );
+    assert_eq!(
+        feed(&mut engine, &chord(48000.0, &[43, 47, 50, 55, 59, 67], 0.9)),
+        1,
+        "a new chord at similar volume must not wait for silence"
+    );
+}

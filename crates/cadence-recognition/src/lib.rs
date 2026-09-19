@@ -45,7 +45,7 @@ impl Engine {
         if mask & !0xfff != 0 || mask.count_ones() < 3 {
             return Err("Invalid chord mask");
         }
-        self.needs_attack |= self.confirmed;
+        self.needs_attack = mask == self.target && (self.needs_attack || self.confirmed);
         self.analyzer.clear();
         self.target = mask;
         self.confirmed = false;
@@ -72,7 +72,7 @@ impl Engine {
             return report;
         }
         report.level = (samples.iter().map(|x| x * x).sum::<f32>() / samples.len() as f32).sqrt();
-        if report.level < 0.008 {
+        if report.level < 0.003 {
             self.released += samples.len();
             self.stable = 0;
             self.analyzer.clear();
@@ -82,7 +82,7 @@ impl Engine {
             self.previous_level = report.level;
             return report;
         }
-        if report.level > self.previous_level.max(0.02) * 2.5 {
+        if self.needs_attack && report.level > self.previous_level.max(0.02) * 2.5 {
             self.needs_attack = false;
             self.stable = 0;
             self.analyzer.clear();
@@ -91,7 +91,7 @@ impl Engine {
         self.released = 0;
         let (minimum, hold) = match self.profile {
             Profile::Gentle => (0.78, 0.12),
-            Profile::Balanced => (0.86, 0.18),
+            Profile::Balanced => (0.82, 0.18),
             Profile::Precise => (0.92, 0.25),
         };
         for sample in samples {
@@ -105,15 +105,25 @@ impl Engine {
             let maximum = chroma.iter().copied().fold(0.0_f32, f32::max);
             let mut inside = 0.0;
             let mut covered = true;
+            let mut weakest_inside = f32::INFINITY;
+            let mut strongest_outside = 0.0_f32;
             for (note, energy) in chroma.iter().enumerate() {
                 if self.target & (1 << note) != 0 {
                     inside += energy;
-                    covered &= *energy > maximum * 0.16;
+                    weakest_inside = weakest_inside.min(*energy);
+                    covered &= *energy > maximum * 0.04;
+                } else {
+                    strongest_outside = strongest_outside.max(*energy);
                 }
             }
+            // A strong root/fifth must not hide the wrong third. Every target
+            // class must dominate any unexplained class before evidence counts.
+            covered &= weakest_inside > strongest_outside;
             report.score = if total > 0.0 { inside / total } else { 0.0 };
             if covered && report.score >= minimum {
                 self.stable += HOP;
+            } else if covered && report.score >= minimum - 0.1 {
+                self.stable = self.stable.saturating_sub(HOP / 4);
             } else {
                 self.stable = 0;
             }

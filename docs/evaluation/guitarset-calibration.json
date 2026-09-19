@@ -1,0 +1,3976 @@
+{
+  "dataset": {
+    "name": "GuitarSet v1.1.0",
+    "source": "https://zenodo.org/records/3371780",
+    "license": "CC-BY-4.0",
+    "audioArchiveMd5": "275966d6610ac34999b58426beb119c3",
+    "annotationArchiveMd5": "b39b78e63d3446f2e54ddb7a54df9b10",
+    "partialArchive": false
+  },
+  "scope": "Calibration players 00\u201303 only. Held-out players 04\u201305 have not been evaluated. No real-device release claim.",
+  "baselineRevision": "b97a3da3c848a290b0d4da9bf9164518d3d10ef0",
+  "candidateSources": {
+    "crates/cadence-dsp/src/lib.rs": "42ece6e0aa1994c62a1cfb007c797f3dfd0537b6dfc264b721de8b09ff289de7",
+    "crates/cadence-recognition/src/lib.rs": "28d1d0390acc5bcf213a0b9f4d2ac72d667a630b2ebdcd54c6fe244c0e4a68dc",
+    "tooling/prepare-guitarset.py": "b34a0f04fc18d19ae592bee161a03fe4523480afac356ed097e5c6b309200c9c",
+    "tooling/prepare-strums.py": "d51add4610be2e8f4af889ae09c42eb0a06ef9be1e55ac983ee847b6dd3a11a3"
+  },
+  "selection": "All target pitch classes attacked within 150 ms, no extra attacked pitch classes, all target classes annotated sounding at 400 ms; no held foreign notes; interval ends before any foreign onset, with at least 500 ms available; selected without engine output",
+  "excludedCases": 1129,
+  "baseline": {
+    "truePositive": 134,
+    "falseNegative": 99,
+    "falsePositive": 0,
+    "trueNegative": 203,
+    "p95MatchMs": 1068.1179138321995
+  },
+  "candidate": {
+    "truePositive": 209,
+    "falseNegative": 24,
+    "falsePositive": 0,
+    "trueNegative": 203,
+    "p95MatchMs": 510.83900226757373
+  },
+  "broadSegmentBaseline": {
+    "truePositive": 332,
+    "falseNegative": 557,
+    "falsePositive": 5,
+    "trueNegative": 671,
+    "p95MatchMs": 1393.1972789115646
+  },
+  "broadSegmentCandidate": {
+    "truePositive": 557,
+    "falseNegative": 332,
+    "falsePositive": 5,
+    "trueNegative": 671,
+    "p95MatchMs": 1346.7573696145125
+  },
+  "broadSegmentCaveat": "Coarse chord labels include partial playing and later non-chord notes. These are exploratory segment counts, not clean-strum acceptance measurements.",
+  "releaseGatesMet": false,
+  "cases": [
+    {
+      "id": "00_Funk2-108-Eb_comp:2:correct",
+      "chord": "F#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Funk2-108-Eb_comp:2:wrong-quality",
+      "chord": "F#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Funk2-108-Eb_comp:5:correct",
+      "chord": "A#7",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 464.39909297052156
+    },
+    {
+      "id": "00_Funk2-108-Eb_comp:10:correct",
+      "chord": "B",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Funk2-108-Eb_comp:10:wrong-quality",
+      "chord": "B",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Funk3-112-C#_comp:0:correct",
+      "chord": "C#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "00_Funk3-112-C#_comp:0:wrong-quality",
+      "chord": "C#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Funk3-112-C#_comp:5:correct",
+      "chord": "C#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 464.39909297052156,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Funk3-112-C#_comp:5:wrong-quality",
+      "chord": "C#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Funk3-112-C#_comp:6:correct",
+      "chord": "F#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Funk3-112-C#_comp:6:wrong-quality",
+      "chord": "F#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Funk3-112-C#_comp:11:correct",
+      "chord": "Fm7",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Funk3-112-C#_comp:14:correct",
+      "chord": "F#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "00_Funk3-112-C#_comp:14:wrong-quality",
+      "chord": "F#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Funk3-98-A_comp:0:correct",
+      "chord": "A",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Funk3-98-A_comp:0:wrong-quality",
+      "chord": "A",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Funk3-98-A_comp:4:correct",
+      "chord": "D",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Funk3-98-A_comp:4:wrong-quality",
+      "chord": "D",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Funk3-98-A_comp:7:correct",
+      "chord": "E",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 789.4784580498866,
+      "candidateLatencyMs": 464.39909297052156
+    },
+    {
+      "id": "00_Funk3-98-A_comp:7:wrong-quality",
+      "chord": "E",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Funk3-98-A_comp:8:correct",
+      "chord": "A",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 417.9591836734694,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Funk3-98-A_comp:8:wrong-quality",
+      "chord": "A",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Funk3-98-A_comp:10:correct",
+      "chord": "F#m",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Funk3-98-A_comp:10:wrong-quality",
+      "chord": "F#m",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Funk3-98-A_comp:11:correct",
+      "chord": "C#m7",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Funk3-98-A_comp:12:correct",
+      "chord": "D",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "00_Funk3-98-A_comp:12:wrong-quality",
+      "chord": "D",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Funk3-98-A_comp:13:correct",
+      "chord": "A",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "00_Funk3-98-A_comp:13:wrong-quality",
+      "chord": "A",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Jazz1-130-D_comp:0:correct",
+      "chord": "D7",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "00_Jazz1-130-D_comp:3:correct",
+      "chord": "A",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Jazz1-130-D_comp:3:wrong-quality",
+      "chord": "A",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Jazz1-130-D_comp:5:correct",
+      "chord": "D",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Jazz1-130-D_comp:5:wrong-quality",
+      "chord": "D",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Jazz2-110-Bb_comp:3:correct",
+      "chord": "F#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Jazz2-110-Bb_comp:3:wrong-quality",
+      "chord": "F#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Jazz2-110-Bb_comp:8:correct",
+      "chord": "G#7",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "00_Jazz2-110-Bb_comp:13:correct",
+      "chord": "A#m7",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 417.9591836734694,
+      "candidateLatencyMs": 417.9591836734694
+    },
+    {
+      "id": "00_Jazz2-187-F#_comp:3:correct",
+      "chord": "Dmaj7",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 464.39909297052156
+    },
+    {
+      "id": "00_Jazz3-137-Eb_comp:2:correct",
+      "chord": "Cm7",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Jazz3-137-Eb_comp:4:correct",
+      "chord": "G#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "00_Jazz3-137-Eb_comp:4:wrong-quality",
+      "chord": "G#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Jazz3-137-Eb_comp:6:correct",
+      "chord": "G#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "00_Jazz3-137-Eb_comp:6:wrong-quality",
+      "chord": "G#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Jazz3-137-Eb_comp:10:correct",
+      "chord": "Cm7",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Jazz3-137-Eb_comp:12:correct",
+      "chord": "G#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Jazz3-137-Eb_comp:12:wrong-quality",
+      "chord": "G#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Jazz3-150-C_comp:0:correct",
+      "chord": "Cmaj7",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Jazz3-150-C_comp:4:correct",
+      "chord": "Fmaj7",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Jazz3-150-C_comp:5:correct",
+      "chord": "C",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "00_Jazz3-150-C_comp:5:wrong-quality",
+      "chord": "C",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Jazz3-150-C_comp:10:correct",
+      "chord": "Am7",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Rock1-130-A_comp:5:correct",
+      "chord": "A",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 417.9591836734694,
+      "candidateLatencyMs": 417.9591836734694
+    },
+    {
+      "id": "00_Rock1-130-A_comp:5:wrong-quality",
+      "chord": "A",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Rock1-90-C#_comp:1:correct",
+      "chord": "F#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 1114.5578231292516,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Rock1-90-C#_comp:1:wrong-quality",
+      "chord": "F#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Rock1-90-C#_comp:4:correct",
+      "chord": "F#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "00_Rock1-90-C#_comp:4:wrong-quality",
+      "chord": "F#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Rock2-142-D_comp:0:correct",
+      "chord": "Gm",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Rock2-142-D_comp:0:wrong-quality",
+      "chord": "Gm",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Rock2-142-D_comp:1:correct",
+      "chord": "C7",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 417.9591836734694
+    },
+    {
+      "id": "00_Rock2-85-F_comp:0:correct",
+      "chord": "A#m",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 1068.1179138321995
+    },
+    {
+      "id": "00_Rock2-85-F_comp:0:wrong-quality",
+      "chord": "A#m",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Rock3-117-Bb_comp:0:correct",
+      "chord": "A#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Rock3-117-Bb_comp:0:wrong-quality",
+      "chord": "A#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Rock3-117-Bb_comp:5:correct",
+      "chord": "A#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Rock3-117-Bb_comp:5:wrong-quality",
+      "chord": "A#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Rock3-148-C_comp:0:correct",
+      "chord": "C",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "00_Rock3-148-C_comp:0:wrong-quality",
+      "chord": "C",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Rock3-148-C_comp:1:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Rock3-148-C_comp:1:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Rock3-148-C_comp:4:correct",
+      "chord": "F",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 464.39909297052156
+    },
+    {
+      "id": "00_Rock3-148-C_comp:4:wrong-quality",
+      "chord": "F",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Rock3-148-C_comp:5:correct",
+      "chord": "C",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_Rock3-148-C_comp:5:wrong-quality",
+      "chord": "C",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Rock3-148-C_comp:8:correct",
+      "chord": "C",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 417.9591836734694
+    },
+    {
+      "id": "00_Rock3-148-C_comp:8:wrong-quality",
+      "chord": "C",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Rock3-148-C_comp:9:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 417.9591836734694
+    },
+    {
+      "id": "00_Rock3-148-C_comp:9:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Rock3-148-C_comp:12:correct",
+      "chord": "F",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 417.9591836734694
+    },
+    {
+      "id": "00_Rock3-148-C_comp:12:wrong-quality",
+      "chord": "F",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_Rock3-148-C_comp:14:correct",
+      "chord": "F",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "00_Rock3-148-C_comp:14:wrong-quality",
+      "chord": "F",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_SS1-68-E_comp:4:correct",
+      "chord": "A",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_SS1-68-E_comp:4:wrong-quality",
+      "chord": "A",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_SS1-68-E_comp:5:correct",
+      "chord": "E",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 650.1587301587301,
+      "candidateLatencyMs": 603.7188208616781
+    },
+    {
+      "id": "00_SS1-68-E_comp:5:wrong-quality",
+      "chord": "E",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "00_SS3-98-C_comp:6:correct",
+      "chord": "F",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 1068.1179138321995,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "00_SS3-98-C_comp:6:wrong-quality",
+      "chord": "F",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_BN1-147-Gb_comp:0:correct",
+      "chord": "F#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_BN1-147-Gb_comp:0:wrong-quality",
+      "chord": "F#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_BN2-131-B_comp:1:correct",
+      "chord": "A7",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_BN2-131-B_comp:2:correct",
+      "chord": "D",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_BN2-131-B_comp:2:wrong-quality",
+      "chord": "D",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_BN2-131-B_comp:3:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 464.39909297052156,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_BN2-131-B_comp:3:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_BN2-131-B_comp:6:correct",
+      "chord": "Bm",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_BN2-131-B_comp:6:wrong-quality",
+      "chord": "Bm",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_BN2-131-B_comp:7:correct",
+      "chord": "Em",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 464.39909297052156,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_BN2-131-B_comp:7:wrong-quality",
+      "chord": "Em",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_BN2-131-B_comp:10:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_BN2-131-B_comp:10:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_BN2-131-B_comp:12:correct",
+      "chord": "F#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_BN2-131-B_comp:12:wrong-quality",
+      "chord": "F#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_BN2-131-B_comp:13:correct",
+      "chord": "Bm",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_BN2-131-B_comp:13:wrong-quality",
+      "chord": "Bm",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_BN2-166-Ab_comp:0:correct",
+      "chord": "C#m",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_BN2-166-Ab_comp:0:wrong-quality",
+      "chord": "C#m",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_BN3-119-G_comp:7:correct",
+      "chord": "D",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 557.2789115646258,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_BN3-119-G_comp:7:wrong-quality",
+      "chord": "D",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_BN3-119-G_comp:15:correct",
+      "chord": "D",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_BN3-119-G_comp:15:wrong-quality",
+      "chord": "D",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_BN3-154-E_comp:7:correct",
+      "chord": "B",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_BN3-154-E_comp:7:wrong-quality",
+      "chord": "B",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_BN3-154-E_comp:11:correct",
+      "chord": "G#m",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 417.9591836734694,
+      "candidateLatencyMs": 417.9591836734694
+    },
+    {
+      "id": "01_BN3-154-E_comp:11:wrong-quality",
+      "chord": "G#m",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Jazz1-130-D_comp:3:correct",
+      "chord": "A",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Jazz1-130-D_comp:3:wrong-quality",
+      "chord": "A",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Jazz1-130-D_comp:5:correct",
+      "chord": "D",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 464.39909297052156,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Jazz1-130-D_comp:5:wrong-quality",
+      "chord": "D",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Jazz2-110-Bb_comp:0:correct",
+      "chord": "D#m",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 417.9591836734694,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Jazz2-110-Bb_comp:0:wrong-quality",
+      "chord": "D#m",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Jazz2-110-Bb_comp:1:correct",
+      "chord": "G#7",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Jazz2-110-Bb_comp:2:correct",
+      "chord": "C#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Jazz2-110-Bb_comp:2:wrong-quality",
+      "chord": "C#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Jazz2-110-Bb_comp:3:correct",
+      "chord": "F#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 464.39909297052156,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Jazz2-110-Bb_comp:3:wrong-quality",
+      "chord": "F#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Jazz2-110-Bb_comp:5:correct",
+      "chord": "F7",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Jazz2-110-Bb_comp:7:correct",
+      "chord": "D#m",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 510.83900226757373,
+      "candidateLatencyMs": 464.39909297052156
+    },
+    {
+      "id": "01_Jazz2-110-Bb_comp:7:wrong-quality",
+      "chord": "D#m",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Jazz2-110-Bb_comp:8:correct",
+      "chord": "G#7",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "01_Jazz2-110-Bb_comp:10:correct",
+      "chord": "F#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Jazz2-110-Bb_comp:10:wrong-quality",
+      "chord": "F#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Jazz2-110-Bb_comp:11:correct",
+      "chord": "C7",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Jazz2-110-Bb_comp:13:correct",
+      "chord": "A#m",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Jazz2-110-Bb_comp:13:wrong-quality",
+      "chord": "A#m",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Jazz3-137-Eb_comp:3:correct",
+      "chord": "Gm",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Jazz3-137-Eb_comp:3:wrong-quality",
+      "chord": "Gm",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Jazz3-137-Eb_comp:5:correct",
+      "chord": "D#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Jazz3-137-Eb_comp:5:wrong-quality",
+      "chord": "D#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Jazz3-137-Eb_comp:8:correct",
+      "chord": "D#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Jazz3-137-Eb_comp:8:wrong-quality",
+      "chord": "D#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Jazz3-137-Eb_comp:9:correct",
+      "chord": "A#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Jazz3-137-Eb_comp:9:wrong-quality",
+      "chord": "A#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Jazz3-137-Eb_comp:12:correct",
+      "chord": "G#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 417.9591836734694,
+      "candidateLatencyMs": 417.9591836734694
+    },
+    {
+      "id": "01_Jazz3-137-Eb_comp:12:wrong-quality",
+      "chord": "G#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Jazz3-137-Eb_comp:13:correct",
+      "chord": "D#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Jazz3-137-Eb_comp:13:wrong-quality",
+      "chord": "D#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Jazz3-137-Eb_comp:14:correct",
+      "chord": "G#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 417.9591836734694,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Jazz3-137-Eb_comp:14:wrong-quality",
+      "chord": "G#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Jazz3-137-Eb_comp:15:correct",
+      "chord": "A#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Jazz3-137-Eb_comp:15:wrong-quality",
+      "chord": "A#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Rock1-130-A_comp:2:correct",
+      "chord": "A",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "01_Rock1-130-A_comp:2:wrong-quality",
+      "chord": "A",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Rock1-130-A_comp:3:correct",
+      "chord": "E",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Rock1-130-A_comp:3:wrong-quality",
+      "chord": "E",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Rock1-90-C#_comp:0:correct",
+      "chord": "C#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Rock1-90-C#_comp:0:wrong-quality",
+      "chord": "C#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Rock1-90-C#_comp:3:correct",
+      "chord": "G#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 417.9591836734694,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "01_Rock1-90-C#_comp:3:wrong-quality",
+      "chord": "G#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Rock1-90-C#_comp:4:correct",
+      "chord": "F#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Rock1-90-C#_comp:4:wrong-quality",
+      "chord": "F#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Rock2-142-D_comp:0:correct",
+      "chord": "Gm",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Rock2-142-D_comp:0:wrong-quality",
+      "chord": "Gm",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Rock2-142-D_comp:2:correct",
+      "chord": "F",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Rock2-142-D_comp:2:wrong-quality",
+      "chord": "F",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Rock2-142-D_comp:5:correct",
+      "chord": "A",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Rock2-142-D_comp:5:wrong-quality",
+      "chord": "A",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Rock2-142-D_comp:6:correct",
+      "chord": "Dm",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Rock2-142-D_comp:6:wrong-quality",
+      "chord": "Dm",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Rock2-142-D_comp:7:correct",
+      "chord": "Gm",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 417.9591836734694,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "01_Rock2-142-D_comp:7:wrong-quality",
+      "chord": "Gm",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Rock2-142-D_comp:9:correct",
+      "chord": "F",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Rock2-142-D_comp:9:wrong-quality",
+      "chord": "F",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Rock2-142-D_comp:13:correct",
+      "chord": "Dm",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 1068.1179138321995,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "01_Rock2-142-D_comp:13:wrong-quality",
+      "chord": "Dm",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Rock2-85-F_comp:0:correct",
+      "chord": "A#m",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 417.9591836734694,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Rock2-85-F_comp:0:wrong-quality",
+      "chord": "A#m",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Rock2-85-F_comp:2:correct",
+      "chord": "G#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Rock2-85-F_comp:2:wrong-quality",
+      "chord": "G#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Rock2-85-F_comp:6:correct",
+      "chord": "Fm",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Rock2-85-F_comp:6:wrong-quality",
+      "chord": "Fm",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Rock2-85-F_comp:7:correct",
+      "chord": "A#m",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Rock2-85-F_comp:7:wrong-quality",
+      "chord": "A#m",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Rock2-85-F_comp:9:correct",
+      "chord": "G#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "01_Rock2-85-F_comp:9:wrong-quality",
+      "chord": "G#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_Rock2-85-F_comp:13:correct",
+      "chord": "Fm",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_Rock2-85-F_comp:13:wrong-quality",
+      "chord": "Fm",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_SS1-68-E_comp:0:correct",
+      "chord": "E",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_SS1-68-E_comp:0:wrong-quality",
+      "chord": "E",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_SS1-68-E_comp:1:correct",
+      "chord": "A",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "01_SS1-68-E_comp:1:wrong-quality",
+      "chord": "A",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_SS1-68-E_comp:4:correct",
+      "chord": "A",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_SS1-68-E_comp:4:wrong-quality",
+      "chord": "A",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_SS3-84-Bb_comp:1:correct",
+      "chord": "F",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_SS3-84-Bb_comp:1:wrong-quality",
+      "chord": "F",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_SS3-84-Bb_comp:2:correct",
+      "chord": "Gm",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_SS3-84-Bb_comp:2:wrong-quality",
+      "chord": "Gm",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_SS3-84-Bb_comp:3:correct",
+      "chord": "Dm",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_SS3-84-Bb_comp:3:wrong-quality",
+      "chord": "Dm",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_SS3-84-Bb_comp:6:correct",
+      "chord": "D#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_SS3-84-Bb_comp:6:wrong-quality",
+      "chord": "D#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_SS3-84-Bb_comp:9:correct",
+      "chord": "F",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_SS3-84-Bb_comp:9:wrong-quality",
+      "chord": "F",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_SS3-98-C_comp:0:correct",
+      "chord": "C",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "01_SS3-98-C_comp:0:wrong-quality",
+      "chord": "C",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_SS3-98-C_comp:4:correct",
+      "chord": "F",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 603.7188208616781,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "01_SS3-98-C_comp:4:wrong-quality",
+      "chord": "F",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_SS3-98-C_comp:7:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_SS3-98-C_comp:7:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_SS3-98-C_comp:9:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_SS3-98-C_comp:9:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "01_SS3-98-C_comp:10:correct",
+      "chord": "Am",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 603.7188208616781
+    },
+    {
+      "id": "01_SS3-98-C_comp:10:wrong-quality",
+      "chord": "Am",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN1-147-Gb_comp:0:correct",
+      "chord": "F#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 928.7981859410431,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_BN1-147-Gb_comp:0:wrong-quality",
+      "chord": "F#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN2-131-B_comp:0:correct",
+      "chord": "Em",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_BN2-131-B_comp:0:wrong-quality",
+      "chord": "Em",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN2-131-B_comp:1:correct",
+      "chord": "A",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "02_BN2-131-B_comp:1:wrong-quality",
+      "chord": "A",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN2-131-B_comp:3:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 417.9591836734694,
+      "candidateLatencyMs": 417.9591836734694
+    },
+    {
+      "id": "02_BN2-131-B_comp:3:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN2-131-B_comp:7:correct",
+      "chord": "Em",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_BN2-131-B_comp:7:wrong-quality",
+      "chord": "Em",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN2-131-B_comp:8:correct",
+      "chord": "A",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 464.39909297052156,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_BN2-131-B_comp:8:wrong-quality",
+      "chord": "A",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN2-131-B_comp:10:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_BN2-131-B_comp:10:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN2-166-Ab_comp:9:correct",
+      "chord": "B",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_BN2-166-Ab_comp:9:wrong-quality",
+      "chord": "B",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN3-119-G_comp:1:correct",
+      "chord": "D",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_BN3-119-G_comp:1:wrong-quality",
+      "chord": "D",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN3-119-G_comp:2:correct",
+      "chord": "Em",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_BN3-119-G_comp:2:wrong-quality",
+      "chord": "Em",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN3-119-G_comp:4:correct",
+      "chord": "C",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN3-119-G_comp:4:wrong-quality",
+      "chord": "C",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN3-119-G_comp:6:correct",
+      "chord": "C",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_BN3-119-G_comp:6:wrong-quality",
+      "chord": "C",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN3-119-G_comp:8:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_BN3-119-G_comp:8:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN3-119-G_comp:9:correct",
+      "chord": "D",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "02_BN3-119-G_comp:9:wrong-quality",
+      "chord": "D",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN3-119-G_comp:10:correct",
+      "chord": "Em",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 510.83900226757373,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_BN3-119-G_comp:10:wrong-quality",
+      "chord": "Em",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN3-119-G_comp:13:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_BN3-119-G_comp:13:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN3-119-G_comp:14:correct",
+      "chord": "C",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_BN3-119-G_comp:14:wrong-quality",
+      "chord": "C",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN3-154-E_comp:11:correct",
+      "chord": "G#m",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "02_BN3-154-E_comp:11:wrong-quality",
+      "chord": "G#m",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_BN3-154-E_comp:12:correct",
+      "chord": "A",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "02_BN3-154-E_comp:12:wrong-quality",
+      "chord": "A",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Funk2-119-G_comp:2:correct",
+      "chord": "A#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Funk2-119-G_comp:2:wrong-quality",
+      "chord": "A#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Jazz1-130-D_comp:1:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 557.2789115646258,
+      "candidateLatencyMs": 510.83900226757373
+    },
+    {
+      "id": "02_Jazz1-130-D_comp:1:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Jazz2-110-Bb_comp:1:correct",
+      "chord": "G#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_Jazz2-110-Bb_comp:1:wrong-quality",
+      "chord": "G#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Jazz2-110-Bb_comp:2:correct",
+      "chord": "C#m",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Jazz2-110-Bb_comp:2:wrong-quality",
+      "chord": "C#m",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Jazz2-110-Bb_comp:3:correct",
+      "chord": "F#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_Jazz2-110-Bb_comp:3:wrong-quality",
+      "chord": "F#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Jazz2-110-Bb_comp:5:correct",
+      "chord": "F",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 417.9591836734694,
+      "candidateLatencyMs": 417.9591836734694
+    },
+    {
+      "id": "02_Jazz2-110-Bb_comp:5:wrong-quality",
+      "chord": "F",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Jazz2-110-Bb_comp:7:correct",
+      "chord": "D#m",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 417.9591836734694,
+      "candidateLatencyMs": 417.9591836734694
+    },
+    {
+      "id": "02_Jazz2-110-Bb_comp:7:wrong-quality",
+      "chord": "D#m",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Jazz2-110-Bb_comp:8:correct",
+      "chord": "G#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 464.39909297052156,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "02_Jazz2-110-Bb_comp:8:wrong-quality",
+      "chord": "G#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Jazz2-110-Bb_comp:10:correct",
+      "chord": "F#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_Jazz2-110-Bb_comp:10:wrong-quality",
+      "chord": "F#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Jazz2-110-Bb_comp:11:correct",
+      "chord": "Cm",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 1207.4376417233561,
+      "candidateLatencyMs": 1207.4376417233561
+    },
+    {
+      "id": "02_Jazz2-110-Bb_comp:11:wrong-quality",
+      "chord": "Cm",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Jazz2-187-F#_comp:8:correct",
+      "chord": "E",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_Jazz2-187-F#_comp:8:wrong-quality",
+      "chord": "E",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Jazz2-187-F#_comp:12:correct",
+      "chord": "C#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 417.9591836734694,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "02_Jazz2-187-F#_comp:12:wrong-quality",
+      "chord": "C#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Jazz3-150-C_comp:1:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "02_Jazz3-150-C_comp:1:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Jazz3-150-C_comp:2:correct",
+      "chord": "Am",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 510.83900226757373
+    },
+    {
+      "id": "02_Jazz3-150-C_comp:2:wrong-quality",
+      "chord": "Am",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Jazz3-150-C_comp:9:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_Jazz3-150-C_comp:9:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Jazz3-150-C_comp:13:correct",
+      "chord": "C",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_Jazz3-150-C_comp:13:wrong-quality",
+      "chord": "C",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Rock1-130-A_comp:5:correct",
+      "chord": "A",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Rock1-130-A_comp:5:wrong-quality",
+      "chord": "A",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Rock2-142-D_comp:6:correct",
+      "chord": "Dm",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Rock2-142-D_comp:6:wrong-quality",
+      "chord": "Dm",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Rock2-142-D_comp:11:correct",
+      "chord": "E7",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_Rock3-148-C_comp:1:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_Rock3-148-C_comp:1:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Rock3-148-C_comp:2:correct",
+      "chord": "Am",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "02_Rock3-148-C_comp:2:wrong-quality",
+      "chord": "Am",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Rock3-148-C_comp:3:correct",
+      "chord": "E",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_Rock3-148-C_comp:3:wrong-quality",
+      "chord": "E",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Rock3-148-C_comp:9:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 417.9591836734694,
+      "candidateLatencyMs": 417.9591836734694
+    },
+    {
+      "id": "02_Rock3-148-C_comp:9:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Rock3-148-C_comp:14:correct",
+      "chord": "F",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_Rock3-148-C_comp:14:wrong-quality",
+      "chord": "F",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_Rock3-148-C_comp:15:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_Rock3-148-C_comp:15:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_SS1-100-C#_comp:0:correct",
+      "chord": "C#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "02_SS1-100-C#_comp:0:wrong-quality",
+      "chord": "C#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_SS1-100-C#_comp:3:correct",
+      "chord": "G#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_SS1-100-C#_comp:3:wrong-quality",
+      "chord": "G#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_SS3-84-Bb_comp:0:correct",
+      "chord": "A#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_SS3-84-Bb_comp:0:wrong-quality",
+      "chord": "A#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_SS3-84-Bb_comp:3:correct",
+      "chord": "D",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_SS3-84-Bb_comp:3:wrong-quality",
+      "chord": "D",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_SS3-84-Bb_comp:4:correct",
+      "chord": "D#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_SS3-84-Bb_comp:4:wrong-quality",
+      "chord": "D#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_SS3-84-Bb_comp:8:correct",
+      "chord": "A#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "02_SS3-84-Bb_comp:8:wrong-quality",
+      "chord": "A#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_SS3-98-C_comp:10:correct",
+      "chord": "Am",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "02_SS3-98-C_comp:10:wrong-quality",
+      "chord": "Am",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "02_SS3-98-C_comp:15:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 510.83900226757373,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "02_SS3-98-C_comp:15:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Funk2-108-Eb_comp:3:correct",
+      "chord": "B",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_Funk2-108-Eb_comp:3:wrong-quality",
+      "chord": "B",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Funk2-108-Eb_comp:6:correct",
+      "chord": "D#m7",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_Funk2-108-Eb_comp:9:correct",
+      "chord": "F#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_Funk2-108-Eb_comp:9:wrong-quality",
+      "chord": "F#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Funk2-108-Eb_comp:10:correct",
+      "chord": "B",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 417.9591836734694,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_Funk2-108-Eb_comp:10:wrong-quality",
+      "chord": "B",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Funk3-98-A_comp:0:correct",
+      "chord": "A",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 417.9591836734694,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "03_Funk3-98-A_comp:0:wrong-quality",
+      "chord": "A",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Funk3-98-A_comp:12:correct",
+      "chord": "D",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_Funk3-98-A_comp:12:wrong-quality",
+      "chord": "D",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Jazz2-110-Bb_comp:0:correct",
+      "chord": "D#m7",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Jazz2-110-Bb_comp:6:correct",
+      "chord": "A#m7",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 1207.4376417233561,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "03_Jazz2-110-Bb_comp:7:correct",
+      "chord": "D#m7",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Jazz2-110-Bb_comp:9:correct",
+      "chord": "C#maj7",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 835.9183673469388
+    },
+    {
+      "id": "03_Jazz2-187-F#_comp:2:correct",
+      "chord": "Amaj7",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Jazz2-187-F#_comp:13:correct",
+      "chord": "F#m7",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 464.39909297052156
+    },
+    {
+      "id": "03_Rock1-130-A_comp:3:correct",
+      "chord": "E",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 557.2789115646258,
+      "candidateLatencyMs": 464.39909297052156
+    },
+    {
+      "id": "03_Rock1-130-A_comp:3:wrong-quality",
+      "chord": "E",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock1-90-C#_comp:3:correct",
+      "chord": "G#7",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_Rock2-142-D_comp:0:correct",
+      "chord": "Gm",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "03_Rock2-142-D_comp:0:wrong-quality",
+      "chord": "Gm",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock2-142-D_comp:1:correct",
+      "chord": "C",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock2-142-D_comp:1:wrong-quality",
+      "chord": "C",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock2-142-D_comp:2:correct",
+      "chord": "F",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_Rock2-142-D_comp:2:wrong-quality",
+      "chord": "F",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock2-142-D_comp:5:correct",
+      "chord": "A7",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_Rock2-142-D_comp:6:correct",
+      "chord": "Dm",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 743.0385487528345,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "03_Rock2-142-D_comp:6:wrong-quality",
+      "chord": "Dm",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock2-142-D_comp:7:correct",
+      "chord": "Gm",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_Rock2-142-D_comp:7:wrong-quality",
+      "chord": "Gm",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock2-142-D_comp:9:correct",
+      "chord": "F",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_Rock2-142-D_comp:9:wrong-quality",
+      "chord": "F",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock2-142-D_comp:13:correct",
+      "chord": "Dm",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "03_Rock2-142-D_comp:13:wrong-quality",
+      "chord": "Dm",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock2-85-F_comp:0:correct",
+      "chord": "A#m",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "03_Rock2-85-F_comp:0:wrong-quality",
+      "chord": "A#m",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock3-117-Bb_comp:1:correct",
+      "chord": "F",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_Rock3-117-Bb_comp:1:wrong-quality",
+      "chord": "F",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock3-117-Bb_comp:3:correct",
+      "chord": "Dm",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 417.9591836734694,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "03_Rock3-117-Bb_comp:3:wrong-quality",
+      "chord": "Dm",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock3-117-Bb_comp:12:correct",
+      "chord": "D#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 1300.3174603174602
+    },
+    {
+      "id": "03_Rock3-117-Bb_comp:12:wrong-quality",
+      "chord": "D#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock3-148-C_comp:1:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "03_Rock3-148-C_comp:1:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock3-148-C_comp:2:correct",
+      "chord": "Am",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_Rock3-148-C_comp:2:wrong-quality",
+      "chord": "Am",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock3-148-C_comp:3:correct",
+      "chord": "Em",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_Rock3-148-C_comp:3:wrong-quality",
+      "chord": "Em",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock3-148-C_comp:5:correct",
+      "chord": "C",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_Rock3-148-C_comp:5:wrong-quality",
+      "chord": "C",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock3-148-C_comp:6:correct",
+      "chord": "F",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_Rock3-148-C_comp:6:wrong-quality",
+      "chord": "F",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock3-148-C_comp:8:correct",
+      "chord": "C",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock3-148-C_comp:8:wrong-quality",
+      "chord": "C",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock3-148-C_comp:10:correct",
+      "chord": "Am",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "03_Rock3-148-C_comp:10:wrong-quality",
+      "chord": "Am",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock3-148-C_comp:11:correct",
+      "chord": "Em",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 557.2789115646258
+    },
+    {
+      "id": "03_Rock3-148-C_comp:11:wrong-quality",
+      "chord": "Em",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock3-148-C_comp:12:correct",
+      "chord": "F",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_Rock3-148-C_comp:12:wrong-quality",
+      "chord": "F",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock3-148-C_comp:13:correct",
+      "chord": "C",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_Rock3-148-C_comp:13:wrong-quality",
+      "chord": "C",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS1-100-C#_comp:0:correct",
+      "chord": "C#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 1068.1179138321995,
+      "candidateLatencyMs": 789.4784580498866
+    },
+    {
+      "id": "03_SS1-100-C#_comp:0:wrong-quality",
+      "chord": "C#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS1-100-C#_comp:1:correct",
+      "chord": "F#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 1160.9977324263039,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS1-100-C#_comp:1:wrong-quality",
+      "chord": "F#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS1-100-C#_comp:3:correct",
+      "chord": "G#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 557.2789115646258,
+      "candidateLatencyMs": 557.2789115646258
+    },
+    {
+      "id": "03_SS1-100-C#_comp:3:wrong-quality",
+      "chord": "G#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS1-100-C#_comp:4:correct",
+      "chord": "F#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 464.39909297052156
+    },
+    {
+      "id": "03_SS1-100-C#_comp:4:wrong-quality",
+      "chord": "F#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS2-107-Ab_comp:0:correct",
+      "chord": "C#m",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS2-107-Ab_comp:0:wrong-quality",
+      "chord": "C#m",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS2-107-Ab_comp:1:correct",
+      "chord": "F#7",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS2-107-Ab_comp:9:correct",
+      "chord": "B",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 417.9591836734694
+    },
+    {
+      "id": "03_SS2-107-Ab_comp:9:wrong-quality",
+      "chord": "B",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS2-107-Ab_comp:13:correct",
+      "chord": "G#m",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS2-107-Ab_comp:13:wrong-quality",
+      "chord": "G#m",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS2-88-F_comp:0:correct",
+      "chord": "A#m",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS2-88-F_comp:0:wrong-quality",
+      "chord": "A#m",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS2-88-F_comp:2:correct",
+      "chord": "G#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS2-88-F_comp:2:wrong-quality",
+      "chord": "G#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS2-88-F_comp:8:correct",
+      "chord": "D#7",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 464.39909297052156,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS2-88-F_comp:9:correct",
+      "chord": "G#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 371.51927437641723,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS2-88-F_comp:9:wrong-quality",
+      "chord": "G#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS2-88-F_comp:10:correct",
+      "chord": "C#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "03_SS2-88-F_comp:10:wrong-quality",
+      "chord": "C#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS3-84-Bb_comp:4:correct",
+      "chord": "D#",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS3-84-Bb_comp:4:wrong-quality",
+      "chord": "D#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS3-84-Bb_comp:12:correct",
+      "chord": "D#",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS3-84-Bb_comp:12:wrong-quality",
+      "chord": "D#",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS3-98-C_comp:0:correct",
+      "chord": "C",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS3-98-C_comp:0:wrong-quality",
+      "chord": "C",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS3-98-C_comp:1:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 325.07936507936506,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "03_SS3-98-C_comp:1:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS3-98-C_comp:2:correct",
+      "chord": "Am",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS3-98-C_comp:2:wrong-quality",
+      "chord": "Am",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS3-98-C_comp:3:correct",
+      "chord": "Em",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS3-98-C_comp:3:wrong-quality",
+      "chord": "Em",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS3-98-C_comp:4:correct",
+      "chord": "F",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 928.7981859410431,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS3-98-C_comp:4:wrong-quality",
+      "chord": "F",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS3-98-C_comp:5:correct",
+      "chord": "C",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS3-98-C_comp:5:wrong-quality",
+      "chord": "C",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS3-98-C_comp:7:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": true,
+      "candidateMatched": true,
+      "baselineLatencyMs": 464.39909297052156,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS3-98-C_comp:7:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS3-98-C_comp:8:correct",
+      "chord": "C",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS3-98-C_comp:8:wrong-quality",
+      "chord": "C",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS3-98-C_comp:9:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 371.51927437641723
+    },
+    {
+      "id": "03_SS3-98-C_comp:9:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS3-98-C_comp:10:correct",
+      "chord": "Am",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS3-98-C_comp:10:wrong-quality",
+      "chord": "Am",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS3-98-C_comp:11:correct",
+      "chord": "Em",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS3-98-C_comp:11:wrong-quality",
+      "chord": "Em",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS3-98-C_comp:13:correct",
+      "chord": "C",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS3-98-C_comp:13:wrong-quality",
+      "chord": "C",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS3-98-C_comp:14:correct",
+      "chord": "F",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS3-98-C_comp:14:wrong-quality",
+      "chord": "F",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    },
+    {
+      "id": "03_SS3-98-C_comp:15:correct",
+      "chord": "G",
+      "expectedMatch": true,
+      "baselineMatched": false,
+      "candidateMatched": true,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": 325.07936507936506
+    },
+    {
+      "id": "03_SS3-98-C_comp:15:wrong-quality",
+      "chord": "G",
+      "expectedMatch": false,
+      "baselineMatched": false,
+      "candidateMatched": false,
+      "baselineLatencyMs": null,
+      "candidateLatencyMs": null
+    }
+  ]
+}

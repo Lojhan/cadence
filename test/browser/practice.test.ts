@@ -24,7 +24,7 @@ pcm.writeUInt32LE(pcm.length - 44, 40);
 for (let i = 0; i < rate * 8; i++) {
   const value =
     i < rate * 4
-      ? [48, 52, 55, 60, 64].reduce(
+      ? (i < rate * 2 ? [48, 52, 55, 60, 64] : [43, 47, 50, 55, 59, 67]).reduce(
           (sum, note) =>
             sum +
             0.08 *
@@ -133,7 +133,9 @@ try {
         const buffer = context.createBuffer(1, 48000 * 8, 48000);
         const samples = buffer.getChannelData(0);
         for (let i = 0; i < 48000 * 4; i++)
-          samples[i] = [48, 52, 55, 60, 64].reduce(
+          samples[i] = (
+            i < 48000 * 2 ? [48, 52, 55, 60, 64] : [43, 47, 50, 55, 59, 67]
+          ).reduce(
             (sum, note) =>
               sum +
               0.08 *
@@ -219,16 +221,18 @@ try {
   await page
     .getByRole("heading", { name: "G", exact: true })
     .waitFor({ timeout: 15000 });
+  await page
+    .getByRole("heading", { name: "Am", exact: true })
+    .waitFor({ timeout: 15000 });
   await page.mouse.move(10, 10);
   await page
     .getByRole("button", { name: "Mute microphone", exact: true })
     .click();
   assert.equal(
-    await page.getByRole("heading", { name: "G", exact: true }).count(),
+    await page.getByRole("heading", { name: "Am", exact: true }).count(),
     1,
-    "real worker/WASM capture advances C to G",
+    "real worker/WASM capture accepts C then G without a silent gap",
   );
-  await page.getByRole("button", { name: "Next chord", exact: true }).click();
   await page.getByRole("button", { name: "Next chord", exact: true }).click();
   assert.equal(
     await page.getByRole("button", { name: "Next chord", exact: true }).count(),

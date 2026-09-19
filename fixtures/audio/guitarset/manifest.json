@@ -1,0 +1,56 @@
+{
+  "source": "https://zenodo.org/records/3371780",
+  "license": "CC-BY-4.0",
+  "cases": [
+    {
+      "file": "c-major.wav",
+      "startSeconds": 0,
+      "durationSeconds": 1.5,
+      "split": "calibration",
+      "chord": "C",
+      "id": "03_SS3-98-C_comp:0:correct",
+      "targetMask": 145,
+      "expectedMatch": true
+    },
+    {
+      "file": "f-major.wav",
+      "startSeconds": 0,
+      "durationSeconds": 1.5,
+      "split": "calibration",
+      "chord": "F",
+      "id": "00_SS3-84-Bb_comp:9:wrong-quality",
+      "targetMask": 289,
+      "expectedMatch": false
+    },
+    {
+      "file": "e-minor.wav",
+      "startSeconds": 0,
+      "durationSeconds": 0.9183446712018141,
+      "split": "calibration",
+      "chord": "Em",
+      "id": "03_Rock3-148-C_comp:11:wrong-quality",
+      "targetMask": 2320,
+      "expectedMatch": false
+    }
+  ],
+  "files": [
+    {
+      "file": "c-major.wav",
+      "originalFile": "audio/03_SS3-98-C_comp_mic.wav",
+      "originalStartSeconds": 0.036190476190427034,
+      "sha256": "edeef02da69ab1a1a6d982f77e9a3126600e1054125514019351352e57caeb7c"
+    },
+    {
+      "file": "f-major.wav",
+      "originalFile": "audio/00_SS3-84-Bb_comp_mic.wav",
+      "originalStartSeconds": 25.753258049886654,
+      "sha256": "355d9443a7de5e36aceadc3763ee8bff7fe49803c019389f1f09b65a857901e0"
+    },
+    {
+      "file": "e-minor.wav",
+      "originalFile": "audio/03_Rock3-148-C_comp_mic.wav",
+      "originalStartSeconds": 18.439185487528334,
+      "sha256": "e5eebfef0108393aab39a4f2c9cb8a7df11376285f15f4408ecf85ea3ca11d84"
+    }
+  ]
+}
