@@ -1,0 +1,12 @@
+--- a/crates/cadence-dsp/src/lib.rs
++++ b/crates/cadence-dsp/src/lib.rs
+@@ -124,7 +124,8 @@
+             }
+             // Favor fundamentals over upper partials, which can introduce
+             // pitch classes not actually played (for example a fifth harmonic).
+-            chroma[(midi.round() as i32).rem_euclid(12) as usize] += b / frequency.sqrt();
++            let tuning_weight = 1.0 - ((midi - midi.round()).abs() / 0.35).powi(2);
++            chroma[(midi.round() as i32).rem_euclid(12) as usize] += b / frequency.sqrt() * tuning_weight;
+         }
+         Some(chroma)
+     }

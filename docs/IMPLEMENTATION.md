@@ -142,3 +142,11 @@ f40494a. All downloaded release checksums match the verified CI artifacts. The
 actual downloaded packages pass the isolated Poku consumer test, and the published
 GHCR image passes the local installed-container suite. Documented image tags now
 point to alpha.4. Recognition and physical-device gates remain open.
+
+Recognition follow-up: a focused Poku check reproduces Em being accepted as Em7.
+A stronger per-tone floor reduced false matches but lost a valid chord; weighting
+spectral peaks by tuning proximity recovered a chord but increased false matches.
+Neither fixed the focused regression. Both experiments were rejected and recorded
+with source patches, manifest hashes and changed decisions. The runtime was
+restored and reproduced the complete calibration baseline exactly. No accuracy
+improvement or release-gate completion is claimed.

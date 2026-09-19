@@ -1,0 +1,11 @@
+--- a/crates/cadence-recognition/src/lib.rs
++++ b/crates/cadence-recognition/src/lib.rs
+@@ -111,7 +111,7 @@
+                 if self.target & (1 << note) != 0 {
+                     inside += energy;
+                     weakest_inside = weakest_inside.min(*energy);
+-                    covered &= *energy > maximum * 0.04;
++                    covered &= *energy > maximum * 0.06;
+                 } else {
+                     strongest_outside = strongest_outside.max(*energy);
+                 }

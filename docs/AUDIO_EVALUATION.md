@@ -222,3 +222,30 @@ A-major/Amaj7 excerpt regression reproduced one improvement, and all 25 test
 suites passed with the candidate, demonstrating why the broader evaluation is
 necessary. The temporary fixture was removed with the rejected change.
 Held-out recordings were not evaluated, and the current engine is unchanged.
+
+## Rejected tone-evidence experiments
+
+A focused Poku regression reproduced `03_SS3-98-C_comp:3`: the performed Em
+matches both Em and the incorrect Em7 target. Two hypotheses were evaluated on
+all 772 current calibration comparisons; neither fixed that focused error.
+
+| Balanced candidate | Correct strums | Wrong targets | Matched p95 |
+| --- | --- | --- | --- |
+| Unchanged baseline | 97/116 | 10/656 | 511 ms |
+| Raise minimum per-tone chroma from 4% to 6% of maximum | 96/116 | 7/656 | 511 ms |
+| Weight peaks by proximity to the nearest semitone | 98/116 | 13/656 | 464 ms |
+
+The higher floor loses the previously recognized `01_SS1-68-E_comp:1:correct`.
+The tuning weight recovers one valid G but introduces five new wrong-target
+matches while removing two others. Both candidates are rejected; improved aggregate
+latency or fewer false matches alone does not justify these regressions. Broader
+and held-out evaluation was not run for candidates that already failed this check.
+
+[The comparison](evaluation/guitarset-tone-evidence-rejected.json) records the
+source and manifest hashes, summaries, and every changed decision. The
+[tone-floor patch](evaluation/guitarset-tone-floor-006-rejected.patch) and
+[tuning-weight patch](evaluation/guitarset-tuning-weight-rejected.patch) preserve
+the experiments without applying them to the runtime. Restoring the engine
+reproduced the complete baseline report exactly. The next investigation must
+inspect the spurious pitch-class evidence rather than treating these two simple
+threshold/weighting changes as solutions. Held-out players remain untouched.
