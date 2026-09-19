@@ -332,6 +332,39 @@ try {
     1,
     "real worker/WASM capture accepts C then G without a silent gap",
   );
+  if (process.env.CADENCE_NATIVE_MIC !== "1") {
+    const beforeReconnect = await page.evaluate(() => {
+      const streams = (
+        window as unknown as { cadenceTestStreams: MediaStream[] }
+      ).cadenceTestStreams;
+      const track = streams.at(-1)?.getAudioTracks()[0];
+      if (!track) throw new Error("No microphone track to disconnect");
+      track.stop();
+      // Physical removal fires ended; programmatic stop alone does not.
+      track.dispatchEvent(new Event("ended"));
+      return streams.length;
+    });
+    await page
+      .getByText("Microphone disconnected. Choose an input and try again.")
+      .waitFor();
+    await page
+      .getByRole("button", { name: "Unmute microphone", exact: true })
+      .click();
+    await page.waitForFunction(
+      (previous) =>
+        (window as unknown as { cadenceTestStreams: MediaStream[] })
+          .cadenceTestStreams.length > previous,
+      beforeReconnect,
+    );
+    await page
+      .getByRole("button", { name: "Mute microphone", exact: true })
+      .click();
+    assert.equal(
+      await page.getByRole("heading", { name: "Am", exact: true }).count(),
+      1,
+      "disconnect recovery preserves the current chord",
+    );
+  }
   await page.getByRole("button", { name: "Next chord", exact: true }).click();
   assert.equal(
     await page.getByRole("button", { name: "Next chord", exact: true }).count(),

@@ -106,6 +106,7 @@ export class PracticeController {
     )
       this.pause();
     if (event.type === "error") {
+      this.configuration = "";
       this.pause();
       this.setError(event.message);
     }

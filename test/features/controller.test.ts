@@ -5,6 +5,7 @@ import { PracticeController } from "../../packages/features/src/controller.ts";
 let audioEvent: (event: AudioEvent) => void = () => {};
 let resolveOpen: () => void = () => {};
 let unmutes = 0;
+let opens = 0;
 const controller = new PracticeController(
   {
     id: "song",
@@ -21,6 +22,7 @@ const controller = new PracticeController(
     return {
       open: () =>
         new Promise<void>((resolve) => {
+          opens++;
           resolveOpen = resolve;
         }),
       unmute: async () => {
@@ -67,4 +69,16 @@ audioEvent({
 assert.equal(controller.getSnapshot().session.status, "transitioning");
 controller.finish(state.epoch);
 assert.equal(controller.getSnapshot().session.index, 1);
+audioEvent({ type: "error", message: "Microphone disconnected" });
+assert.equal(controller.getSnapshot().session.status, "paused");
+const retry = controller.toggle("", "balanced");
+assert.equal(
+  opens,
+  2,
+  "retry after disconnect opens a fresh microphone stream",
+);
+resolveOpen();
+await retry;
+assert.equal(unmutes, 2, "retry unmutes the replacement stream");
+assert.equal(controller.getSnapshot().error, "");
 controller.dispose();
