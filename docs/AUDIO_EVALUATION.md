@@ -249,3 +249,37 @@ the experiments without applying them to the runtime. Restoring the engine
 reproduced the complete baseline report exactly. The next investigation must
 inspect the spurious pitch-class evidence rather than treating these two simple
 threshold/weighting changes as solutions. Held-out players remain untouched.
+
+## Offline feature traces
+
+To inspect one calibration failure using the exact engine features:
+
+```sh
+pnpm --silent eval:audio artifacts/guitarset/calibration-confusions.json balanced --trace-case 03_SS3-98-C_comp:3:target-Em7 > artifacts/guitarset/em7-trace.json
+```
+
+The normal report remains unchanged; the optional `trace` includes feature frames
+for the requested case up to its first match (or interval end). Each frame contains
+its relative sample end/time, input RMS level, score, confirmation progress, match
+flag and 12 raw chroma energies ordered C, C#, D, D#, E, F, F#, G, G#, A, A#, B.
+Timestamps are reporting block boundaries, not physical microphone latency. Cases
+without a complete analysis window have no feature frames. Unknown case IDs fail.
+
+The evaluator enables a Rust `diagnostics` feature. Default recognition and the
+WASM dependency build do not enable it; the application has no trace endpoint or
+recording feature. This reads existing offline WAV fixtures and does not capture,
+log or upload microphone PCM.
+
+The [Em/Em7 trace](evaluation/guitarset-em7-feature-trace.json) records dataset
+attribution, audio/manifest hashes and the exact calibration interval. In this
+case the D evidence rises to about 9% of the strongest class at the 279 ms
+frame, then rises to about 17% by the false match at 418 ms. The evidence is too
+large for the rejected 6% floor to remove. This trace identifies the unexplained
+class and its timing; it does not yet establish which spectral partial caused it.
+
+Poku verifies trace output against a known C/E/G signal, unchanged decisions and
+latency with tracing, frame ordering, and invalid-case rejection. With diagnostics
+enabled, the full 772-case native report exactly matches the unchanged baseline.
+
+Full native/WASM parity also passes: all 772 calibration cases across three
+profiles agree in decision and latency (2,316 comparisons).

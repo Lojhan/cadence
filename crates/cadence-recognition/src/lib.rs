@@ -12,6 +12,9 @@ pub struct Report {
     pub level: f32,
     pub score: f32,
     pub progress: f32,
+    /// Offline evaluator only; absent from the default engine and WASM build.
+    #[cfg(feature = "diagnostics")]
+    pub chroma: Option<[f32; 12]>,
 }
 pub struct Engine {
     analyzer: Analyzer,
@@ -98,6 +101,10 @@ impl Engine {
             let Some(chroma) = self.analyzer.push(*sample) else {
                 continue;
             };
+            #[cfg(feature = "diagnostics")]
+            {
+                report.chroma = Some(chroma);
+            }
             if self.target == 0 || self.confirmed || self.needs_attack {
                 continue;
             }

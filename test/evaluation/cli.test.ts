@@ -101,6 +101,84 @@ try {
     assert.equal(measured.summary.truePositive, 1);
     assert.equal(measured.summary.falsePositive, 0);
   }
+  assert.equal(
+    report.trace,
+    undefined,
+    "ordinary evaluation emits no diagnostic trace",
+  );
+  const traced = spawnSync(
+    "cargo",
+    [
+      "run",
+      "--quiet",
+      "--locked",
+      "-p",
+      "cadence-eval",
+      "--",
+      join(directory, "manifest.json"),
+      "balanced",
+      "--trace-case",
+      "correct",
+    ],
+    { encoding: "utf8" },
+  );
+  assert.equal(traced.status, 0, traced.stderr);
+  const diagnostics = JSON.parse(traced.stdout);
+  assert.deepEqual(
+    diagnostics.cases,
+    report.cases,
+    "tracing preserves every recognition result and latency",
+  );
+  assert.deepEqual(diagnostics.summary, report.summary);
+  assert.equal(diagnostics.trace.caseId, "correct");
+  const frames = diagnostics.trace.frames as {
+    sampleEnd: number;
+    timeMs: number;
+    chroma: number[];
+    matched: boolean;
+  }[];
+  assert.ok(frames.length > 0, "trace contains actual engine feature frames");
+  assert.equal(frames.at(-1)?.timeMs, report.cases[0].latencyMs);
+  assert.equal(frames.filter((frame) => frame.matched).length, 1);
+  for (const [i, frame] of frames.entries()) {
+    assert.equal(frame.chroma.length, 12);
+    assert.ok(
+      frame.chroma.every((value) => Number.isFinite(value) && value >= 0),
+    );
+    assert.ok(frame.sampleEnd > (frames[i - 1]?.sampleEnd ?? 0));
+    const ordered = frame.chroma
+      .map((energy, note) => ({ energy, note }))
+      .sort((a, b) => b.energy - a.energy)
+      .slice(0, 3)
+      .map((value) => value.note)
+      .sort((a, b) => a - b);
+    assert.deepEqual(
+      ordered,
+      [0, 4, 7],
+      "diagnostics expose the performed C/E/G pitch classes",
+    );
+  }
+  const unknownTrace = spawnSync(
+    "cargo",
+    [
+      "run",
+      "--quiet",
+      "--locked",
+      "-p",
+      "cadence-eval",
+      "--",
+      join(directory, "manifest.json"),
+      "balanced",
+      "--trace-case",
+      "missing",
+    ],
+    { encoding: "utf8" },
+  );
+  assert.notEqual(
+    unknownTrace.status,
+    0,
+    "unknown trace cases cannot silently emit empty evidence",
+  );
   const invalidProfile = spawnSync(
     "cargo",
     [

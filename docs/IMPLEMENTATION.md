@@ -150,3 +150,17 @@ Neither fixed the focused regression. Both experiments were rejected and recorde
 with source patches, manifest hashes and changed decisions. The runtime was
 restored and reproduced the complete calibration baseline exactly. No accuracy
 improvement or release-gate completion is claimed.
+
+Offline recognition diagnostics: a Poku CLI test first failed because trace-case
+arguments were unsupported. The evaluator now exposes actual per-frame engine
+chroma and confirmation state for one selected recording through an evaluator-only
+Cargo feature. Default/WASM dependencies do not enable that feature. Synthetic
+feature identities and unchanged results/latency are checked; all 28 suites and
+full build/lint/type/Rust checks pass. The entire 772-case native baseline is
+identical with diagnostics enabled. The documented Em/Em7 trace shows D rising
+from about 9% to 17% of maximum chroma before the false match, explaining why a
+6% floor cannot fix it. Recognition decisions remain unchanged and held-out audio
+remains untouched.
+
+The full calibration native/WASM comparison also passes for all 772 cases across
+three profiles: 2,316 identical match decisions and sample-based latencies.

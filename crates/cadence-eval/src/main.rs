@@ -78,6 +78,25 @@ struct Report {
     groups: BTreeMap<String, Summary>,
     confusions: BTreeMap<String, Summary>,
     cases: Vec<ResultRow>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    trace: Option<Trace>,
+}
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct Trace {
+    case_id: String,
+    frames: Vec<TraceFrame>,
+}
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct TraceFrame {
+    sample_end: usize,
+    time_ms: f64,
+    level: f32,
+    score: f32,
+    progress: f32,
+    matched: bool,
+    chroma: [f32; 12],
 }
 fn read_wave(path: &Path) -> Result<(u32, Vec<f32>), Box<dyn Error>> {
     let mut reader = hound::WavReader::open(path)?;
@@ -107,18 +126,28 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut arguments = std::env::args().skip(1);
     let file = arguments
         .next()
-        .ok_or("Usage: cadence-eval MANIFEST.json [gentle|balanced|precise]")?;
+        .ok_or("Usage: cadence-eval MANIFEST.json [gentle|balanced|precise [--trace-case ID]]")?;
     let (profile, profile_name) = match arguments.next().as_deref().unwrap_or("balanced") {
         "gentle" => (Profile::Gentle, "gentle"),
         "balanced" => (Profile::Balanced, "balanced"),
         "precise" => (Profile::Precise, "precise"),
         _ => return Err("Unknown recognition profile".into()),
     };
+    let trace_case = match arguments.next().as_deref() {
+        None => None,
+        Some("--trace-case") => Some(arguments.next().ok_or("Missing trace case ID")?),
+        _ => return Err("Unexpected evaluation argument".into()),
+    };
     if arguments.next().is_some() {
         return Err("Unexpected evaluation argument".into());
     }
     let manifest_path = Path::new(&file);
     let manifest: Manifest = serde_json::from_slice(&fs::read(manifest_path)?)?;
+    if let Some(id) = &trace_case {
+        if !manifest.cases.iter().any(|case| &case.id == id) {
+            return Err("Unknown trace case".into());
+        }
+    }
     let directory = manifest_path.parent().ok_or("Manifest has no parent")?;
     let mut report = Report {
         engine_version: env!("CARGO_PKG_VERSION"),
@@ -127,6 +156,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         groups: BTreeMap::new(),
         confusions: BTreeMap::new(),
         cases: vec![],
+        trace: trace_case.map(|case_id| Trace {
+            case_id,
+            frames: vec![],
+        }),
     };
     let mut previous_file = String::new();
     let mut samples = vec![];
@@ -154,7 +187,23 @@ fn main() -> Result<(), Box<dyn Error>> {
         let mut consumed = 0;
         for chunk in samples[start..end].chunks(2048) {
             consumed += chunk.len();
-            if engine.process(chunk).matched {
+            let measured = engine.process(chunk);
+            if let Some(trace) = &mut report.trace {
+                if trace.case_id == case.id {
+                    if let Some(chroma) = measured.chroma {
+                        trace.frames.push(TraceFrame {
+                            sample_end: consumed,
+                            time_ms: consumed as f64 / f64::from(rate) * 1000.0,
+                            level: measured.level,
+                            score: measured.score,
+                            progress: measured.progress,
+                            matched: measured.matched,
+                            chroma,
+                        });
+                    }
+                }
+            }
+            if measured.matched {
                 latency_ms = Some(consumed as f64 / f64::from(rate) * 1000.0);
                 break;
             }

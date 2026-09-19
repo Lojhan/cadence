@@ -1,0 +1,96 @@
+{
+  "source": "GuitarSet v1.1.0, Xi et al. (2018), https://zenodo.org/records/3371780",
+  "license": "CC BY 4.0",
+  "manifestSha256": "7e97dec14ac6b4cfb41dad7faf456fed5675f83ec5916ec3b60ff14cd527210d",
+  "audioSha256": "541e936a3a2375572e325684dd448bc69f609518ba667f40cac14def634c2aff",
+  "case": {
+    "file": "audio/03_SS3-98-C_comp_mic.wav",
+    "startSeconds": 7.623265306122448,
+    "durationSeconds": 0.679591836734744,
+    "split": "calibration",
+    "chord": "Em",
+    "id": "03_SS3-98-C_comp:3:target-Em7",
+    "targetMask": 2196,
+    "expectedMatch": false,
+    "targetChord": "Em7"
+  },
+  "profile": "balanced",
+  "trace": {
+    "caseId": "03_SS3-98-C_comp:3:target-Em7",
+    "frames": [
+      {
+        "sampleEnd": 8192,
+        "timeMs": 185.75963718820861,
+        "level": 0.16038525,
+        "score": 0.9504004,
+        "progress": 0.0,
+        "matched": false,
+        "chroma": [
+          0.0, 0.0, 0.0, 0.0, 22.626719, 0.0, 0.0, 35.56634, 0.0, 4.0398903,
+          0.0, 19.21709
+        ]
+      },
+      {
+        "sampleEnd": 10240,
+        "timeMs": 232.19954648526078,
+        "level": 0.12612516,
+        "score": 0.9976842,
+        "progress": 0.0,
+        "matched": false,
+        "chroma": [
+          0.0, 0.0, 0.22944607, 0.0, 24.407831, 0.0, 0.15458536, 27.124672, 0.0,
+          0.0, 0.0, 14.835205
+        ]
+      },
+      {
+        "sampleEnd": 12288,
+        "timeMs": 278.6394557823129,
+        "level": 0.11886068,
+        "score": 0.9972939,
+        "progress": 0.25799948,
+        "matched": false,
+        "chroma": [
+          0.0, 0.0, 2.3462832, 0.0, 26.22956, 0.0, 0.151235, 14.863415, 0.0,
+          0.0, 0.0, 12.294397
+        ]
+      },
+      {
+        "sampleEnd": 14336,
+        "timeMs": 325.07936507936506,
+        "level": 0.10885914,
+        "score": 0.9977877,
+        "progress": 0.51599896,
+        "matched": false,
+        "chroma": [
+          0.0, 0.0, 3.4783266, 0.0, 25.417759, 0.0, 0.10555663, 7.9624033, 0.0,
+          0.0, 0.0, 10.749714
+        ]
+      },
+      {
+        "sampleEnd": 16384,
+        "timeMs": 371.51927437641723,
+        "level": 0.106237814,
+        "score": 0.9989725,
+        "progress": 0.77399844,
+        "matched": false,
+        "chroma": [
+          0.0, 0.0, 3.800155, 0.0, 24.482895, 0.0, 0.043618243, 5.141875, 0.0,
+          0.0, 0.0, 8.979206
+        ]
+      },
+      {
+        "sampleEnd": 18432,
+        "timeMs": 417.9591836734694,
+        "level": 0.10293928,
+        "score": 1.0,
+        "progress": 1.0,
+        "matched": true,
+        "chroma": [
+          0.0, 0.0, 3.9309912, 0.0, 23.468676, 0.0, 0.0, 3.2938015, 0.0, 0.0,
+          0.0, 8.67675
+        ]
+      }
+    ]
+  },
+  "heldOutEvaluated": false
+}
