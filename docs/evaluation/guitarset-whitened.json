@@ -1,0 +1,4640 @@
+{
+  "detector": "whitened-v1",
+  "split": "calibration players 00\u201303 only",
+  "heldOutEvaluated": false,
+  "implementationSha256": {
+    "crates/cadence-dsp/src/lib.rs": "72364b8f824cbf4736c6178dc7ab8428c74620fe79cb7d4e5b14026395ab0f4e",
+    "crates/cadence-dsp/src/multipitch.rs": "c54c0221fdca524650beb53a7e79df7ed96d36ca1b2e319ae72410318db5741e",
+    "crates/cadence-recognition/src/lib.rs": "c44c3e52c1fe43294945bc558dfce1cd211a46529aa0cc214745969c83827290"
+  },
+  "experiments": [
+    {
+      "gamma": 0.7,
+      "cancellation": 0.89,
+      "peakInterpolation": false,
+      "truePositive": 73,
+      "falsePositive": 4,
+      "rejected": "loses weak notes, including synthetic G"
+    },
+    {
+      "gamma": 0.5,
+      "cancellation": 0.89,
+      "peakInterpolation": false,
+      "truePositive": 99,
+      "falsePositive": 19,
+      "rejected": "too many residual harmonic false matches"
+    },
+    {
+      "gamma": 0.5,
+      "cancellation": 1.8,
+      "peakInterpolation": false,
+      "truePositive": 100,
+      "falsePositive": 9,
+      "rejected": "whole-bin frequency ambiguity fails pure G browser regression"
+    },
+    {
+      "gamma": 0.5,
+      "cancellation": 1.8,
+      "peakInterpolation": "fixed 4*delta^2 penalty",
+      "truePositive": 94,
+      "falsePositive": 9,
+      "rejected": "penalizes high harmonic deviations too strongly"
+    },
+    {
+      "gamma": 0.5,
+      "cancellation": 1.8,
+      "peakInterpolation": "0.25*(delta/max(0.5,0.003*bin))^2 penalty",
+      "truePositive": 102,
+      "falsePositive": 7,
+      "selected": true
+    }
+  ],
+  "comparisons": {
+    "focused-gentle": {
+      "baseline": {
+        "truePositive": 102,
+        "falseNegative": 14,
+        "falsePositive": 18,
+        "trueNegative": 638,
+        "p95MatchMs": 371.51927437641723
+      },
+      "candidate": {
+        "truePositive": 102,
+        "falseNegative": 14,
+        "falsePositive": 12,
+        "trueNegative": 644,
+        "p95MatchMs": 371.51927437641723
+      },
+      "changes": {
+        "positiveRecoveries": 2,
+        "positiveLosses": 2,
+        "falseMatchFixes": 12,
+        "newFalseMatches": 6
+      },
+      "changedCases": [
+        {
+          "before": {
+            "id": "00_Funk2-108-Eb_comp:5:target-A#",
+            "targetMask": 1060,
+            "targetChord": "A#",
+            "split": "calibration",
+            "chord": "A#7",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 510.83900226757373,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Funk2-108-Eb_comp:5:target-A#",
+            "targetMask": 1060,
+            "targetChord": "A#",
+            "split": "calibration",
+            "chord": "A#7",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Funk2-108-Eb_comp:10:target-G#m7",
+            "targetMask": 2376,
+            "targetChord": "G#m7",
+            "split": "calibration",
+            "chord": "B",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 417.9591836734694,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Funk2-108-Eb_comp:10:target-G#m7",
+            "targetMask": 2376,
+            "targetChord": "G#m7",
+            "split": "calibration",
+            "chord": "B",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Funk3-112-C#_comp:6:target-F#maj7",
+            "targetMask": 1122,
+            "targetChord": "F#maj7",
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Funk3-112-C#_comp:6:target-F#maj7",
+            "targetMask": 1122,
+            "targetChord": "F#maj7",
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Funk3-98-A_comp:8:target-Amaj7",
+            "targetMask": 786,
+            "targetChord": "Amaj7",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 510.83900226757373,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Funk3-98-A_comp:8:target-Amaj7",
+            "targetMask": 786,
+            "targetChord": "Amaj7",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz2-110-Bb_comp:13:target-C#",
+            "targetMask": 290,
+            "targetChord": "C#",
+            "split": "calibration",
+            "chord": "A#m7",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz2-110-Bb_comp:13:target-C#",
+            "targetMask": 290,
+            "targetChord": "C#",
+            "split": "calibration",
+            "chord": "A#m7",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 278.6394557823129,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz3-137-Eb_comp:2:target-D#",
+            "targetMask": 1160,
+            "targetChord": "D#",
+            "split": "calibration",
+            "chord": "Cm7",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz3-137-Eb_comp:2:target-D#",
+            "targetMask": 1160,
+            "targetChord": "D#",
+            "split": "calibration",
+            "chord": "Cm7",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 278.6394557823129,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz3-137-Eb_comp:4:target-G#maj7",
+            "targetMask": 393,
+            "targetChord": "G#maj7",
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 510.83900226757373,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz3-137-Eb_comp:4:target-G#maj7",
+            "targetMask": 393,
+            "targetChord": "G#maj7",
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz3-137-Eb_comp:12:target-G#maj7",
+            "targetMask": 393,
+            "targetChord": "G#maj7",
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 417.9591836734694,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz3-137-Eb_comp:12:target-G#maj7",
+            "targetMask": 393,
+            "targetChord": "G#maj7",
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Rock3-117-Bb_comp:5:target-Gm7",
+            "targetMask": 1188,
+            "targetChord": "Gm7",
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 278.6394557823129,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Rock3-117-Bb_comp:5:target-Gm7",
+            "targetMask": 1188,
+            "targetChord": "Gm7",
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_SS1-68-E_comp:5:target-Emaj7",
+            "targetMask": 2328,
+            "targetChord": "Emaj7",
+            "split": "calibration",
+            "chord": "E",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_SS1-68-E_comp:5:target-Emaj7",
+            "targetMask": 2328,
+            "targetChord": "Emaj7",
+            "split": "calibration",
+            "chord": "E",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 464.39909297052156,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_BN3-119-G_comp:7:target-Dmaj7",
+            "targetMask": 582,
+            "targetChord": "Dmaj7",
+            "split": "calibration",
+            "chord": "D",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 278.6394557823129,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_BN3-119-G_comp:7:target-Dmaj7",
+            "targetMask": 582,
+            "targetChord": "Dmaj7",
+            "split": "calibration",
+            "chord": "D",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz2-110-Bb_comp:1:target-G#",
+            "targetMask": 265,
+            "targetChord": "G#",
+            "split": "calibration",
+            "chord": "G#7",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 557.2789115646258,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz2-110-Bb_comp:1:target-G#",
+            "targetMask": 265,
+            "targetChord": "G#",
+            "split": "calibration",
+            "chord": "G#7",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz2-110-Bb_comp:8:target-G#",
+            "targetMask": 265,
+            "targetChord": "G#",
+            "split": "calibration",
+            "chord": "G#7",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz2-110-Bb_comp:8:target-G#",
+            "targetMask": 265,
+            "targetChord": "G#",
+            "split": "calibration",
+            "chord": "G#7",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 278.6394557823129,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz2-110-Bb_comp:11:correct",
+            "targetMask": 1169,
+            "targetChord": "C7",
+            "split": "calibration",
+            "chord": "C7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 278.6394557823129,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz2-110-Bb_comp:11:correct",
+            "targetMask": 1169,
+            "targetChord": "C7",
+            "split": "calibration",
+            "chord": "C7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz3-137-Eb_comp:14:target-G#maj7",
+            "targetMask": 393,
+            "targetChord": "G#maj7",
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 603.7188208616781,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz3-137-Eb_comp:14:target-G#maj7",
+            "targetMask": 393,
+            "targetChord": "G#maj7",
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_SS1-68-E_comp:4:target-A7",
+            "targetMask": 658,
+            "targetChord": "A7",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 1021.6780045351475,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_SS1-68-E_comp:4:target-A7",
+            "targetMask": 658,
+            "targetChord": "A7",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_SS3-98-C_comp:10:target-Am7",
+            "targetMask": 657,
+            "targetChord": "Am7",
+            "split": "calibration",
+            "chord": "Am",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 278.6394557823129,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_SS3-98-C_comp:10:target-Am7",
+            "targetMask": 657,
+            "targetChord": "Am7",
+            "split": "calibration",
+            "chord": "Am",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_Rock1-130-A_comp:5:correct",
+            "targetMask": 530,
+            "targetChord": "A",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_Rock1-130-A_comp:5:correct",
+            "targetMask": 530,
+            "targetChord": "A",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 278.6394557823129,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Rock3-148-C_comp:11:target-E",
+            "targetMask": 2320,
+            "targetChord": "E",
+            "split": "calibration",
+            "chord": "Em",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 371.51927437641723,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Rock3-148-C_comp:11:target-E",
+            "targetMask": 2320,
+            "targetChord": "E",
+            "split": "calibration",
+            "chord": "Em",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_SS1-100-C#_comp:4:correct",
+            "targetMask": 1090,
+            "targetChord": "F#",
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_SS1-100-C#_comp:4:correct",
+            "targetMask": 1090,
+            "targetChord": "F#",
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 278.6394557823129,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_SS3-84-Bb_comp:4:target-D#maj7",
+            "targetMask": 1164,
+            "targetChord": "D#maj7",
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_SS3-84-Bb_comp:4:target-D#maj7",
+            "targetMask": 1164,
+            "targetChord": "D#maj7",
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 371.51927437641723,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_SS3-98-C_comp:7:correct",
+            "targetMask": 2180,
+            "targetChord": "G",
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 278.6394557823129,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_SS3-98-C_comp:7:correct",
+            "targetMask": 2180,
+            "targetChord": "G",
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        }
+      ],
+      "processing": {
+        "processingMs": 916.4023330000039,
+        "audioProcessedMs": 449567.89115639596,
+        "maxBlockMs": 1.005666
+      },
+      "casesFile": "guitarset-whitened-focused-gentle-cases.json"
+    },
+    "focused-balanced": {
+      "baseline": {
+        "truePositive": 97,
+        "falseNegative": 19,
+        "falsePositive": 10,
+        "trueNegative": 646,
+        "p95MatchMs": 510.83900226757373
+      },
+      "candidate": {
+        "truePositive": 102,
+        "falseNegative": 14,
+        "falsePositive": 7,
+        "trueNegative": 649,
+        "p95MatchMs": 417.9591836734694
+      },
+      "changes": {
+        "positiveRecoveries": 7,
+        "positiveLosses": 2,
+        "falseMatchFixes": 7,
+        "newFalseMatches": 4
+      },
+      "changedCases": [
+        {
+          "before": {
+            "id": "00_Funk3-98-A_comp:8:target-Amaj7",
+            "targetMask": 786,
+            "targetChord": "Amaj7",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 557.2789115646258,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Funk3-98-A_comp:8:target-Amaj7",
+            "targetMask": 786,
+            "targetChord": "Amaj7",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz2-110-Bb_comp:13:target-C#",
+            "targetMask": 290,
+            "targetChord": "C#",
+            "split": "calibration",
+            "chord": "A#m7",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz2-110-Bb_comp:13:target-C#",
+            "targetMask": 290,
+            "targetChord": "C#",
+            "split": "calibration",
+            "chord": "A#m7",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz3-137-Eb_comp:2:target-D#",
+            "targetMask": 1160,
+            "targetChord": "D#",
+            "split": "calibration",
+            "chord": "Cm7",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz3-137-Eb_comp:2:target-D#",
+            "targetMask": 1160,
+            "targetChord": "D#",
+            "split": "calibration",
+            "chord": "Cm7",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz3-137-Eb_comp:4:target-G#maj7",
+            "targetMask": 393,
+            "targetChord": "G#maj7",
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 557.2789115646258,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz3-137-Eb_comp:4:target-G#maj7",
+            "targetMask": 393,
+            "targetChord": "G#maj7",
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz3-137-Eb_comp:12:target-G#maj7",
+            "targetMask": 393,
+            "targetChord": "G#maj7",
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 464.39909297052156,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz3-137-Eb_comp:12:target-G#maj7",
+            "targetMask": 393,
+            "targetChord": "G#maj7",
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz3-150-C_comp:4:target-Am",
+            "targetMask": 529,
+            "targetChord": "Am",
+            "split": "calibration",
+            "chord": "Fmaj7",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz3-150-C_comp:4:target-Am",
+            "targetMask": 529,
+            "targetChord": "Am",
+            "split": "calibration",
+            "chord": "Fmaj7",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 371.51927437641723,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz3-150-C_comp:10:target-Am",
+            "targetMask": 529,
+            "targetChord": "Am",
+            "split": "calibration",
+            "chord": "Am7",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 603.7188208616781,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz3-150-C_comp:10:target-Am",
+            "targetMask": 529,
+            "targetChord": "Am",
+            "split": "calibration",
+            "chord": "Am7",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_BN3-119-G_comp:7:target-Dmaj7",
+            "targetMask": 582,
+            "targetChord": "Dmaj7",
+            "split": "calibration",
+            "chord": "D",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_BN3-119-G_comp:7:target-Dmaj7",
+            "targetMask": 582,
+            "targetChord": "Dmaj7",
+            "split": "calibration",
+            "chord": "D",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz2-110-Bb_comp:11:correct",
+            "targetMask": 1169,
+            "targetChord": "C7",
+            "split": "calibration",
+            "chord": "C7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz2-110-Bb_comp:11:correct",
+            "targetMask": 1169,
+            "targetChord": "C7",
+            "split": "calibration",
+            "chord": "C7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz3-137-Eb_comp:15:correct",
+            "targetMask": 1060,
+            "targetChord": "A#",
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz3-137-Eb_comp:15:correct",
+            "targetMask": 1060,
+            "targetChord": "A#",
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_SS1-68-E_comp:4:target-A7",
+            "targetMask": 658,
+            "targetChord": "A7",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 1068.1179138321995,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_SS1-68-E_comp:4:target-A7",
+            "targetMask": 658,
+            "targetChord": "A7",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_SS3-98-C_comp:9:correct",
+            "targetMask": 2180,
+            "targetChord": "G",
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_SS3-98-C_comp:9:correct",
+            "targetMask": 2180,
+            "targetChord": "G",
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_SS3-98-C_comp:10:target-Am7",
+            "targetMask": 657,
+            "targetChord": "Am7",
+            "split": "calibration",
+            "chord": "Am",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_SS3-98-C_comp:10:target-Am7",
+            "targetMask": 657,
+            "targetChord": "Am7",
+            "split": "calibration",
+            "chord": "Am",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_Rock1-130-A_comp:5:correct",
+            "targetMask": 530,
+            "targetChord": "A",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_Rock1-130-A_comp:5:correct",
+            "targetMask": 530,
+            "targetChord": "A",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_SS3-84-Bb_comp:4:correct",
+            "targetMask": 1160,
+            "targetChord": "D#",
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_SS3-84-Bb_comp:4:correct",
+            "targetMask": 1160,
+            "targetChord": "D#",
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Jazz2-110-Bb_comp:9:correct",
+            "targetMask": 291,
+            "targetChord": "C#maj7",
+            "split": "calibration",
+            "chord": "C#maj7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Jazz2-110-Bb_comp:9:correct",
+            "targetMask": 291,
+            "targetChord": "C#maj7",
+            "split": "calibration",
+            "chord": "C#maj7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Rock3-117-Bb_comp:12:correct",
+            "targetMask": 1160,
+            "targetChord": "D#",
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Rock3-117-Bb_comp:12:correct",
+            "targetMask": 1160,
+            "targetChord": "D#",
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_SS1-100-C#_comp:4:correct",
+            "targetMask": 1090,
+            "targetChord": "F#",
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_SS1-100-C#_comp:4:correct",
+            "targetMask": 1090,
+            "targetChord": "F#",
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_SS3-84-Bb_comp:4:target-D#maj7",
+            "targetMask": 1164,
+            "targetChord": "D#maj7",
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_SS3-84-Bb_comp:4:target-D#maj7",
+            "targetMask": 1164,
+            "targetChord": "D#maj7",
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 417.9591836734694,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_SS3-98-C_comp:7:correct",
+            "targetMask": 2180,
+            "targetChord": "G",
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_SS3-98-C_comp:7:correct",
+            "targetMask": 2180,
+            "targetChord": "G",
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        }
+      ],
+      "processing": {
+        "processingMs": 900.2274509999894,
+        "audioProcessedMs": 455842.65306115645,
+        "maxBlockMs": 0.31383300000000003
+      },
+      "casesFile": "guitarset-whitened-focused-balanced-cases.json"
+    },
+    "focused-precise": {
+      "baseline": {
+        "truePositive": 72,
+        "falseNegative": 44,
+        "falsePositive": 2,
+        "trueNegative": 654,
+        "p95MatchMs": 557.2789115646258
+      },
+      "candidate": {
+        "truePositive": 75,
+        "falseNegative": 41,
+        "falsePositive": 1,
+        "trueNegative": 655,
+        "p95MatchMs": 557.2789115646258
+      },
+      "changes": {
+        "positiveRecoveries": 13,
+        "positiveLosses": 10,
+        "falseMatchFixes": 1,
+        "newFalseMatches": 0
+      },
+      "changedCases": [
+        {
+          "before": {
+            "id": "00_Funk3-98-A_comp:13:correct",
+            "targetMask": 530,
+            "targetChord": "A",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Funk3-98-A_comp:13:correct",
+            "targetMask": 530,
+            "targetChord": "A",
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 417.9591836734694,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz1-130-D_comp:0:correct",
+            "targetMask": 581,
+            "targetChord": "D7",
+            "split": "calibration",
+            "chord": "D7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 464.39909297052156,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz1-130-D_comp:0:correct",
+            "targetMask": 581,
+            "targetChord": "D7",
+            "split": "calibration",
+            "chord": "D7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz2-110-Bb_comp:8:correct",
+            "targetMask": 329,
+            "targetChord": "G#7",
+            "split": "calibration",
+            "chord": "G#7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 510.83900226757373,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz2-110-Bb_comp:8:correct",
+            "targetMask": 329,
+            "targetChord": "G#7",
+            "split": "calibration",
+            "chord": "G#7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz3-137-Eb_comp:4:target-G#maj7",
+            "targetMask": 393,
+            "targetChord": "G#maj7",
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 650.1587301587301,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz3-137-Eb_comp:4:target-G#maj7",
+            "targetMask": 393,
+            "targetChord": "G#maj7",
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Rock3-117-Bb_comp:0:correct",
+            "targetMask": 1060,
+            "targetChord": "A#",
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Rock3-117-Bb_comp:0:correct",
+            "targetMask": 1060,
+            "targetChord": "A#",
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 417.9591836734694,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Rock3-117-Bb_comp:5:correct",
+            "targetMask": 1060,
+            "targetChord": "A#",
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Rock3-117-Bb_comp:5:correct",
+            "targetMask": 1060,
+            "targetChord": "A#",
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 417.9591836734694,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_BN3-154-E_comp:11:correct",
+            "targetMask": 2312,
+            "targetChord": "G#m",
+            "split": "calibration",
+            "chord": "G#m",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_BN3-154-E_comp:11:correct",
+            "targetMask": 2312,
+            "targetChord": "G#m",
+            "split": "calibration",
+            "chord": "G#m",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 557.2789115646258,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz2-110-Bb_comp:3:correct",
+            "targetMask": 1090,
+            "targetChord": "F#",
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 417.9591836734694,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz2-110-Bb_comp:3:correct",
+            "targetMask": 1090,
+            "targetChord": "F#",
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz2-110-Bb_comp:11:correct",
+            "targetMask": 1169,
+            "targetChord": "C7",
+            "split": "calibration",
+            "chord": "C7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 417.9591836734694,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz2-110-Bb_comp:11:correct",
+            "targetMask": 1169,
+            "targetChord": "C7",
+            "split": "calibration",
+            "chord": "C7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz3-137-Eb_comp:9:correct",
+            "targetMask": 1060,
+            "targetChord": "A#",
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 464.39909297052156,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz3-137-Eb_comp:9:correct",
+            "targetMask": 1060,
+            "targetChord": "A#",
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz3-137-Eb_comp:14:correct",
+            "targetMask": 265,
+            "targetChord": "G#",
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz3-137-Eb_comp:14:correct",
+            "targetMask": 265,
+            "targetChord": "G#",
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 464.39909297052156,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_SS3-98-C_comp:0:correct",
+            "targetMask": 145,
+            "targetChord": "C",
+            "split": "calibration",
+            "chord": "C",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_SS3-98-C_comp:0:correct",
+            "targetMask": 145,
+            "targetChord": "C",
+            "split": "calibration",
+            "chord": "C",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 510.83900226757373,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_SS3-98-C_comp:10:correct",
+            "targetMask": 529,
+            "targetChord": "Am",
+            "split": "calibration",
+            "chord": "Am",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_SS3-98-C_comp:10:correct",
+            "targetMask": 529,
+            "targetChord": "Am",
+            "split": "calibration",
+            "chord": "Am",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 557.2789115646258,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_BN3-119-G_comp:10:correct",
+            "targetMask": 2192,
+            "targetChord": "Em",
+            "split": "calibration",
+            "chord": "Em",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 417.9591836734694,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_BN3-119-G_comp:10:correct",
+            "targetMask": 2192,
+            "targetChord": "Em",
+            "split": "calibration",
+            "chord": "Em",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_Jazz1-130-D_comp:1:correct",
+            "targetMask": 2180,
+            "targetChord": "G",
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_Jazz1-130-D_comp:1:correct",
+            "targetMask": 2180,
+            "targetChord": "G",
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 464.39909297052156,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Jazz2-110-Bb_comp:9:correct",
+            "targetMask": 291,
+            "targetChord": "C#maj7",
+            "split": "calibration",
+            "chord": "C#maj7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Jazz2-110-Bb_comp:9:correct",
+            "targetMask": 291,
+            "targetChord": "C#maj7",
+            "split": "calibration",
+            "chord": "C#maj7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 417.9591836734694,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Rock1-90-C#_comp:3:correct",
+            "targetMask": 329,
+            "targetChord": "G#7",
+            "split": "calibration",
+            "chord": "G#7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 417.9591836734694,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Rock1-90-C#_comp:3:correct",
+            "targetMask": 329,
+            "targetChord": "G#7",
+            "split": "calibration",
+            "chord": "G#7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Rock2-142-D_comp:0:correct",
+            "targetMask": 1156,
+            "targetChord": "Gm",
+            "split": "calibration",
+            "chord": "Gm",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Rock2-142-D_comp:0:correct",
+            "targetMask": 1156,
+            "targetChord": "Gm",
+            "split": "calibration",
+            "chord": "Gm",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 417.9591836734694,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Rock2-142-D_comp:9:correct",
+            "targetMask": 545,
+            "targetChord": "F",
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 417.9591836734694,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Rock2-142-D_comp:9:correct",
+            "targetMask": 545,
+            "targetChord": "F",
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Rock3-117-Bb_comp:12:correct",
+            "targetMask": 1160,
+            "targetChord": "D#",
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Rock3-117-Bb_comp:12:correct",
+            "targetMask": 1160,
+            "targetChord": "D#",
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 417.9591836734694,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Rock3-148-C_comp:1:correct",
+            "targetMask": 2180,
+            "targetChord": "G",
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 417.9591836734694,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Rock3-148-C_comp:1:correct",
+            "targetMask": 2180,
+            "targetChord": "G",
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Rock3-148-C_comp:3:correct",
+            "targetMask": 2192,
+            "targetChord": "Em",
+            "split": "calibration",
+            "chord": "Em",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Rock3-148-C_comp:3:correct",
+            "targetMask": 2192,
+            "targetChord": "Em",
+            "split": "calibration",
+            "chord": "Em",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 417.9591836734694,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_SS1-100-C#_comp:3:correct",
+            "targetMask": 265,
+            "targetChord": "G#",
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_SS1-100-C#_comp:3:correct",
+            "targetMask": 265,
+            "targetChord": "G#",
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 464.39909297052156,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_SS3-98-C_comp:7:correct",
+            "targetMask": 2180,
+            "targetChord": "G",
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 417.9591836734694,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_SS3-98-C_comp:7:correct",
+            "targetMask": 2180,
+            "targetChord": "G",
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        }
+      ],
+      "processing": {
+        "processingMs": 1034.8110040000015,
+        "audioProcessedMs": 472587.12018133415,
+        "maxBlockMs": 2.923417
+      },
+      "casesFile": "guitarset-whitened-focused-precise-cases.json"
+    },
+    "broad-balanced": {
+      "baseline": {
+        "truePositive": 557,
+        "falseNegative": 332,
+        "falsePositive": 5,
+        "trueNegative": 671,
+        "p95MatchMs": 1346.7573696145125
+      },
+      "candidate": {
+        "truePositive": 573,
+        "falseNegative": 316,
+        "falsePositive": 2,
+        "trueNegative": 674,
+        "p95MatchMs": 1346.7573696145125
+      },
+      "changes": {
+        "positiveRecoveries": 71,
+        "positiveLosses": 55,
+        "falseMatchFixes": 4,
+        "newFalseMatches": 1
+      },
+      "changedCases": [
+        {
+          "before": {
+            "id": "00_BN1-129-Eb_comp:3:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_BN1-129-Eb_comp:3:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1346.7573696145125,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_BN2-131-B_comp:10:correct",
+            "targetMask": 2244,
+            "split": "calibration",
+            "chord": "Gmaj7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1253.8775510204082,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_BN2-131-B_comp:10:correct",
+            "targetMask": 2244,
+            "split": "calibration",
+            "chord": "Gmaj7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_BN2-166-Ab_comp:1:correct",
+            "targetMask": 1106,
+            "split": "calibration",
+            "chord": "F#7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_BN2-166-Ab_comp:1:correct",
+            "targetMask": 1106,
+            "split": "calibration",
+            "chord": "F#7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1160.9977324263039,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_BN2-166-Ab_comp:10:wrong-quality",
+            "targetMask": 2192,
+            "split": "calibration",
+            "chord": "E",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 789.4784580498866,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_BN2-166-Ab_comp:10:wrong-quality",
+            "targetMask": 2192,
+            "split": "calibration",
+            "chord": "E",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_BN3-154-E_comp:5:correct",
+            "targetMask": 2328,
+            "split": "calibration",
+            "chord": "Emaj7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_BN3-154-E_comp:5:correct",
+            "targetMask": 2328,
+            "split": "calibration",
+            "chord": "Emaj7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 789.4784580498866,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_BN3-154-E_comp:6:correct",
+            "targetMask": 530,
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 882.358276643991,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_BN3-154-E_comp:6:correct",
+            "targetMask": 530,
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_BN3-154-E_comp:11:correct",
+            "targetMask": 2376,
+            "split": "calibration",
+            "chord": "G#m7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 882.358276643991,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_BN3-154-E_comp:11:correct",
+            "targetMask": 2376,
+            "split": "calibration",
+            "chord": "G#m7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Funk1-114-Ab_comp:2:correct",
+            "targetMask": 265,
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 371.51927437641723,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Funk1-114-Ab_comp:2:correct",
+            "targetMask": 265,
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Funk2-108-Eb_comp:3:correct",
+            "targetMask": 2120,
+            "split": "calibration",
+            "chord": "B",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 371.51927437641723,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Funk2-108-Eb_comp:3:correct",
+            "targetMask": 2120,
+            "split": "calibration",
+            "chord": "B",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Funk3-112-C#_comp:4:correct",
+            "targetMask": 1090,
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Funk3-112-C#_comp:4:correct",
+            "targetMask": 1090,
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 510.83900226757373,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Funk3-112-C#_comp:12:correct",
+            "targetMask": 1090,
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Funk3-112-C#_comp:12:correct",
+            "targetMask": 1090,
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 882.358276643991,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz1-130-D_comp:2:correct",
+            "targetMask": 581,
+            "split": "calibration",
+            "chord": "D7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1114.5578231292516,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz1-130-D_comp:2:correct",
+            "targetMask": 581,
+            "split": "calibration",
+            "chord": "D7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz1-130-D_comp:3:correct",
+            "targetMask": 530,
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz1-130-D_comp:3:correct",
+            "targetMask": 530,
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1486.077097505669,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz2-187-F#_comp:3:correct",
+            "targetMask": 582,
+            "split": "calibration",
+            "chord": "Dmaj7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 464.39909297052156,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz2-187-F#_comp:3:correct",
+            "targetMask": 582,
+            "split": "calibration",
+            "chord": "Dmaj7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz2-187-F#_comp:13:correct",
+            "targetMask": 578,
+            "split": "calibration",
+            "chord": "F#m",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1486.077097505669,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz2-187-F#_comp:13:correct",
+            "targetMask": 578,
+            "split": "calibration",
+            "chord": "F#m",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz3-137-Eb_comp:3:correct",
+            "targetMask": 1188,
+            "split": "calibration",
+            "chord": "Gm7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz3-137-Eb_comp:3:correct",
+            "targetMask": 1188,
+            "split": "calibration",
+            "chord": "Gm7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 464.39909297052156,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz3-137-Eb_comp:5:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 835.9183673469388,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz3-137-Eb_comp:5:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz3-150-C_comp:6:correct",
+            "targetMask": 561,
+            "split": "calibration",
+            "chord": "Fmaj7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz3-150-C_comp:6:correct",
+            "targetMask": 561,
+            "split": "calibration",
+            "chord": "Fmaj7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1486.077097505669,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Jazz3-150-C_comp:13:correct",
+            "targetMask": 145,
+            "split": "calibration",
+            "chord": "C",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1021.6780045351475,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Jazz3-150-C_comp:13:correct",
+            "targetMask": 145,
+            "split": "calibration",
+            "chord": "C",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Rock2-142-D_comp:10:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Rock2-142-D_comp:10:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 650.1587301587301,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Rock2-142-D_comp:12:correct",
+            "targetMask": 658,
+            "split": "calibration",
+            "chord": "A7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 696.5986394557823,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Rock2-142-D_comp:12:correct",
+            "targetMask": 658,
+            "split": "calibration",
+            "chord": "A7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_Rock2-85-F_comp:13:correct",
+            "targetMask": 289,
+            "split": "calibration",
+            "chord": "Fm",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 975.2380952380952,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_Rock2-85-F_comp:13:correct",
+            "targetMask": 289,
+            "split": "calibration",
+            "chord": "Fm",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_SS1-100-C#_comp:0:correct",
+            "targetMask": 290,
+            "split": "calibration",
+            "chord": "C#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_SS1-100-C#_comp:0:correct",
+            "targetMask": 290,
+            "split": "calibration",
+            "chord": "C#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1346.7573696145125,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_SS1-100-C#_comp:2:correct",
+            "targetMask": 290,
+            "split": "calibration",
+            "chord": "C#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_SS1-100-C#_comp:2:correct",
+            "targetMask": 290,
+            "split": "calibration",
+            "chord": "C#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1300.3174603174602,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_SS2-107-Ab_comp:0:correct",
+            "targetMask": 274,
+            "split": "calibration",
+            "chord": "C#m",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_SS2-107-Ab_comp:0:correct",
+            "targetMask": 274,
+            "split": "calibration",
+            "chord": "C#m",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1207.4376417233561,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_SS2-107-Ab_comp:1:correct",
+            "targetMask": 1106,
+            "split": "calibration",
+            "chord": "F#7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1253.8775510204082,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_SS2-107-Ab_comp:1:correct",
+            "targetMask": 1106,
+            "split": "calibration",
+            "chord": "F#7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_SS2-107-Ab_comp:2:correct",
+            "targetMask": 2120,
+            "split": "calibration",
+            "chord": "B",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_SS2-107-Ab_comp:2:correct",
+            "targetMask": 2120,
+            "split": "calibration",
+            "chord": "B",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1207.4376417233561,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_SS2-107-Ab_comp:9:correct",
+            "targetMask": 2120,
+            "split": "calibration",
+            "chord": "B",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_SS2-107-Ab_comp:9:correct",
+            "targetMask": 2120,
+            "split": "calibration",
+            "chord": "B",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 928.7981859410431,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_SS2-88-F_comp:1:correct",
+            "targetMask": 1162,
+            "split": "calibration",
+            "chord": "D#7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 835.9183673469388,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_SS2-88-F_comp:1:correct",
+            "targetMask": 1162,
+            "split": "calibration",
+            "chord": "D#7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_SS3-84-Bb_comp:1:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 696.5986394557823,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_SS3-84-Bb_comp:1:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_SS3-84-Bb_comp:5:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1393.1972789115646,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_SS3-84-Bb_comp:5:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_SS3-84-Bb_comp:6:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_SS3-84-Bb_comp:6:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1160.9977324263039,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_SS3-84-Bb_comp:9:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_SS3-84-Bb_comp:9:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1486.077097505669,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_SS3-84-Bb_comp:14:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_SS3-84-Bb_comp:14:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1114.5578231292516,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_SS3-84-Bb_comp:15:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_SS3-84-Bb_comp:15:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1486.077097505669,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "00_SS3-98-C_comp:11:wrong-quality",
+            "targetMask": 2320,
+            "split": "calibration",
+            "chord": "Em",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 510.83900226757373,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "00_SS3-98-C_comp:11:wrong-quality",
+            "targetMask": 2320,
+            "split": "calibration",
+            "chord": "Em",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_BN1-129-Eb_comp:5:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 928.7981859410431,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_BN1-129-Eb_comp:5:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_BN1-147-Gb_comp:4:correct",
+            "targetMask": 2120,
+            "split": "calibration",
+            "chord": "B",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1068.1179138321995,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_BN1-147-Gb_comp:4:correct",
+            "targetMask": 2120,
+            "split": "calibration",
+            "chord": "B",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_BN2-131-B_comp:8:correct",
+            "targetMask": 658,
+            "split": "calibration",
+            "chord": "A7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1346.7573696145125,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_BN2-131-B_comp:8:correct",
+            "targetMask": 658,
+            "split": "calibration",
+            "chord": "A7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_BN2-166-Ab_comp:4:correct",
+            "targetMask": 1316,
+            "split": "calibration",
+            "chord": "A#7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_BN2-166-Ab_comp:4:correct",
+            "targetMask": 1316,
+            "split": "calibration",
+            "chord": "A#7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_BN2-166-Ab_comp:12:correct",
+            "targetMask": 1162,
+            "split": "calibration",
+            "chord": "D#7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 928.7981859410431,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_BN2-166-Ab_comp:12:correct",
+            "targetMask": 1162,
+            "split": "calibration",
+            "chord": "D#7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_BN2-166-Ab_comp:13:correct",
+            "targetMask": 2312,
+            "split": "calibration",
+            "chord": "G#m",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_BN2-166-Ab_comp:13:correct",
+            "targetMask": 2312,
+            "split": "calibration",
+            "chord": "G#m",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1114.5578231292516,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_BN3-119-G_comp:5:correct",
+            "targetMask": 2180,
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_BN3-119-G_comp:5:correct",
+            "targetMask": 2180,
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1253.8775510204082,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_BN3-119-G_comp:8:correct",
+            "targetMask": 2180,
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1253.8775510204082,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_BN3-119-G_comp:8:correct",
+            "targetMask": 2180,
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_BN3-119-G_comp:9:correct",
+            "targetMask": 580,
+            "split": "calibration",
+            "chord": "D",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 603.7188208616781,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_BN3-119-G_comp:9:correct",
+            "targetMask": 580,
+            "split": "calibration",
+            "chord": "D",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_BN3-119-G_comp:10:correct",
+            "targetMask": 2192,
+            "split": "calibration",
+            "chord": "Em",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_BN3-119-G_comp:10:correct",
+            "targetMask": 2192,
+            "split": "calibration",
+            "chord": "Em",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1439.6371882086166,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_BN3-154-E_comp:5:correct",
+            "targetMask": 2320,
+            "split": "calibration",
+            "chord": "E",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_BN3-154-E_comp:5:correct",
+            "targetMask": 2320,
+            "split": "calibration",
+            "chord": "E",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 928.7981859410431,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_BN3-154-E_comp:12:correct",
+            "targetMask": 530,
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1068.1179138321995,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_BN3-154-E_comp:12:correct",
+            "targetMask": 530,
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Funk1-114-Ab_comp:3:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Funk1-114-Ab_comp:3:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 510.83900226757373,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Funk1-97-C_comp:2:correct",
+            "targetMask": 145,
+            "split": "calibration",
+            "chord": "C",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Funk1-97-C_comp:2:correct",
+            "targetMask": 145,
+            "split": "calibration",
+            "chord": "C",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1486.077097505669,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Funk1-97-C_comp:5:correct",
+            "targetMask": 145,
+            "split": "calibration",
+            "chord": "C",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Funk1-97-C_comp:5:correct",
+            "targetMask": 145,
+            "split": "calibration",
+            "chord": "C",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1393.1972789115646,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Funk2-108-Eb_comp:4:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Funk2-108-Eb_comp:4:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 835.9183673469388,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Funk2-108-Eb_comp:11:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Funk2-108-Eb_comp:11:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 975.2380952380952,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Funk2-119-G_comp:10:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 464.39909297052156,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Funk2-119-G_comp:10:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Funk3-112-C#_comp:12:correct",
+            "targetMask": 1090,
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Funk3-112-C#_comp:12:correct",
+            "targetMask": 1090,
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1346.7573696145125,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Funk3-112-C#_comp:14:correct",
+            "targetMask": 1090,
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Funk3-112-C#_comp:14:correct",
+            "targetMask": 1090,
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1207.4376417233561,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz1-130-D_comp:2:correct",
+            "targetMask": 580,
+            "split": "calibration",
+            "chord": "D",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz1-130-D_comp:2:correct",
+            "targetMask": 580,
+            "split": "calibration",
+            "chord": "D",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 696.5986394557823,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz1-200-B_comp:3:correct",
+            "targetMask": 1090,
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz1-200-B_comp:3:correct",
+            "targetMask": 1090,
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1021.6780045351475,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz2-110-Bb_comp:4:correct",
+            "targetMask": 1169,
+            "split": "calibration",
+            "chord": "C7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1253.8775510204082,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz2-110-Bb_comp:4:correct",
+            "targetMask": 1169,
+            "split": "calibration",
+            "chord": "C7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz2-110-Bb_comp:5:correct",
+            "targetMask": 553,
+            "split": "calibration",
+            "chord": "F7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1207.4376417233561,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz2-110-Bb_comp:5:correct",
+            "targetMask": 553,
+            "split": "calibration",
+            "chord": "F7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz2-110-Bb_comp:11:correct",
+            "targetMask": 1169,
+            "split": "calibration",
+            "chord": "C7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz2-110-Bb_comp:11:correct",
+            "targetMask": 1169,
+            "split": "calibration",
+            "chord": "C7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz3-137-Eb_comp:1:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 975.2380952380952,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz3-137-Eb_comp:1:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz3-137-Eb_comp:7:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz3-137-Eb_comp:7:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 557.2789115646258,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz3-137-Eb_comp:11:correct",
+            "targetMask": 1156,
+            "split": "calibration",
+            "chord": "Gm",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1207.4376417233561,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz3-137-Eb_comp:11:correct",
+            "targetMask": 1156,
+            "split": "calibration",
+            "chord": "Gm",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz3-137-Eb_comp:15:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz3-137-Eb_comp:15:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 975.2380952380952,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Jazz3-150-C_comp:7:correct",
+            "targetMask": 2180,
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1393.1972789115646,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Jazz3-150-C_comp:7:correct",
+            "targetMask": 2180,
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Rock1-130-A_comp:0:correct",
+            "targetMask": 530,
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Rock1-130-A_comp:0:correct",
+            "targetMask": 530,
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 743.0385487528345,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Rock3-117-Bb_comp:3:correct",
+            "targetMask": 548,
+            "split": "calibration",
+            "chord": "Dm",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Rock3-117-Bb_comp:3:correct",
+            "targetMask": 548,
+            "split": "calibration",
+            "chord": "Dm",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1300.3174603174602,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Rock3-117-Bb_comp:11:correct",
+            "targetMask": 548,
+            "split": "calibration",
+            "chord": "Dm",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Rock3-117-Bb_comp:11:correct",
+            "targetMask": 548,
+            "split": "calibration",
+            "chord": "Dm",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_Rock3-117-Bb_comp:13:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_Rock3-117-Bb_comp:13:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_SS1-68-E_comp:5:correct",
+            "targetMask": 2320,
+            "split": "calibration",
+            "chord": "E",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1160.9977324263039,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_SS1-68-E_comp:5:correct",
+            "targetMask": 2320,
+            "split": "calibration",
+            "chord": "E",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_SS2-88-F_comp:4:correct",
+            "targetMask": 1156,
+            "split": "calibration",
+            "chord": "Gm",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_SS2-88-F_comp:4:correct",
+            "targetMask": 1156,
+            "split": "calibration",
+            "chord": "Gm",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_SS2-88-F_comp:6:correct",
+            "targetMask": 289,
+            "split": "calibration",
+            "chord": "Fm",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1160.9977324263039,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_SS2-88-F_comp:6:correct",
+            "targetMask": 289,
+            "split": "calibration",
+            "chord": "Fm",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_SS2-88-F_comp:7:correct",
+            "targetMask": 1058,
+            "split": "calibration",
+            "chord": "A#m",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1021.6780045351475,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_SS2-88-F_comp:7:correct",
+            "targetMask": 1058,
+            "split": "calibration",
+            "chord": "A#m",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_SS3-84-Bb_comp:8:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1068.1179138321995,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_SS3-84-Bb_comp:8:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_SS3-84-Bb_comp:12:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1253.8775510204082,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_SS3-84-Bb_comp:12:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "01_SS3-84-Bb_comp:13:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "01_SS3-84-Bb_comp:13:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 464.39909297052156,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_BN1-147-Gb_comp:1:correct",
+            "targetMask": 2120,
+            "split": "calibration",
+            "chord": "B",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_BN1-147-Gb_comp:1:correct",
+            "targetMask": 2120,
+            "split": "calibration",
+            "chord": "B",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1486.077097505669,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_BN3-119-G_comp:0:correct",
+            "targetMask": 2180,
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1114.5578231292516,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_BN3-119-G_comp:0:correct",
+            "targetMask": 2180,
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_BN3-119-G_comp:5:correct",
+            "targetMask": 2180,
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 835.9183673469388,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_BN3-119-G_comp:5:correct",
+            "targetMask": 2180,
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_BN3-119-G_comp:12:correct",
+            "targetMask": 145,
+            "split": "calibration",
+            "chord": "C",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_BN3-119-G_comp:12:correct",
+            "targetMask": 145,
+            "split": "calibration",
+            "chord": "C",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1486.077097505669,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_BN3-154-E_comp:4:correct",
+            "targetMask": 530,
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 928.7981859410431,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_BN3-154-E_comp:4:correct",
+            "targetMask": 530,
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_BN3-154-E_comp:7:correct",
+            "targetMask": 2120,
+            "split": "calibration",
+            "chord": "B",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_BN3-154-E_comp:7:correct",
+            "targetMask": 2120,
+            "split": "calibration",
+            "chord": "B",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 417.9591836734694,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_BN3-154-E_comp:14:correct",
+            "targetMask": 530,
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_BN3-154-E_comp:14:correct",
+            "targetMask": 530,
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1160.9977324263039,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_BN3-154-E_comp:15:correct",
+            "targetMask": 2120,
+            "split": "calibration",
+            "chord": "B",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_BN3-154-E_comp:15:correct",
+            "targetMask": 2120,
+            "split": "calibration",
+            "chord": "B",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1114.5578231292516,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_Funk1-114-Ab_comp:0:correct",
+            "targetMask": 265,
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_Funk1-114-Ab_comp:0:correct",
+            "targetMask": 265,
+            "split": "calibration",
+            "chord": "G#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 882.358276643991,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_Jazz1-130-D_comp:4:correct",
+            "targetMask": 2180,
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_Jazz1-130-D_comp:4:correct",
+            "targetMask": 2180,
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1253.8775510204082,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_Jazz3-150-C_comp:3:wrong-quality",
+            "targetMask": 2192,
+            "split": "calibration",
+            "chord": "E",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_Jazz3-150-C_comp:3:wrong-quality",
+            "targetMask": 2192,
+            "split": "calibration",
+            "chord": "E",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 464.39909297052156,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_Jazz3-150-C_comp:6:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1114.5578231292516,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_Jazz3-150-C_comp:6:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_Rock1-130-A_comp:1:correct",
+            "targetMask": 580,
+            "split": "calibration",
+            "chord": "D",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_Rock1-130-A_comp:1:correct",
+            "targetMask": 580,
+            "split": "calibration",
+            "chord": "D",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 743.0385487528345,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_Rock1-130-A_comp:5:correct",
+            "targetMask": 530,
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_Rock1-130-A_comp:5:correct",
+            "targetMask": 530,
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 975.2380952380952,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_Rock1-90-C#_comp:5:correct",
+            "targetMask": 290,
+            "split": "calibration",
+            "chord": "C#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1021.6780045351475,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_Rock1-90-C#_comp:5:correct",
+            "targetMask": 290,
+            "split": "calibration",
+            "chord": "C#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_Rock2-142-D_comp:6:correct",
+            "targetMask": 548,
+            "split": "calibration",
+            "chord": "Dm",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_Rock2-142-D_comp:6:correct",
+            "targetMask": 548,
+            "split": "calibration",
+            "chord": "Dm",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 882.358276643991,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_Rock2-85-F_comp:4:correct",
+            "targetMask": 2212,
+            "split": "calibration",
+            "chord": "G7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1021.6780045351475,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_Rock2-85-F_comp:4:correct",
+            "targetMask": 2212,
+            "split": "calibration",
+            "chord": "G7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_Rock3-117-Bb_comp:4:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_Rock3-117-Bb_comp:4:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1021.6780045351475,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_Rock3-117-Bb_comp:7:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_Rock3-117-Bb_comp:7:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1439.6371882086166,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_Rock3-117-Bb_comp:15:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_Rock3-117-Bb_comp:15:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1300.3174603174602,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_SS1-100-C#_comp:1:correct",
+            "targetMask": 1090,
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_SS1-100-C#_comp:1:correct",
+            "targetMask": 1090,
+            "split": "calibration",
+            "chord": "F#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1346.7573696145125,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_SS2-88-F_comp:3:correct",
+            "targetMask": 290,
+            "split": "calibration",
+            "chord": "C#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1486.077097505669,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_SS2-88-F_comp:3:correct",
+            "targetMask": 290,
+            "split": "calibration",
+            "chord": "C#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_SS3-84-Bb_comp:0:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_SS3-84-Bb_comp:0:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1486.077097505669,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_SS3-84-Bb_comp:3:correct",
+            "targetMask": 580,
+            "split": "calibration",
+            "chord": "D",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_SS3-84-Bb_comp:3:correct",
+            "targetMask": 580,
+            "split": "calibration",
+            "chord": "D",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 743.0385487528345,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_SS3-84-Bb_comp:4:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_SS3-84-Bb_comp:4:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_SS3-84-Bb_comp:14:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_SS3-84-Bb_comp:14:correct",
+            "targetMask": 1160,
+            "split": "calibration",
+            "chord": "D#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1021.6780045351475,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_SS3-84-Bb_comp:15:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_SS3-84-Bb_comp:15:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1068.1179138321995,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "02_SS3-84-Bb_comp:15:wrong-quality",
+            "targetMask": 289,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 1160.9977324263039,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "02_SS3-84-Bb_comp:15:wrong-quality",
+            "targetMask": 289,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_BN1-129-Eb_comp:5:correct",
+            "targetMask": 1164,
+            "split": "calibration",
+            "chord": "D#maj7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_BN1-129-Eb_comp:5:correct",
+            "targetMask": 1164,
+            "split": "calibration",
+            "chord": "D#maj7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1393.1972789115646,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_BN1-147-Gb_comp:2:correct",
+            "targetMask": 1122,
+            "split": "calibration",
+            "chord": "F#maj7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_BN1-147-Gb_comp:2:correct",
+            "targetMask": 1122,
+            "split": "calibration",
+            "chord": "F#maj7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1253.8775510204082,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_BN1-147-Gb_comp:5:correct",
+            "targetMask": 1122,
+            "split": "calibration",
+            "chord": "F#maj7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_BN1-147-Gb_comp:5:correct",
+            "targetMask": 1122,
+            "split": "calibration",
+            "chord": "F#maj7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_BN2-166-Ab_comp:3:correct",
+            "targetMask": 2328,
+            "split": "calibration",
+            "chord": "Emaj7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 789.4784580498866,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_BN2-166-Ab_comp:3:correct",
+            "targetMask": 2328,
+            "split": "calibration",
+            "chord": "Emaj7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_BN2-166-Ab_comp:6:correct",
+            "targetMask": 2376,
+            "split": "calibration",
+            "chord": "G#m7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_BN2-166-Ab_comp:6:correct",
+            "targetMask": 2376,
+            "split": "calibration",
+            "chord": "G#m7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1160.9977324263039,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_BN2-166-Ab_comp:13:correct",
+            "targetMask": 2376,
+            "split": "calibration",
+            "chord": "G#m7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_BN2-166-Ab_comp:13:correct",
+            "targetMask": 2376,
+            "split": "calibration",
+            "chord": "G#m7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 835.9183673469388,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_BN3-119-G_comp:0:correct",
+            "targetMask": 2244,
+            "split": "calibration",
+            "chord": "Gmaj7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_BN3-119-G_comp:0:correct",
+            "targetMask": 2244,
+            "split": "calibration",
+            "chord": "Gmaj7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 743.0385487528345,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_BN3-119-G_comp:12:correct",
+            "targetMask": 2193,
+            "split": "calibration",
+            "chord": "Cmaj7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_BN3-119-G_comp:12:correct",
+            "targetMask": 2193,
+            "split": "calibration",
+            "chord": "Cmaj7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_BN3-154-E_comp:0:correct",
+            "targetMask": 2328,
+            "split": "calibration",
+            "chord": "Emaj7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_BN3-154-E_comp:0:correct",
+            "targetMask": 2328,
+            "split": "calibration",
+            "chord": "Emaj7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 696.5986394557823,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Funk3-98-A_comp:13:correct",
+            "targetMask": 530,
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Funk3-98-A_comp:13:correct",
+            "targetMask": 530,
+            "split": "calibration",
+            "chord": "A",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 603.7188208616781,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Jazz2-110-Bb_comp:13:correct",
+            "targetMask": 1314,
+            "split": "calibration",
+            "chord": "A#m7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1439.6371882086166,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Jazz2-110-Bb_comp:13:correct",
+            "targetMask": 1314,
+            "split": "calibration",
+            "chord": "A#m7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Jazz2-187-F#_comp:0:correct",
+            "targetMask": 2628,
+            "split": "calibration",
+            "chord": "Bm7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Jazz2-187-F#_comp:0:correct",
+            "targetMask": 2628,
+            "split": "calibration",
+            "chord": "Bm7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Jazz2-187-F#_comp:13:correct",
+            "targetMask": 594,
+            "split": "calibration",
+            "chord": "F#m7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 464.39909297052156,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Jazz2-187-F#_comp:13:correct",
+            "targetMask": 594,
+            "split": "calibration",
+            "chord": "F#m7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Rock1-90-C#_comp:1:correct",
+            "targetMask": 1106,
+            "split": "calibration",
+            "chord": "F#7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1021.6780045351475,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Rock1-90-C#_comp:1:correct",
+            "targetMask": 1106,
+            "split": "calibration",
+            "chord": "F#7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Rock1-90-C#_comp:4:correct",
+            "targetMask": 1106,
+            "split": "calibration",
+            "chord": "F#7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 975.2380952380952,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Rock1-90-C#_comp:4:correct",
+            "targetMask": 1106,
+            "split": "calibration",
+            "chord": "F#7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Rock2-142-D_comp:1:correct",
+            "targetMask": 145,
+            "split": "calibration",
+            "chord": "C",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Rock2-142-D_comp:1:correct",
+            "targetMask": 145,
+            "split": "calibration",
+            "chord": "C",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 743.0385487528345,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Rock2-142-D_comp:3:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1068.1179138321995,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Rock2-142-D_comp:3:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_Rock2-142-D_comp:13:correct",
+            "targetMask": 548,
+            "split": "calibration",
+            "chord": "Dm",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 371.51927437641723,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_Rock2-142-D_comp:13:correct",
+            "targetMask": 548,
+            "split": "calibration",
+            "chord": "Dm",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_SS1-68-E_comp:4:correct",
+            "targetMask": 658,
+            "split": "calibration",
+            "chord": "A7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1439.6371882086166,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_SS1-68-E_comp:4:correct",
+            "targetMask": 658,
+            "split": "calibration",
+            "chord": "A7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_SS2-107-Ab_comp:7:correct",
+            "targetMask": 274,
+            "split": "calibration",
+            "chord": "C#m",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_SS2-107-Ab_comp:7:correct",
+            "targetMask": 274,
+            "split": "calibration",
+            "chord": "C#m",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1393.1972789115646,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_SS2-107-Ab_comp:8:correct",
+            "targetMask": 1106,
+            "split": "calibration",
+            "chord": "F#7",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 650.1587301587301,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_SS2-107-Ab_comp:8:correct",
+            "targetMask": 1106,
+            "split": "calibration",
+            "chord": "F#7",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_SS2-88-F_comp:6:wrong-quality",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "Fm",
+            "expectedMatch": false,
+            "matched": true,
+            "latencyMs": 1021.6780045351475,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_SS2-88-F_comp:6:wrong-quality",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "Fm",
+            "expectedMatch": false,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_SS3-84-Bb_comp:13:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_SS3-84-Bb_comp:13:correct",
+            "targetMask": 1060,
+            "split": "calibration",
+            "chord": "A#",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 1160.9977324263039,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_SS3-84-Bb_comp:15:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 928.7981859410431,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_SS3-84-Bb_comp:15:correct",
+            "targetMask": 545,
+            "split": "calibration",
+            "chord": "F",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_SS3-98-C_comp:1:correct",
+            "targetMask": 2180,
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 325.07936507936506,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_SS3-98-C_comp:1:correct",
+            "targetMask": 2180,
+            "split": "calibration",
+            "chord": "G",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          }
+        },
+        {
+          "before": {
+            "id": "03_SS3-98-C_comp:10:correct",
+            "targetMask": 529,
+            "split": "calibration",
+            "chord": "Am",
+            "expectedMatch": true,
+            "matched": false,
+            "latencyMs": null,
+            "sampleRate": 44100
+          },
+          "after": {
+            "id": "03_SS3-98-C_comp:10:correct",
+            "targetMask": 529,
+            "split": "calibration",
+            "chord": "Am",
+            "expectedMatch": true,
+            "matched": true,
+            "latencyMs": 557.2789115646258,
+            "sampleRate": 44100
+          }
+        }
+      ],
+      "processing": {
+        "processingMs": 4080.36117300008,
+        "audioProcessedMs": 1872133.8321991947,
+        "maxBlockMs": 10.307833
+      },
+      "casesFile": "guitarset-whitened-broad-balanced-cases.json"
+    }
+  }
+}

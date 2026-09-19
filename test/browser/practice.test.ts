@@ -536,6 +536,34 @@ try {
   await page.getByRole("button", { name: "Import", exact: true }).click();
   await page.getByLabel("Song title", { exact: true }).fill("Browser exercise");
   await page.getByLabel("Chord chart", { exact: true }).fill("Em Am C G");
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate((value) => {
+      document.documentElement.dataset.theme = value;
+    }, theme);
+    const review = page.getByRole("button", {
+      name: "Review chart",
+      exact: true,
+    });
+    await page.mouse.move(0, 0);
+    const before = await review.evaluate(
+      (element) => getComputedStyle(element).backgroundColor,
+    );
+    await review.hover();
+    await page.waitForFunction(
+      (color) => {
+        const button = [...document.querySelectorAll("button")].find(
+          (element) => element.textContent?.includes("Review chart"),
+        );
+        return button && getComputedStyle(button).backgroundColor !== color;
+      },
+      before,
+      { timeout: 2000 },
+    );
+  }
+  await page.evaluate(() => {
+    document.documentElement.dataset.theme = "light";
+  });
+
   await page.getByRole("button", { name: "Review chart" }).click();
   await page.getByRole("button", { name: "Save music" }).click();
   await page.getByRole("heading", { name: "Em", exact: true }).waitFor();

@@ -1,10 +1,18 @@
 //! Streaming, sample-rate-aware pitch-class features with preallocated FFT storage.
+mod multipitch;
+#[derive(Clone, Copy, Debug, Default)]
+pub enum Detector {
+    Spectral,
+    #[default]
+    Whitened,
+}
 use rustfft::{num_complex::Complex, Fft, FftPlanner};
 use std::sync::Arc;
 pub const WINDOW: usize = 8192;
 pub const HOP: usize = 2048;
 
 pub struct Analyzer {
+    detector: Option<multipitch::MultiPitch>,
     rate: f32,
     ring: Vec<f32>,
     position: usize,
@@ -17,9 +25,16 @@ pub struct Analyzer {
 }
 impl Analyzer {
     pub fn new(rate: f32) -> Self {
+        Self::with_detector(rate, Detector::Whitened)
+    }
+    pub fn with_detector(rate: f32, detector: Detector) -> Self {
         let fft = FftPlanner::new().plan_fft_forward(WINDOW);
         let scratch = vec![Complex::default(); fft.get_inplace_scratch_len()];
         Self {
+            detector: match detector {
+                Detector::Spectral => None,
+                Detector::Whitened => Some(multipitch::MultiPitch::new(rate)),
+            },
             rate,
             ring: vec![0.0; WINDOW],
             position: 0,
@@ -56,6 +71,9 @@ impl Analyzer {
         }
         self.fft
             .process_with_scratch(&mut self.spectrum, &mut self.scratch);
+        if let Some(detector) = &mut self.detector {
+            return Some(detector.analyze(&self.spectrum));
+        }
         let mut chroma = [0.0_f32; 12];
         let min = (80.0 * WINDOW as f32 / self.rate).ceil() as usize;
         let max = (1800.0 * WINDOW as f32 / self.rate).floor() as usize;

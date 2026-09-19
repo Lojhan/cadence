@@ -1,4 +1,5 @@
 //! Target-aware chord confirmation. No clocks, browser APIs, or database dependencies.
+pub use cadence_dsp::Detector;
 use cadence_dsp::{Analyzer, HOP};
 #[derive(Clone, Copy)]
 pub enum Profile {
@@ -29,11 +30,18 @@ pub struct Engine {
 }
 impl Engine {
     pub fn new(rate: f32, profile: Profile) -> Result<Self, &'static str> {
+        Self::with_detector(rate, profile, Detector::Whitened)
+    }
+    pub fn with_detector(
+        rate: f32,
+        profile: Profile,
+        detector: Detector,
+    ) -> Result<Self, &'static str> {
         if !rate.is_finite() || !(8000.0..=192000.0).contains(&rate) {
             return Err("Unsupported sample rate");
         }
         Ok(Self {
-            analyzer: Analyzer::new(rate),
+            analyzer: Analyzer::with_detector(rate, detector),
             rate,
             profile,
             target: 0,

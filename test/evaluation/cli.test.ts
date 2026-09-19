@@ -74,6 +74,16 @@ try {
   assert.equal(report.cases[0].matched, true);
   assert.equal(report.cases[1].matched, false);
   assert.ok(report.cases[0].latencyMs > 0);
+  assert.equal(
+    report.detector,
+    "whitened",
+    "offline evaluation uses the shipping detector",
+  );
+  assert.ok(
+    report.processingMs > 0 &&
+      report.audioProcessedMs > 0 &&
+      report.maxBlockMs > 0,
+  );
   assert.equal(report.summary.truePositive, 1);
   assert.equal(report.summary.falsePositive, 0);
   for (const profile of ["gentle", "precise"]) {

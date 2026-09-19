@@ -74,6 +74,10 @@ impl Summary {
 #[serde(rename_all = "camelCase")]
 struct Report {
     engine_version: &'static str,
+    detector: &'static str,
+    processing_ms: f64,
+    audio_processed_ms: f64,
+    max_block_ms: f64,
     profile: &'static str,
     summary: Summary,
     groups: BTreeMap<String, Summary>,
@@ -136,6 +140,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         "precise" => (Profile::Precise, "precise"),
         _ => return Err("Unknown recognition profile".into()),
     };
+    let (detector, detector_name) = match std::env::var("CADENCE_DETECTOR").as_deref() {
+        Ok("spectral") => (cadence_recognition::Detector::Spectral, "spectral"),
+        Ok("whitened") | Err(std::env::VarError::NotPresent) => {
+            (cadence_recognition::Detector::Whitened, "whitened")
+        }
+        _ => return Err("Unknown detector; use spectral or whitened".into()),
+    };
     let mut notes_case = None;
     let trace_case = match arguments.next().as_deref() {
         None => None,
@@ -164,6 +175,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     let directory = manifest_path.parent().ok_or("Manifest has no parent")?;
     let mut report = Report {
         note_probe: None,
+        detector: detector_name,
+        processing_ms: 0.0,
+        audio_processed_ms: 0.0,
+        max_block_ms: 0.0,
         engine_version: env!("CARGO_PKG_VERSION"),
         profile: profile_name,
         summary: Summary::default(),
@@ -195,7 +210,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         if start >= end || end > samples.len() {
             return Err(format!("{}: interval outside audio", case.id).into());
         }
-        let mut engine = Engine::new(rate as f32, profile)?;
+        let mut engine = Engine::with_detector(rate as f32, profile, detector)?;
         engine.arm(case.target_mask)?;
         if notes_case.as_ref() == Some(&case.id) {
             report.note_probe = Some(notes::probe(case.id.clone(), &samples[start..end], rate));
@@ -204,7 +219,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         let mut consumed = 0;
         for chunk in samples[start..end].chunks(2048) {
             consumed += chunk.len();
+            let processing_start = std::time::Instant::now();
             let measured = engine.process(chunk);
+            let elapsed = processing_start.elapsed().as_secs_f64() * 1000.0;
+            report.processing_ms += elapsed;
+            report.max_block_ms = report.max_block_ms.max(elapsed);
+            report.audio_processed_ms += chunk.len() as f64 / f64::from(rate) * 1000.0;
             if let Some(trace) = &mut report.trace {
                 if trace.case_id == case.id {
                     if let Some(chroma) = measured.chroma {

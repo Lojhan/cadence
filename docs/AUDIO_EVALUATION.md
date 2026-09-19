@@ -542,3 +542,55 @@ artifacts are not bundled into application packages or container runtime files.
 See [the September research review](DETECTION_RESEARCH.md) for primary sources,
 Rust/WASM feasibility, licensing constraints and the next bounded whitening and
 multi-pitch experiment. This is a research plan; production detection is unchanged.
+
+## Whitened multi-pitch detector (alpha.7)
+
+Alpha.7 switches the Rust/WASM runtime to an independently implemented causal
+adaptation of [Klapuri 2006](https://archives.ismir.net/ismir2006/paper/000125.pdf).
+The legacy spectral path remains available to the offline evaluator with
+`CADENCE_DETECTOR=spectral`; omitted or `whitened` selects the shipping path.
+Unrecognized detector names fail rather than silently evaluating another model.
+
+The implementation uses the existing trailing 8192-sample Hann FFT and 2048-sample
+hop. It estimates a bounded ERB-band whitening curve, searches MIDI 40–88 with
+nine tuning offsets, scores up to twenty partials below 5 kHz, and iteratively
+cancels selected notes before projecting at most six distinct pitches to chroma.
+The target chord does not influence pitch estimation. Chord coverage, stability,
+clipping rejection and repeated-strum behavior remain in the confirmation layer.
+
+This is an adaptation, not an exact reproduction of the paper: no zero-padding,
+a fixed guitar candidate grid, bounded band gains, a local five-bin cancellation
+approximation, and calibration-selected cancellation 1.8/polyphony exponent 0.5.
+Sub-bin peak positions and a frequency-scaled distance penalty prevent adjacent
+bass notes sharing an FFT bin from being assigned to the wrong semitone. The
+pure-tone G browser regression caught this issue; a Rust test now preserves it.
+Buffers and candidate kernels are allocated at initialization, not per frame.
+
+| Calibration set / profile | Correct before → after | False matches before → after | p95 matched sample latency before → after |
+| --- | ---: | ---: | ---: |
+| Focused Gentle | 102 → 102 / 116 | 18 → 12 / 656 | 372 → 372 ms |
+| Focused Balanced | 97 → 102 / 116 | 10 → 7 / 656 | 511 → 418 ms |
+| Focused Precise | 72 → 75 / 116 | 2 → 1 / 656 | 557 → 557 ms |
+| Broad Balanced | 557 → 573 / 889 | 5 → 2 / 676 | 1347 → 1347 ms |
+
+[Complete results, individual decision changes, intermediate rejected variants
+and source hashes](evaluation/guitarset-whitened.json) record the trade-offs,
+including positive losses and newly introduced false matches. Aggregate gains do
+not mean every recording improved. These are calibration results on players
+00–03; no held-out players 04/05 were accessed and no held-out accuracy is claimed.
+
+The evaluator now records time spent in `Engine::process`, processed audio duration
+and the slowest block separately from sample latency. These are native development
+machine observations, exclude construction/decoding, and do not establish Safari
+performance or physical input latency. The frame needs 186 ms at 44.1 kHz or
+171 ms at 48 kHz before its first estimate, plus chord confirmation and browser
+capture costs. Physical iPhone/iPad microphone and electric/noisy-room validation
+remain open; recognition is still experimental.
+
+Verification: all 31 Poku suites passed, including browser capture/progression,
+quiet-input boost, repeated strums, invalid/noisy audio and WASM memory stability.
+The complete 772-case manifest agrees exactly on decisions and sample latencies
+between native Rust and WASM at all three sensitivities. Native processing in the
+focused Balanced run took about 0.8 seconds for over 459 seconds of analyzed
+audio; this measurement is not a physical-device benchmark. Shared hover colors
+were checked on actual light/dark app controls, preserving unboxed arrows.

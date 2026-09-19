@@ -7,6 +7,7 @@
   --line: #d9ddd1;
   --accent: #30664b;
   --soft: #e5eadd;
+  --hover: #dce6d2;
   --white: #fbfaf5;
   --dock: #efeee6;
   --string: #87917e;
@@ -28,6 +29,7 @@
   --line: #3b473c;
   --accent: #b0cfa1;
   --soft: #303e32;
+  --hover: #3b503e;
   --white: #222b24;
   --dock: #1c2520;
   --string: #899780;
@@ -118,9 +120,6 @@ p {
   justify-content: center;
   padding: 0;
   flex-shrink: 0;
-}
-.icon-button:hover {
-  background: var(--soft);
 }
 .stage {
   height: calc(100% - 190px);
@@ -217,9 +216,6 @@ p {
 .next {
   right: 32px;
 }
-.step-arrow:hover {
-  color: var(--ink);
-}
 .transport {
   position: absolute;
   bottom: calc(22px + env(safe-area-inset-bottom));
@@ -259,9 +255,6 @@ p {
 .listening .mic-group {
   background: var(--ink);
   color: var(--paper);
-}
-.mic-group .icon-button:hover {
-  background: #80808018;
 }
 .mic-options-toggle svg {
   width: 16px;
@@ -871,4 +864,32 @@ p {
 }
 .panel-frame[data-current="false"] {
   pointer-events: none;
+}
+
+/* Shared interaction colors apply to every native app button, including hosted
+   controls. Disabled controls retain their surface; arrows remain unboxed. */
+@media (hover: hover) {
+  button:enabled:hover,
+  a.pill:hover {
+    background: var(--hover);
+    color: var(--ink);
+  }
+  button.primary:enabled:hover,
+  .listening button:enabled:hover {
+    background: var(--accent);
+    color: var(--paper);
+  }
+  button.step-arrow:enabled:hover {
+    background: transparent;
+    color: var(--accent);
+  }
+}
+button:enabled:active,
+a.pill:active {
+  background: var(--hover);
+  color: var(--ink);
+}
+button.step-arrow:enabled:active {
+  background: transparent;
+  color: var(--accent);
 }

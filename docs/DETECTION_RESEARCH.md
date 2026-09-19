@@ -2,10 +2,10 @@
 
 ## Decision
 
-Investigate causal spectral whitening and multi-pitch estimation next, independently
-implemented in Rust from the published mathematics. Keep this as an offline
-experiment until it improves complete calibration results. No detector change is
-shipped by this research. The current failures and rejected experiments remain in
+The causal spectral-whitening and multi-pitch estimator is now independently
+implemented in Rust and selected for alpha.7 after improving both focused and broad
+calibration results. See the implementation and measured trade-offs in
+[AUDIO_EVALUATION.md](AUDIO_EVALUATION.md#whitened-multi-pitch-detector-alpha7). The current failures and rejected experiments remain in
 [AUDIO_EVALUATION.md](AUDIO_EVALUATION.md).
 
 The existing detector folds peaks into twelve chroma bins early. Preserving

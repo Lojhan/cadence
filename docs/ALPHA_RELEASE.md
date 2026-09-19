@@ -1,14 +1,13 @@
-Cadence 0.1.0-alpha.6 is an MIT-licensed preview for self-hosting and integration.
+Cadence 0.1.0-alpha.7 is an MIT-licensed preview for self-hosting and integration.
 It includes the reviewed practice UI, local Rust/WASM recognition,
 SQLite/PostgreSQL persistence, and container backup tools.
 
-Changes since alpha.5:
+Changes since alpha.6:
 
-- Chord, fretboard, and timeline move and fade together when navigating forward or backward.
-- Modal panels use subtle directional transitions, with reduced-motion support.
-- Exiting animation frames are hidden from assistive technology and cannot receive input.
-- Decorative panel headings and redundant subtitles are removed.
-- Hosted integrations can supply the complete account panel inside the practice modal.
+- Rust/WASM detection now uses spectral whitening and iterative multi-pitch estimation before chord confirmation.
+- Pitch estimation is independent of the expected chord and retains octave information until the final chroma projection.
+- Buttons across practice, settings, account and authentication share light/dark hover colors; chord arrows remain unboxed.
+- Disabled buttons do not acquire hover colors; touch presses have matching feedback.
 
 Alpha.5 also introduced per-input microphone boost and restored keyboard focus to
 modal openers. Input boost defaults off and can help quiet capture, but it also
@@ -16,9 +15,11 @@ amplifies noise. The reported iPhone/iPad Safari capture issue still needs a
 physical-device retest; the synthetic quiet-input checks do not prove it is fixed.
 
 Recognition remains **experimental**. No profile meets every release target.
-On the corrected calibration subset, Balanced recognizes 97/116 qualifying strums
-and incorrectly accepts 10/656 related targets. These are calibration comparisons,
-not held-out accuracy or end-to-end device latency. Physical microphone and mobile
+On the corrected calibration subset, Balanced recognizes 102/116 qualifying strums
+and incorrectly accepts 7/656 related targets. These are calibration comparisons,
+not held-out accuracy or end-to-end device latency. Broader Balanced results improve
+from 557 to 573 of 889 positives and from 5 to 2 false matches out of 676.
+Individual regressions remain and are listed in the evaluation report. Physical microphone and mobile
 validation remain outstanding. The private hosted distribution has verified
 development Clerk sign-in and Stripe sandbox purchase, refund and renewal journeys;
 these do not establish live payment readiness or recognition accuracy.
