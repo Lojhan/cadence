@@ -703,6 +703,163 @@ try {
     .getByRole("combobox", { name: "Handedness" })
     .selectOption("right");
   await page.getByRole("button", { name: "Close", exact: true }).click();
+  await page.getByRole("button", { name: "Open music library" }).click();
+  await page.getByRole("button", { name: "Import", exact: true }).click();
+  await page.getByLabel("Song title", { exact: true }).fill("Layout exercise");
+  await page
+    .getByLabel("Chord chart", { exact: true })
+    .fill("C#maj7 F#m7 Bmaj7");
+  await page.getByRole("button", { name: "Review chart" }).click();
+  await page.getByRole("button", { name: "Save music" }).click();
+  await page.getByRole("heading", { name: "C#maj7", exact: true }).waitFor();
+  for (const viewport of [
+    { width: 360, height: 640 },
+    { width: 844, height: 390 },
+    { width: 768, height: 1024 },
+    { width: 1440, height: 900 },
+    // A 1440×900 desktop at 200% browser zoom has this CSS viewport.
+    { width: 720, height: 450 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.mouse.move(12, 12);
+    if (process.env.CADENCE_LAYOUT_SCREENSHOTS) {
+      await page.screenshot({
+        path: join(
+          process.env.CADENCE_LAYOUT_SCREENSHOTS,
+          `${viewport.width}x${viewport.height}.png`,
+        ),
+      });
+    }
+    const layout = await page.evaluate(() => {
+      const selectors = [
+        ".wordmark",
+        ".header-actions",
+        ".chord",
+        ".diagram",
+        ".chord-timeline",
+        ".transport",
+      ];
+      return {
+        width: document.documentElement.scrollWidth,
+        height: document.documentElement.scrollHeight,
+        boxes: selectors.map((selector) => {
+          const element = document.querySelector(selector);
+          if (!element) throw new Error(`Missing ${selector}`);
+          let rect = element.getBoundingClientRect();
+          // SVG viewBox margins are empty space, not visible fretboard content.
+          if (element instanceof SVGSVGElement) {
+            const bounds = element.getBBox();
+            const matrix = element.getScreenCTM();
+            if (!matrix) throw new Error("Missing SVG transform");
+            const start = new DOMPoint(bounds.x, bounds.y).matrixTransform(
+              matrix,
+            );
+            const end = new DOMPoint(
+              bounds.x + bounds.width,
+              bounds.y + bounds.height,
+            ).matrixTransform(matrix);
+            rect = new DOMRect(
+              start.x,
+              start.y,
+              end.x - start.x,
+              end.y - start.y,
+            );
+          }
+          return {
+            selector,
+            x: rect.x,
+            y: rect.y,
+            right: rect.right,
+            bottom: rect.bottom,
+          };
+        }),
+        controls: [
+          ...document.querySelectorAll<HTMLButtonElement>(
+            ".toolbar button, .transport button, .step-arrow",
+          ),
+        ].map((button) => {
+          const rect = button.getBoundingClientRect();
+          return {
+            label: button.getAttribute("aria-label"),
+            width: rect.width,
+            height: rect.height,
+          };
+        }),
+      };
+    });
+    assert.ok(
+      layout.width <= viewport.width && layout.height <= viewport.height,
+      `practice fits ${viewport.width}×${viewport.height} without scrolling`,
+    );
+    for (const box of layout.boxes) {
+      assert.ok(
+        box.x >= 0 &&
+          box.y >= 0 &&
+          box.right <= viewport.width &&
+          box.bottom <= viewport.height,
+        `${box.selector} remains inside ${viewport.width}×${viewport.height}`,
+      );
+    }
+    for (const [i, a] of layout.boxes.entries()) {
+      for (const b of layout.boxes.slice(i + 1)) {
+        assert.ok(
+          a.right <= b.x ||
+            b.right <= a.x ||
+            a.bottom <= b.y ||
+            b.bottom <= a.y,
+          `${a.selector} does not overlap ${b.selector} at ${viewport.width}×${viewport.height}`,
+        );
+      }
+    }
+    for (const control of layout.controls) {
+      assert.ok(
+        control.width >= 44 && control.height >= 44,
+        `${control.label} keeps a 44px touch target at ${viewport.width}×${viewport.height}`,
+      );
+    }
+  }
+  await page.getByRole("button", { name: "Open settings" }).click();
+  await page.getByRole("dialog").waitFor();
+  for (let i = 0; i < 16; i++) {
+    await page.keyboard.press("Tab");
+    assert.ok(
+      await page
+        .getByRole("dialog")
+        .evaluate((dialog) => dialog.contains(document.activeElement)),
+      "Tab remains inside the settings dialog",
+    );
+  }
+  await page.keyboard.press("Escape");
+  await page.getByRole("dialog").waitFor({ state: "hidden" });
+  await page.waitForFunction(
+    () =>
+      document.activeElement?.getAttribute("aria-label") === "Open settings",
+    {},
+    { timeout: 1500 },
+  );
+  assert.equal(
+    await page
+      .getByRole("button", { name: "Open settings" })
+      .evaluate((button) => button === document.activeElement),
+    true,
+    "Escape returns keyboard focus to the settings opener",
+  );
+  await page.keyboard.press("Enter");
+  await page.getByRole("dialog").waitFor();
+  await page.getByRole("button", { name: "Close", exact: true }).click();
+  await page.waitForFunction(
+    () =>
+      document.activeElement?.getAttribute("aria-label") === "Open settings",
+  );
+  await page.getByRole("button", { name: "Open music library" }).click();
+  await page.getByRole("dialog").waitFor();
+  await page.keyboard.press("Escape");
+  await page.getByRole("dialog").waitFor({ state: "hidden" });
+  await page.waitForFunction(
+    () =>
+      document.activeElement?.getAttribute("aria-label") ===
+      "Open music library",
+  );
   assert.deepEqual(errors, [], logs);
   await page.screenshot({ path: join(directory, "phone.png") });
 } catch (error) {

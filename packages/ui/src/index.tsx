@@ -5,6 +5,7 @@ import {
   Fragment,
   type ReactNode,
   type SelectHTMLAttributes,
+  useRef,
 } from "react";
 export function IconButton({
   label,
@@ -60,6 +61,7 @@ export function Dialog({
   title: string;
   children: ReactNode;
 }) {
+  const opener = useRef<HTMLElement | null>(null);
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
@@ -67,6 +69,19 @@ export function Dialog({
         <DialogPrimitive.Content
           className="modal-panel"
           aria-describedby={undefined}
+          onOpenAutoFocus={() => {
+            opener.current =
+              document.activeElement instanceof HTMLElement
+                ? document.activeElement
+                : null;
+          }}
+          onCloseAutoFocus={(event) => {
+            // Openers live in the app toolbar rather than a Radix Trigger.
+            if (opener.current?.isConnected) {
+              event.preventDefault();
+              opener.current.focus({ preventScroll: true });
+            }
+          }}
         >
           <header className="panel-head">
             <DialogPrimitive.Title>{title}</DialogPrimitive.Title>

@@ -173,3 +173,14 @@ veto removed those but lost three broad valid matches and one Gentle positive.
 Shorter retention did not remove those regressions. All candidates were reverted,
 with patches and comparisons retained. The complete baseline is reproduced and
 recording/native-WASM regression tests pass. No recognition improvement is shipped.
+
+Keyboard focus regression: the built-browser Poku journey first failed when
+Escape closed Settings but left focus on the document. Shared controlled dialogs
+now remember their opener and restore focus through Radix's documented
+[autofocus hooks](https://www.radix-ui.com/primitives/docs/components/dialog).
+Tab trapping, Escape, keyboard reopening, Close and distinct library/settings
+openers are verified. Long C#maj7 labels and visible fretboard geometry fit
+360×640, 844×390, 768×1024, 1440×900 and a 720×450 CSS viewport (200% desktop zoom)
+without scrolling, content overlap or undersized toolbar touch targets. Screenshots
+were inspected; these checks do not replace physical Safari validation. All 28
+Poku suites and the full check pass.
