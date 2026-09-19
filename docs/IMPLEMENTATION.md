@@ -82,3 +82,6 @@ Coordinated release metadata: preparing alpha.2 exposed a missing requirement in
 
 
 Declared dependency enforcement: a Poku regression first showed that an undeclared external import passed the boundary checker. The scanner now validates imports, re-exports, and static module loads against each package's dependencies/peers/optional dependencies; development dependencies are available only outside its shipped src tree. It also recognizes bare Node builtins and rejects React imports in framework-independent packages. Existing package sources pass these stricter checks. This CI/tooling change does not alter the alpha.2 runtime being published from 38bc14e.
+
+
+Alpha.2 publication: release workflow 35459939248 passed full checks, PostgreSQL parity, and native AMD64/ARM64 container tests for source commit 38bc14e. It published nine package assets, RELEASE.json and SHA256SUMS at v0.1.0-alpha.2, plus ghcr.io/lojhan/cadence:0.1.0-alpha.2. Downloaded assets match the CI artifact's checksums and clean source revision; an anonymous image pull and the installed-container Poku suite passed locally. README, operations and Compose now point to this published alpha. Recognition remains experimental; real providers and deployed hosted smoke tests are still outstanding.

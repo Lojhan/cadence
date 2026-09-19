@@ -6,7 +6,7 @@ to localhost or protect a remote installation with your own access gateway.
 
 ## Build and run
 
-The published alpha image is `ghcr.io/lojhan/cadence:0.1.0-alpha.1`. To build an
+The published alpha image is `ghcr.io/lojhan/cadence:0.1.0-alpha.2`. To build an
 equivalent local image from this checkout:
 
 ```sh
