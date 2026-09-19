@@ -6,7 +6,12 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!!design/prototype.html", "!!pnpm-lock.yaml"]
+    "includes": [
+      "**",
+      "!!design/prototype.html",
+      "!!pnpm-lock.yaml",
+      "!!packages/audio-engine/generated"
+    ]
   },
   "formatter": {
     "enabled": true,

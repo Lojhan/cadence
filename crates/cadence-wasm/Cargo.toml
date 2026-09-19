@@ -1,0 +1,10 @@
+[package]
+name = "cadence-wasm"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+[lib]
+crate-type = ["cdylib", "rlib"]
+[dependencies]
+cadence-recognition = { path = "../cadence-recognition" }
+wasm-bindgen.workspace = true

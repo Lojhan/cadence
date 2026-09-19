@@ -26,7 +26,7 @@ Confirmed by the brief:
 
 Confirmed clarification: Clerk and Stripe belong **only in the private hosted version**. Self-hosting needs no external accounts. The public core defines vendor-independent interfaces and must provide its free local experience without SaaS credentials. Neon, Supabase, or another PostgreSQL host may be configured voluntarily; none is required for local startup.
 
-Other proposed defaults, subject to review: standard six-string guitar tuning; self-paced chord practice for MVP; SQLite for single-container personal use and PostgreSQL for multi-user or managed hosting; local single-user identity for the default self-hosted mode. Prices, trial policy, license, and precise lifetime terms remain undecided. The old $19 mock price is not a requirement.
+Other proposed defaults, subject to review: standard six-string guitar tuning; self-paced chord practice for MVP; SQLite for single-container personal use and PostgreSQL for multi-user or managed hosting; local single-user identity for the default self-hosted mode. The public core is MIT licensed. Prices, trial policy, and precise lifetime terms remain undecided. The old $19 mock price is not a requirement.
 
 ## Visual direction and interaction
 
@@ -207,7 +207,7 @@ Use the private repo as a thin downstream distribution rather than independently
 
 The implementation uses TanStack Start, pnpm workspaces, and Drizzle. The public repo separates contracts, music, practice core, generated WASM, browser audio, UI, React features, server application use cases, and database adapters; a Cargo workspace owns DSP, recognition, bindings, and offline evaluation. The private repo composes published public packages with Clerk, Stripe, and private PostgreSQL tables. See [the technical specification](./TECHNICAL_SPEC.md) for the authoritative directory layout and allowed dependency graph.
 
-Choose the open-source license deliberately before publishing. A permissive core license can simplify proprietary downstream distribution; any copyleft choice needs a compatible downstream model. License decision, contributor policy, and catalog rights are release decisions, not implied by the words “open core.”
+The public core uses MIT, as selected by the owner. The private hosted distribution remains proprietary. Contributor policy and catalog rights must be documented separately; the code license does not grant rights to imported music.
 
 ## Container and database contract
 

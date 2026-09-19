@@ -14,3 +14,5 @@ coverage/
 test-results/
 playwright-report/
 artifacts/
+
+packages/audio-engine/generated/

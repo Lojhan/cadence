@@ -1,0 +1,15 @@
+{
+  "name": "@cadence/audio-engine",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts",
+    "./wasm": "./generated/cadence_wasm.js",
+    "./binary": "./generated/cadence_wasm_bg.wasm"
+  },
+  "files": [
+    "src",
+    "generated"
+  ]
+}

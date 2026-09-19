@@ -11,13 +11,17 @@
     "lint": "biome check .",
     "format": "biome check --write .",
     "typecheck": "tsc --noEmit",
-    "check": "pnpm lint && pnpm typecheck && pnpm test"
+    "check": "pnpm build:wasm && pnpm lint && pnpm boundaries && pnpm typecheck && pnpm lint:rust && pnpm test",
+    "boundaries": "tsx tooling/boundaries.ts",
+    "lint:rust": "cargo fmt --all -- --check && cargo clippy --workspace --all-targets --locked -- -D warnings",
+    "build:wasm": "tsx tooling/build-wasm.ts"
   },
   "devDependencies": {
+    "@babel/parser": "7.29.9",
+    "@biomejs/biome": "2.5.14",
+    "@types/node": "24.10.0",
     "poku": "4.5.0",
     "tsx": "4.23.13",
-    "typescript": "7.0.2",
-    "@biomejs/biome": "2.5.14",
-    "@types/node": "24.10.0"
+    "typescript": "7.0.2"
   }
 }

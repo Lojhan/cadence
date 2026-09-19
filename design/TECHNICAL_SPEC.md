@@ -89,7 +89,7 @@ Private code consumes exact, versioned public packages. Public workspace depende
 
 Publish coordinated public releases with Changesets or an equivalent explicit release manifest; every release records package versions, WASM hash/protocol version, catalog version, and database compatibility. Cloud pins that release and updates through a reviewed dependency change. React, React DOM, TanStack Query, and shared UI peer dependencies resolve to a single compatible installation.
 
-Treat the private repository as a downstream distribution, not a divergent copy of practice code. If a literal Git fork is retained operationally, keep the same package boundaries and upstream core improvements. Resolve the public license before publishing; license choice remains open.
+Treat the private repository as a downstream distribution, not a divergent copy of practice code. If a literal Git fork is retained operationally, keep the same package boundaries and upstream core improvements. The public core is MIT licensed; the private hosted distribution is proprietary.
 
 ## 3. Package responsibilities and dependency rules
 
@@ -405,4 +405,4 @@ Boundary CI also fails on server secrets/DB/vendor SDKs in public browser bundle
 7. Publish a versioned public release; compose the private Start application with Clerk, PostgreSQL, and Stripe.
 8. Complete real-instrument, access-control, billing, and operating checks before either release is presented as usable.
 
-The stack and ownership boundaries are settled by this spec. Remaining product decisions are license, final hosted prices/lifetime terms, and the measured recognition/support matrix. They do not prevent package scaffolding or the Rust recognition spike.
+The stack and ownership boundaries are settled by this spec. Remaining product decisions are final hosted prices/lifetime terms, and the measured recognition/support matrix. They do not prevent package scaffolding or the Rust recognition spike.

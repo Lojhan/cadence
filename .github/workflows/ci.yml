@@ -14,5 +14,10 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: pnpm
+      - uses: dtolnay/rust-toolchain@1.92.0
+        with:
+          components: rustfmt, clippy
+          targets: wasm32-unknown-unknown
       - run: pnpm install --frozen-lockfile
+      - run: cargo install wasm-bindgen-cli --version 0.2.128 --locked
       - run: pnpm check
