@@ -15,6 +15,8 @@ Use Node 24.10+ (24.x), pnpm 10.32.1, and the pinned Rust toolchain.
 
 ```sh
 pnpm install --frozen-lockfile
+cargo install wasm-bindgen-cli --version 0.2.128 --locked
+pnpm exec playwright install chromium
 pnpm check
 ```
 
@@ -25,3 +27,4 @@ checks. Tests are written before behavior; CI must pass before milestone commits
 - [Technical architecture](design/TECHNICAL_SPEC.md)
 - [Reviewed HTML prototype](design/prototype.html)
 - [Implementation status](docs/IMPLEMENTATION.md)
+- [Container, upgrades, and backups](docs/OPERATIONS.md)

@@ -18,7 +18,8 @@
     "packages/**/*.ts",
     "packages/**/*.tsx",
     "test/**/*.ts",
-    "tooling/**/*.ts"
+    "tooling/**/*.ts",
+    "integration/**/*.ts"
   ],
   "exclude": ["**/dist", "**/node_modules"]
 }

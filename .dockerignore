@@ -1,0 +1,14 @@
+.git
+**/node_modules
+**/.output
+**/.tanstack
+**/dist
+**/data
+target
+artifacts
+.env
+.env.*
+!.env.example
+**/*.db
+**/*.db-*
+packages/audio-engine/generated

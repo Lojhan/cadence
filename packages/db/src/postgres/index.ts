@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Store } from "@cadence/application";
 import { readMigrationFiles } from "drizzle-orm/migrator";
@@ -8,11 +9,12 @@ import { repository } from "../repository.ts";
 export async function openPostgres(
   url: string,
   initialize = false,
+  migrationsRoot?: string,
 ): Promise<Store> {
   const pool = new Pool({ connectionString: url, max: 10 });
-  const migrationsFolder = fileURLToPath(
-    new URL("../../migrations/postgres", import.meta.url),
-  );
+  const migrationsFolder = migrationsRoot
+    ? resolve(migrationsRoot, "postgres")
+    : fileURLToPath(new URL("../../migrations/postgres", import.meta.url));
   const client = await pool.connect();
   try {
     await client.query("SELECT pg_advisory_lock(6742391)");

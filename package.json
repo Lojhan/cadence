@@ -22,7 +22,9 @@
     "dev": "pnpm build:wasm && pnpm --filter @cadence/web dev",
     "build": "pnpm build:wasm && pnpm --filter @cadence/web build",
     "start": "pnpm --filter @cadence/web start",
-    "test:e2e": "poku test/browser --sequential"
+    "test:e2e": "poku test/browser --sequential",
+    "container:build": "docker build -f deploy/Dockerfile -t cadence:test .",
+    "test:container": "poku integration/container --sequential"
   },
   "devDependencies": {
     "@babel/parser": "7.29.9",
@@ -36,6 +38,8 @@
     "@types/react-dom": "19.3.0",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "playwright": "1.63.0"
+    "playwright": "1.63.0",
+    "esbuild": "0.28.2",
+    "@cadence/db": "workspace:*"
   }
 }

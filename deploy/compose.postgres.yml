@@ -1,0 +1,28 @@
+services:
+  cadence:
+    image: ghcr.io/lojhan/cadence:0.1.0-alpha.1
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      DATABASE_URL: postgres://cadence:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/cadence
+      PUBLIC_ORIGIN: http://localhost:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+  postgres:
+    image: postgres:17.6-bookworm
+    environment:
+      POSTGRES_USER: cadence
+      POSTGRES_DB: cadence
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - cadence-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cadence"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+volumes:
+  cadence-postgres:

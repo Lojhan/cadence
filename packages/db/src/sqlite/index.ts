@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Store } from "@cadence/application";
 import Database from "better-sqlite3";
@@ -8,15 +9,16 @@ import { repository } from "../repository.ts";
 export async function openSqlite(
   filename: string,
   initialize = false,
+  migrationsRoot?: string,
 ): Promise<Store> {
   const client = new Database(filename);
   client.pragma("foreign_keys = ON");
   client.pragma("journal_mode = WAL");
   client.pragma("busy_timeout = 5000");
   const db = drizzle(client);
-  const migrationsFolder = fileURLToPath(
-    new URL("../../migrations/sqlite", import.meta.url),
-  );
+  const migrationsFolder = migrationsRoot
+    ? resolve(migrationsRoot, "sqlite")
+    : fileURLToPath(new URL("../../migrations/sqlite", import.meta.url));
   const exists = client
     .prepare(
       "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'users'",

@@ -6,7 +6,8 @@
   "exports": {
     "./sqlite": "./src/sqlite/index.ts",
     "./postgres": "./src/postgres/index.ts",
-    "./migrate": "./src/migrate.ts"
+    "./migrate": "./src/migrate.ts",
+    "./admin": "./src/admin.ts"
   },
   "files": [
     "src",
