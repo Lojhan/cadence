@@ -1,0 +1,15 @@
+{
+  "name": "@cadence/music",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@cadence/contracts": "workspace:*"
+  }
+}

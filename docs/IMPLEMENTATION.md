@@ -9,7 +9,7 @@ A green partial milestone does not mean the product is complete.
 
 - [x] Preserve reviewed design; remove POC source/build/dependencies.
 - [x] pnpm, MIT, Poku, Biome, strict TypeScript, baseline CI.
-- [ ] Public/private GitHub repositories and verified CI.
+- [x] Public/private GitHub repositories and verified CI.
 - [ ] Contracts, music import/export, curated voicings and default music.
 - [ ] Pure practice core: epochs, repeat/rearm, completion, timeline.
 - [ ] Rust DSP/recognition, WASM package and real-recording evaluation.
@@ -30,3 +30,5 @@ committing. Future milestones append actual red/green evidence here.
 The user's Poku requirement supersedes the spec's earlier Vitest proposal. Rust's
 native assertions remain in Rust, invoked and checked by Poku. Browser automation
 uses Playwright as a driver inside Poku, not as a separate test runner.
+
+Music/core milestone: tests first failed on missing packages, then caught an omitted fifth in the open C7 voicing and a lyric-line false positive. Full-tone barre C7 is supported; omitted-tone voicings are intentionally excluded until their recognition contract is explicit. All 12 chromatic roots across major/minor/seventh/m7/maj7 are checked against sounding string pitches. Core tests cover stale epochs, duplicate matches, armed acknowledgment, paused input, completion, and a bounded loop timeline.
