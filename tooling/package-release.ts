@@ -10,7 +10,7 @@ import {
 } from "node:fs";
 import { resolve } from "node:path";
 
-const version = process.env.CADENCE_RELEASE_VERSION ?? "0.1.0-alpha.1";
+const version = process.env.CADENCE_RELEASE_VERSION ?? "0.1.0-alpha.2";
 if (!/^\d+\.\d+\.\d+(?:-[a-z0-9.]+)?$/.test(version))
   throw new Error("Invalid release version");
 const output = resolve("artifacts/packages");
