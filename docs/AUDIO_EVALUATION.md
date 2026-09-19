@@ -536,3 +536,9 @@ The derived profiles retain GuitarSet's CC BY 4.0 license, separately from the
 MIT code. Attribution: Qingyang Xi, Rachel M. Bittner, Johan Pauwels, Xuzhou Ye,
 and Juan Pablo Bello (2018), NYU MARL; DOI 10.5281/zenodo.3371780. These research
 artifacts are not bundled into application packages or container runtime files.
+
+## Further detection research
+
+See [the September research review](DETECTION_RESEARCH.md) for primary sources,
+Rust/WASM feasibility, licensing constraints and the next bounded whitening and
+multi-pitch experiment. This is a research plan; production detection is unchanged.
