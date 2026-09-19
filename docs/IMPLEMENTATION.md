@@ -1,0 +1,32 @@
+# Implementation ledger
+
+The complete deliverable is the reviewed design and technical specification,
+public `Lojhan/cadence`, private `Lojhan/cadence-cloud`, verified containers,
+local Rust/WASM recognition, Drizzle persistence, and hosted identity/billing.
+A green partial milestone does not mean the product is complete.
+
+## Scope / evidence
+
+- [x] Preserve reviewed design; remove POC source/build/dependencies.
+- [x] pnpm, MIT, Poku, Biome, strict TypeScript, baseline CI.
+- [ ] Public/private GitHub repositories and verified CI.
+- [ ] Contracts, music import/export, curated voicings and default music.
+- [ ] Pure practice core: epochs, repeat/rearm, completion, timeline.
+- [ ] Rust DSP/recognition, WASM package and real-recording evaluation.
+- [ ] Browser capture/worklet/worker and recovery lifecycle.
+- [ ] Application authorization and Drizzle SQLite/Postgres parity/migrations.
+- [ ] TanStack Start routes/server functions and reviewed UI/features.
+- [ ] Container run, persistence, backup/restore, multi-arch images.
+- [ ] Private Clerk identity, Stripe lifecycle/entitlements, cloud DB/UI.
+- [ ] End-to-end Poku browser tests, audio corpus gates, deployed smoke tests.
+- [ ] Full requirement-by-requirement completion audit.
+
+## Test-first record
+
+Foundation: Poku workspace test failed on missing workspace configuration before
+implementation; the same test must pass with Biome and strict type checking before
+committing. Future milestones append actual red/green evidence here.
+
+The user's Poku requirement supersedes the spec's earlier Vitest proposal. Rust's
+native assertions remain in Rust, invoked and checked by Poku. Browser automation
+uses Playwright as a driver inside Poku, not as a separate test runner.

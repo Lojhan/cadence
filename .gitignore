@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.output/
+.tanstack/
+target/
+.env
+.env.*
+!.env.example
+*.db
+*.db-shm
+*.db-wal
+.DS_Store
+coverage/
+test-results/
+playwright-report/
+artifacts/
