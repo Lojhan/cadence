@@ -216,3 +216,10 @@ Alpha.6 publication: release workflow 35471501832 passed verification and publis
 nine packages and multi-architecture container images from clean source afd042a.
 Downloaded release assets passed SHA256SUMS verification, including RELEASE.json.
 The documented self-host command now uses alpha.6 with grouped chord transitions.
+
+Release-note audit: alpha.5 and alpha.6 GitHub descriptions incorrectly repeated
+alpha.4 notes. The current notes now describe alpha.6 and retain the experimental
+recognition/device limits. A Poku regression failed before the validator existed,
+then passed matching-version, stale-version, absent-version and non-alpha cases.
+The release workflow checks note identity before its build. Biome and types pass.
+Published descriptions are corrected separately from immutable package assets.

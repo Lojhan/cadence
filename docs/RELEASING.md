@@ -4,7 +4,7 @@ Run releases from a clean Git checkout with the pinned toolchains. The builder
 uses the source commit and records whether the working tree was dirty; local
 experiments must not be described as builds of an unchanged commit.
 
-`CADENCE_RELEASE_VERSION=0.1.0-alpha.2 pnpm check` builds and tests all nine
+`CADENCE_RELEASE_VERSION=0.1.0-alpha.6 pnpm check` builds and tests all nine
 packages together. `artifacts/release/` contains their tarballs, `RELEASE.json`,
 and `SHA256SUMS`. The manifest records:
 
@@ -17,6 +17,11 @@ and `SHA256SUMS`. The manifest records:
 An existing database must match the required migration hash, or run the release's
 migration command before application startup. See [operations](OPERATIONS.md).
 The release notes also describe archive and upgrade compatibility.
+
+Update `docs/ALPHA_RELEASE.md` for the intended version and changes. Its first
+line must start with `Cadence <version> is `; the workflow checks this before
+building, so stale release descriptions cannot be published accidentally.
+Run `CADENCE_RELEASE_VERSION=<version> node tooling/verify-release-notes.ts` locally.
 
 Dispatch `.github/workflows/release.yml` with a new, unused alpha version after
 committing and pushing the reviewed changes. The workflow performs full checks,
