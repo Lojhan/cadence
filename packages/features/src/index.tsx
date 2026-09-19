@@ -71,6 +71,9 @@ export function PracticeApp({
   account?: ReactNode;
 }) {
   const queryClient = useQueryClient();
+  const [preferenceDraft, setPreferenceDraft] =
+    useState<StoredPreferences | null>(null);
+  const [preferenceError, setPreferenceError] = useState("");
   const library = useQuery({
     queryKey: ["library"],
     queryFn: gateway.library,
@@ -80,8 +83,9 @@ export function PracticeApp({
     queryKey: ["preferences"],
     queryFn: gateway.preferences,
     initialData: initial.preferences,
+    enabled: preferenceDraft === null,
   });
-  const prefs = preferences.data.values;
+  const prefs = (preferenceDraft ?? preferences.data).values;
   const [panel, setPanel] = useState<Panel | null>(null);
   const [devicesOpen, setDevicesOpen] = useState(false);
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
@@ -156,11 +160,35 @@ export function PracticeApp({
     session.status === "listening" || session.status === "transitioning";
   const preferenceMutation = useMutation({
     scope: { id: "preferences" },
-    mutationFn: (values: Preferences) =>
-      gateway.savePreferences({ values, revision: preferences.data.revision }),
-    onSuccess: (next) => queryClient.setQueryData(["preferences"], next),
-    onError: (error: Error) => controller.setError(error.message),
+    // Attempt once even offline, so failed changes have an explicit retry path.
+    networkMode: "always",
+    retry: false,
+    onMutate: async (values: StoredPreferences) => {
+      setPreferenceDraft(values);
+      await queryClient.cancelQueries({ queryKey: ["preferences"] });
+    },
+    mutationFn: (input: StoredPreferences) => gateway.savePreferences(input),
+    onSuccess: (next, values) => {
+      queryClient.setQueryData(["preferences"], next);
+      setPreferenceDraft((draft) => (draft === values ? null : draft));
+      setPreferenceError("");
+    },
+    onError: (error: Error) => setPreferenceError(error.message),
   });
+  const restorePreferences = useMutation({
+    scope: { id: "preferences" },
+    networkMode: "always",
+    retry: false,
+    mutationFn: (_discarded: StoredPreferences) => gateway.preferences(),
+    onSuccess: (next, discarded) => {
+      queryClient.setQueryData(["preferences"], next);
+      setPreferenceDraft((draft) => (draft === discarded ? null : draft));
+      setPreferenceError("");
+    },
+    onError: (error: Error) => setPreferenceError(error.message),
+  });
+  const preferenceBusy =
+    preferenceMutation.isPending || restorePreferences.isPending;
   const saveMutation = useMutation({
     mutationFn: () =>
       gateway.saveSong({
@@ -318,7 +346,10 @@ export function PracticeApp({
       if (request !== selecting.current) return;
       positions.current.set(song.id, position?.revision ?? 0);
       controller.replace(song, position?.index ?? 0);
-      await preferenceMutation.mutateAsync({ ...prefs, lastSongId: song.id });
+      await preferenceMutation.mutateAsync({
+        values: { ...prefs, lastSongId: song.id },
+        revision: (preferenceDraft ?? preferences.data).revision,
+      });
       setPanel(null);
     } catch (error) {
       setFormError(
@@ -347,7 +378,10 @@ export function PracticeApp({
     name: K,
     value: Preferences[K],
   ) {
-    preferenceMutation.mutate({ ...prefs, [name]: value });
+    preferenceMutation.mutate({
+      values: { ...prefs, [name]: value },
+      revision: (preferenceDraft ?? preferences.data).revision,
+    });
   }
   async function toggleDevices() {
     controller.pause();
@@ -378,6 +412,8 @@ export function PracticeApp({
     try {
       const contents = await file.text();
       if (archive) {
+        if (preferenceDraft)
+          throw new Error("Save your settings before restoring an archive.");
         await gateway.importData(JSON.parse(contents));
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ["library"] }),
@@ -405,7 +441,7 @@ export function PracticeApp({
         <div className="header-actions">
           <IconButton
             label="Switch color theme"
-            disabled={preferenceMutation.isPending}
+            disabled={preferenceBusy}
             onClick={() =>
               setPreference(
                 "theme",
@@ -467,7 +503,7 @@ export function PracticeApp({
           device={device}
           devices={devices}
           profile={prefs.profile}
-          saving={preferenceMutation.isPending}
+          saving={preferenceBusy}
           onHand={(hand) => setPreference("hand", hand)}
           onDevice={(id) => {
             setDevice(id);
@@ -549,6 +585,19 @@ export function PracticeApp({
             label="Retry saving progress"
             disabled={progressSave.saving}
             onClick={() => void progressWrites.retry()}
+          >
+            <RotateCcw />
+          </IconButton>
+        </div>
+      ) : preferenceError && !panel ? (
+        <div className="toast" role="alert">
+          <span>Settings haven’t saved. Keep this page open and retry.</span>
+          <IconButton
+            label="Retry saving settings"
+            disabled={preferenceBusy}
+            onClick={() =>
+              preferenceDraft && preferenceMutation.mutate(preferenceDraft)
+            }
           >
             <RotateCcw />
           </IconButton>
@@ -839,7 +888,7 @@ export function PracticeApp({
                 detail="Mirror the fretboard"
                 label="Handedness"
                 value={prefs.hand}
-                disabled={preferenceMutation.isPending}
+                disabled={preferenceBusy}
                 choices={["right", "left"]}
                 onChange={(value) =>
                   setPreference("hand", value as Preferences["hand"])
@@ -850,7 +899,7 @@ export function PracticeApp({
                 detail="A little guidance on each string"
                 label="Finger numbers"
                 value={String(prefs.numbers)}
-                disabled={preferenceMutation.isPending}
+                disabled={preferenceBusy}
                 choices={["true", "false"]}
                 labels={["Show", "Hide"]}
                 onChange={(value) => setPreference("numbers", value === "true")}
@@ -860,7 +909,7 @@ export function PracticeApp({
                 detail="How carefully to check each strum"
                 label="Chord matching"
                 value={prefs.profile}
-                disabled={preferenceMutation.isPending}
+                disabled={preferenceBusy}
                 choices={["gentle", "balanced", "precise"]}
                 onChange={(value) =>
                   setPreference("profile", value as Preferences["profile"])
@@ -871,7 +920,7 @@ export function PracticeApp({
                 detail="Practice at your own pace"
                 label="At the end"
                 value={String(prefs.loop)}
-                disabled={preferenceMutation.isPending}
+                disabled={preferenceBusy}
                 choices={["true", "false"]}
                 labels={["Repeat", "Finish"]}
                 onChange={(value) => setPreference("loop", value === "true")}
@@ -881,7 +930,7 @@ export function PracticeApp({
                 detail="Choose your light"
                 label="Appearance"
                 value={prefs.theme}
-                disabled={preferenceMutation.isPending}
+                disabled={preferenceBusy}
                 choices={["system", "light", "dark"]}
                 onChange={(value) =>
                   setPreference("theme", value as Preferences["theme"])
@@ -892,7 +941,7 @@ export function PracticeApp({
                 detail="A closer look at the strings"
                 label="Diagram size"
                 value={prefs.diagramSize}
-                disabled={preferenceMutation.isPending}
+                disabled={preferenceBusy}
                 choices={["standard", "large"]}
                 onChange={(value) =>
                   setPreference(
@@ -907,7 +956,7 @@ export function PracticeApp({
                   detail="Recognition checks pitch content"
                   label="Fingering"
                   value={shape?.id ?? ""}
-                  disabled={preferenceMutation.isPending}
+                  disabled={preferenceBusy}
                   choices={chord.voicings.map((shape) => shape.id)}
                   labels={chord.voicings.map((shape) =>
                     shape.id.endsWith(":open")
@@ -974,6 +1023,29 @@ export function PracticeApp({
                 preferences.
               </p>
             </>
+          ) : null}
+          {preferenceError ? (
+            <div className="error" role="alert">
+              <p>Settings haven’t saved. Your changes still apply here.</p>
+              <Button
+                disabled={preferenceBusy}
+                onClick={() =>
+                  preferenceDraft && preferenceMutation.mutate(preferenceDraft)
+                }
+              >
+                <RotateCcw />
+                Retry saving settings
+              </Button>
+              <Button
+                disabled={preferenceBusy}
+                onClick={() =>
+                  preferenceDraft && restorePreferences.mutate(preferenceDraft)
+                }
+              >
+                Use saved settings
+              </Button>
+              <p>Using saved settings replaces your unsaved changes.</p>
+            </div>
           ) : null}
           {formError ? (
             <div className="error" role="alert">

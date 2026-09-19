@@ -397,10 +397,82 @@ try {
   );
   await page.getByRole("button", { name: "Close", exact: true }).click();
   await page.getByRole("button", { name: "Open settings" }).click();
+  await page.context().setOffline(true);
   await page.getByRole("combobox", { name: "Appearance" }).selectOption("dark");
   await page.waitForFunction(
     () => document.documentElement.dataset.theme === "dark",
+    {},
+    { timeout: 3000 },
   );
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Retry saving settings" })
+    .waitFor({ timeout: 3000 });
+  await page
+    .getByRole("combobox", { name: "Handedness" })
+    .selectOption("right");
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Retry saving settings" })
+    .waitFor();
+  await page.getByRole("button", { name: "Close", exact: true }).click();
+  await page.getByRole("button", { name: "Retry saving settings" }).waitFor();
+  await page.context().setOffline(false);
+  await page.getByRole("button", { name: "Retry saving settings" }).click();
+  await page
+    .getByRole("button", { name: "Retry saving settings" })
+    .waitFor({ state: "hidden" });
+  await page.reload();
+  await page.getByRole("heading", { name: "C", exact: true }).waitFor();
+  await page.getByRole("button", { name: "Open settings" }).click();
+  assert.equal(
+    await page.getByRole("combobox", { name: "Appearance" }).inputValue(),
+    "dark",
+    "retried preferences survive reload",
+  );
+  assert.equal(
+    await page.getByRole("combobox", { name: "Handedness" }).inputValue(),
+    "right",
+    "retry preserves multiple offline changes",
+  );
+  const otherTab = await browser.newPage();
+  await otherTab.goto("http://localhost:3100");
+  await otherTab.getByRole("button", { name: "Open settings" }).click();
+  await otherTab
+    .getByRole("combobox", { name: "Handedness" })
+    .selectOption("left");
+  await otherTab.waitForFunction(
+    () =>
+      !document.querySelector<HTMLSelectElement>(
+        'select[aria-label="Handedness"]',
+      )?.disabled,
+  );
+  await page
+    .getByRole("combobox", { name: "Appearance" })
+    .selectOption("light");
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Retry saving settings" })
+    .waitFor({ timeout: 3000 });
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Use saved settings" })
+    .click({ timeout: 3000 });
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Retry saving settings" })
+    .waitFor({ state: "hidden" });
+  assert.equal(
+    await page.getByRole("combobox", { name: "Handedness" }).inputValue(),
+    "left",
+    "conflict recovery loads the other tab's saved settings",
+  );
+  assert.equal(
+    await page.getByRole("combobox", { name: "Appearance" }).inputValue(),
+    "dark",
+    "a conflicting save never overwrites stored preferences",
+  );
+  await otherTab.close();
   await page.getByRole("button", { name: "Close", exact: true }).click();
   await page.mouse.move(10, 10);
   await page.waitForFunction(
