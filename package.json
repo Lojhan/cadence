@@ -20,11 +20,12 @@
     "db:generate:postgres": "pnpm --filter @cadence/db exec drizzle-kit generate --config drizzle.postgres.ts",
     "test:db": "poku test/db --sequential",
     "dev": "pnpm build:wasm && pnpm --filter @cadence/web dev",
-    "build": "pnpm build:wasm && pnpm --filter @cadence/web build",
+    "build": "pnpm build:wasm && pnpm build:packages && pnpm --filter @cadence/web build",
     "start": "pnpm --filter @cadence/web start",
     "test:e2e": "poku test/browser --sequential",
     "container:build": "docker build -f deploy/Dockerfile -t cadence:test .",
-    "test:container": "poku integration/container --sequential"
+    "test:container": "poku integration/container --sequential",
+    "build:packages": "tsx tooling/package-release.ts"
   },
   "devDependencies": {
     "@babel/parser": "7.29.9",
