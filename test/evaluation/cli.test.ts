@@ -207,8 +207,15 @@ try {
   for (const frame of decomposition.noteProbe.frames as {
     notes: { midi: number; strength: number }[];
     relativeError: number;
+    tuningCents: number;
   }[]) {
     assert.ok(Number.isFinite(frame.relativeError));
+    assert.ok(
+      Number.isInteger(frame.tuningCents) &&
+        Math.abs(frame.tuningCents) <= 40 &&
+        frame.tuningCents % 5 === 0,
+      "note probe reports its bounded tuning choice",
+    );
     assert.ok(
       frame.notes.every(
         (note) => Number.isFinite(note.strength) && note.strength >= 0,

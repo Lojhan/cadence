@@ -1,0 +1,2270 @@
+{
+  "source": "GuitarSet v1.1.0, Xi et al. (2018), https://zenodo.org/records/3371780",
+  "license": "CC BY 4.0",
+  "manifestSha256": "7e97dec14ac6b4cfb41dad7faf456fed5675f83ec5916ec3b60ff14cd527210d",
+  "audioSha256": "541e936a3a2375572e325684dd448bc69f609518ba667f40cac14def634c2aff",
+  "case": {
+    "file": "audio/03_SS3-98-C_comp_mic.wav",
+    "startSeconds": 7.623265306122448,
+    "durationSeconds": 0.679591836734744,
+    "split": "calibration",
+    "chord": "Em",
+    "id": "03_SS3-98-C_comp:3:target-Em7",
+    "targetMask": 2196,
+    "expectedMatch": false,
+    "targetChord": "Em7"
+  },
+  "probeSourceSha256": "063379aba1486f4daae278d02f22574307e280178421cf9d2b0053af9e73d79a",
+  "model": "Offline NNLS with the same ten 1/h harmonics; independent per-frame dictionary tuning search from -40 to +40 cents in 5-cent steps, selecting least relative L2 error. Baseline dictionary is evaluated first; exact ties retain it. No target label is used in fitting.",
+  "heldOutEvaluated": false,
+  "conclusion": "Tuning alone is rejected as a fix for this false positive. At 418 ms, error falls from 0.427 to 0.411 while false D5 activation rises from 69.2 to 77.1. The live recognizer is unchanged.",
+  "noteProbe": {
+    "caseId": "03_SS3-98-C_comp:3:target-Em7",
+    "frames": [
+      {
+        "sampleEnd": 8192,
+        "timeMs": 185.75963718820861,
+        "relativeError": 0.3926331101112459,
+        "tuningCents": 10,
+        "notes": [
+          {
+            "midi": 40,
+            "strength": 46.706399370513964
+          },
+          {
+            "midi": 41,
+            "strength": 0.0
+          },
+          {
+            "midi": 42,
+            "strength": 0.0
+          },
+          {
+            "midi": 43,
+            "strength": 42.228429608159445
+          },
+          {
+            "midi": 44,
+            "strength": 19.577123301379345
+          },
+          {
+            "midi": 45,
+            "strength": 12.06981286848422
+          },
+          {
+            "midi": 46,
+            "strength": 15.080770336930541
+          },
+          {
+            "midi": 47,
+            "strength": 104.3536022351627
+          },
+          {
+            "midi": 48,
+            "strength": 0.0
+          },
+          {
+            "midi": 49,
+            "strength": 0.0
+          },
+          {
+            "midi": 50,
+            "strength": 0.0
+          },
+          {
+            "midi": 51,
+            "strength": 37.09815659889938
+          },
+          {
+            "midi": 52,
+            "strength": 326.569382011722
+          },
+          {
+            "midi": 53,
+            "strength": 0.0
+          },
+          {
+            "midi": 54,
+            "strength": 133.42253154346488
+          },
+          {
+            "midi": 55,
+            "strength": 559.905282287269
+          },
+          {
+            "midi": 56,
+            "strength": 15.035490753157063
+          },
+          {
+            "midi": 57,
+            "strength": 0.0
+          },
+          {
+            "midi": 58,
+            "strength": 0.0
+          },
+          {
+            "midi": 59,
+            "strength": 119.42836011300213
+          },
+          {
+            "midi": 60,
+            "strength": 0.0
+          },
+          {
+            "midi": 61,
+            "strength": 0.0
+          },
+          {
+            "midi": 62,
+            "strength": 0.0
+          },
+          {
+            "midi": 63,
+            "strength": 0.0
+          },
+          {
+            "midi": 64,
+            "strength": 0.0
+          },
+          {
+            "midi": 65,
+            "strength": 0.8227170764940102
+          },
+          {
+            "midi": 66,
+            "strength": 0.0
+          },
+          {
+            "midi": 67,
+            "strength": 0.0
+          },
+          {
+            "midi": 68,
+            "strength": 0.0
+          },
+          {
+            "midi": 69,
+            "strength": 0.0
+          },
+          {
+            "midi": 70,
+            "strength": 0.0
+          },
+          {
+            "midi": 71,
+            "strength": 0.0
+          },
+          {
+            "midi": 72,
+            "strength": 0.0
+          },
+          {
+            "midi": 73,
+            "strength": 0.0
+          },
+          {
+            "midi": 74,
+            "strength": 0.0
+          },
+          {
+            "midi": 75,
+            "strength": 0.0
+          },
+          {
+            "midi": 76,
+            "strength": 0.0
+          },
+          {
+            "midi": 77,
+            "strength": 2.0493357934889866
+          },
+          {
+            "midi": 78,
+            "strength": 0.0
+          },
+          {
+            "midi": 79,
+            "strength": 0.0
+          },
+          {
+            "midi": 80,
+            "strength": 0.0
+          },
+          {
+            "midi": 81,
+            "strength": 0.0
+          },
+          {
+            "midi": 82,
+            "strength": 0.0
+          },
+          {
+            "midi": 83,
+            "strength": 0.0
+          },
+          {
+            "midi": 84,
+            "strength": 0.0
+          },
+          {
+            "midi": 85,
+            "strength": 0.0
+          },
+          {
+            "midi": 86,
+            "strength": 0.0
+          },
+          {
+            "midi": 87,
+            "strength": 0.0
+          },
+          {
+            "midi": 88,
+            "strength": 0.0
+          }
+        ]
+      },
+      {
+        "sampleEnd": 10240,
+        "timeMs": 232.19954648526078,
+        "relativeError": 0.3686994929935214,
+        "tuningCents": 10,
+        "notes": [
+          {
+            "midi": 40,
+            "strength": 56.94418107810577
+          },
+          {
+            "midi": 41,
+            "strength": 0.0
+          },
+          {
+            "midi": 42,
+            "strength": 0.0
+          },
+          {
+            "midi": 43,
+            "strength": 17.311269761181734
+          },
+          {
+            "midi": 44,
+            "strength": 19.17001837167534
+          },
+          {
+            "midi": 45,
+            "strength": 0.0
+          },
+          {
+            "midi": 46,
+            "strength": 3.5305420625259245
+          },
+          {
+            "midi": 47,
+            "strength": 111.0278776191941
+          },
+          {
+            "midi": 48,
+            "strength": 0.0
+          },
+          {
+            "midi": 49,
+            "strength": 0.0
+          },
+          {
+            "midi": 50,
+            "strength": 0.0
+          },
+          {
+            "midi": 51,
+            "strength": 40.9049266121075
+          },
+          {
+            "midi": 52,
+            "strength": 306.4627374733024
+          },
+          {
+            "midi": 53,
+            "strength": 0.0
+          },
+          {
+            "midi": 54,
+            "strength": 64.50304162371441
+          },
+          {
+            "midi": 55,
+            "strength": 445.00917856027354
+          },
+          {
+            "midi": 56,
+            "strength": 6.476760419722979
+          },
+          {
+            "midi": 57,
+            "strength": 0.0
+          },
+          {
+            "midi": 58,
+            "strength": 0.0
+          },
+          {
+            "midi": 59,
+            "strength": 59.420008340939205
+          },
+          {
+            "midi": 60,
+            "strength": 0.0
+          },
+          {
+            "midi": 61,
+            "strength": 0.0
+          },
+          {
+            "midi": 62,
+            "strength": 0.0
+          },
+          {
+            "midi": 63,
+            "strength": 0.0
+          },
+          {
+            "midi": 64,
+            "strength": 0.0
+          },
+          {
+            "midi": 65,
+            "strength": 2.223378782262966
+          },
+          {
+            "midi": 66,
+            "strength": 0.0
+          },
+          {
+            "midi": 67,
+            "strength": 0.0
+          },
+          {
+            "midi": 68,
+            "strength": 0.0
+          },
+          {
+            "midi": 69,
+            "strength": 0.0
+          },
+          {
+            "midi": 70,
+            "strength": 0.0
+          },
+          {
+            "midi": 71,
+            "strength": 0.0
+          },
+          {
+            "midi": 72,
+            "strength": 0.0
+          },
+          {
+            "midi": 73,
+            "strength": 0.0
+          },
+          {
+            "midi": 74,
+            "strength": 0.0
+          },
+          {
+            "midi": 75,
+            "strength": 0.0
+          },
+          {
+            "midi": 76,
+            "strength": 0.0
+          },
+          {
+            "midi": 77,
+            "strength": 1.7447555653498101
+          },
+          {
+            "midi": 78,
+            "strength": 0.0
+          },
+          {
+            "midi": 79,
+            "strength": 0.0
+          },
+          {
+            "midi": 80,
+            "strength": 0.0
+          },
+          {
+            "midi": 81,
+            "strength": 0.0
+          },
+          {
+            "midi": 82,
+            "strength": 0.0
+          },
+          {
+            "midi": 83,
+            "strength": 0.0
+          },
+          {
+            "midi": 84,
+            "strength": 0.0
+          },
+          {
+            "midi": 85,
+            "strength": 0.0
+          },
+          {
+            "midi": 86,
+            "strength": 0.0
+          },
+          {
+            "midi": 87,
+            "strength": 1.752616800260249
+          },
+          {
+            "midi": 88,
+            "strength": 0.0
+          }
+        ]
+      },
+      {
+        "sampleEnd": 12288,
+        "timeMs": 278.6394557823129,
+        "relativeError": 0.3491437618829151,
+        "tuningCents": 5,
+        "notes": [
+          {
+            "midi": 40,
+            "strength": 49.21827227734565
+          },
+          {
+            "midi": 41,
+            "strength": 0.0
+          },
+          {
+            "midi": 42,
+            "strength": 0.0
+          },
+          {
+            "midi": 43,
+            "strength": 7.58855033351017
+          },
+          {
+            "midi": 44,
+            "strength": 11.283494677446548
+          },
+          {
+            "midi": 45,
+            "strength": 0.0
+          },
+          {
+            "midi": 46,
+            "strength": 0.0
+          },
+          {
+            "midi": 47,
+            "strength": 112.12590060382078
+          },
+          {
+            "midi": 48,
+            "strength": 0.0
+          },
+          {
+            "midi": 49,
+            "strength": 0.0
+          },
+          {
+            "midi": 50,
+            "strength": 0.0
+          },
+          {
+            "midi": 51,
+            "strength": 29.694748685554487
+          },
+          {
+            "midi": 52,
+            "strength": 314.0849792189294
+          },
+          {
+            "midi": 53,
+            "strength": 0.0
+          },
+          {
+            "midi": 54,
+            "strength": 10.646089118725243
+          },
+          {
+            "midi": 55,
+            "strength": 239.94793208148877
+          },
+          {
+            "midi": 56,
+            "strength": 10.5833324450467
+          },
+          {
+            "midi": 57,
+            "strength": 0.0
+          },
+          {
+            "midi": 58,
+            "strength": 0.7730211105853044
+          },
+          {
+            "midi": 59,
+            "strength": 35.55593553226609
+          },
+          {
+            "midi": 60,
+            "strength": 0.2329044447930464
+          },
+          {
+            "midi": 61,
+            "strength": 0.0
+          },
+          {
+            "midi": 62,
+            "strength": 0.0
+          },
+          {
+            "midi": 63,
+            "strength": 0.0
+          },
+          {
+            "midi": 64,
+            "strength": 0.0
+          },
+          {
+            "midi": 65,
+            "strength": 2.8781848538627335
+          },
+          {
+            "midi": 66,
+            "strength": 0.0
+          },
+          {
+            "midi": 67,
+            "strength": 0.0
+          },
+          {
+            "midi": 68,
+            "strength": 0.0
+          },
+          {
+            "midi": 69,
+            "strength": 0.0
+          },
+          {
+            "midi": 70,
+            "strength": 0.0
+          },
+          {
+            "midi": 71,
+            "strength": 0.0
+          },
+          {
+            "midi": 72,
+            "strength": 0.0
+          },
+          {
+            "midi": 73,
+            "strength": 0.0
+          },
+          {
+            "midi": 74,
+            "strength": 31.578973803658585
+          },
+          {
+            "midi": 75,
+            "strength": 0.0
+          },
+          {
+            "midi": 76,
+            "strength": 0.0
+          },
+          {
+            "midi": 77,
+            "strength": 0.0
+          },
+          {
+            "midi": 78,
+            "strength": 0.0
+          },
+          {
+            "midi": 79,
+            "strength": 0.0
+          },
+          {
+            "midi": 80,
+            "strength": 13.749219349813444
+          },
+          {
+            "midi": 81,
+            "strength": 0.11267184229186
+          },
+          {
+            "midi": 82,
+            "strength": 0.0
+          },
+          {
+            "midi": 83,
+            "strength": 6.022691185898111
+          },
+          {
+            "midi": 84,
+            "strength": 0.0
+          },
+          {
+            "midi": 85,
+            "strength": 9.830480792624417
+          },
+          {
+            "midi": 86,
+            "strength": 0.0
+          },
+          {
+            "midi": 87,
+            "strength": 0.0
+          },
+          {
+            "midi": 88,
+            "strength": 0.0
+          }
+        ]
+      },
+      {
+        "sampleEnd": 14336,
+        "timeMs": 325.07936507936506,
+        "relativeError": 0.3612573352867843,
+        "tuningCents": 5,
+        "notes": [
+          {
+            "midi": 40,
+            "strength": 41.84656293524387
+          },
+          {
+            "midi": 41,
+            "strength": 0.0
+          },
+          {
+            "midi": 42,
+            "strength": 0.0
+          },
+          {
+            "midi": 43,
+            "strength": 14.499076202434637
+          },
+          {
+            "midi": 44,
+            "strength": 0.0
+          },
+          {
+            "midi": 45,
+            "strength": 0.0
+          },
+          {
+            "midi": 46,
+            "strength": 0.0
+          },
+          {
+            "midi": 47,
+            "strength": 107.02371638246757
+          },
+          {
+            "midi": 48,
+            "strength": 6.533453120940166
+          },
+          {
+            "midi": 49,
+            "strength": 0.0
+          },
+          {
+            "midi": 50,
+            "strength": 0.0
+          },
+          {
+            "midi": 51,
+            "strength": 29.493382826266284
+          },
+          {
+            "midi": 52,
+            "strength": 317.07877898804213
+          },
+          {
+            "midi": 53,
+            "strength": 0.6144458573560883
+          },
+          {
+            "midi": 54,
+            "strength": 0.8516503060283824
+          },
+          {
+            "midi": 55,
+            "strength": 107.40795806093291
+          },
+          {
+            "midi": 56,
+            "strength": 3.0040989477125137
+          },
+          {
+            "midi": 57,
+            "strength": 0.0
+          },
+          {
+            "midi": 58,
+            "strength": 0.0
+          },
+          {
+            "midi": 59,
+            "strength": 18.235030226840706
+          },
+          {
+            "midi": 60,
+            "strength": 2.174428524505803
+          },
+          {
+            "midi": 61,
+            "strength": 0.25511100053756763
+          },
+          {
+            "midi": 62,
+            "strength": 0.0
+          },
+          {
+            "midi": 63,
+            "strength": 0.0
+          },
+          {
+            "midi": 64,
+            "strength": 0.0
+          },
+          {
+            "midi": 65,
+            "strength": 1.6223509360503048
+          },
+          {
+            "midi": 66,
+            "strength": 0.0
+          },
+          {
+            "midi": 67,
+            "strength": 18.00538519626508
+          },
+          {
+            "midi": 68,
+            "strength": 1.4884995700893917
+          },
+          {
+            "midi": 69,
+            "strength": 0.0
+          },
+          {
+            "midi": 70,
+            "strength": 0.0
+          },
+          {
+            "midi": 71,
+            "strength": 0.0
+          },
+          {
+            "midi": 72,
+            "strength": 0.0
+          },
+          {
+            "midi": 73,
+            "strength": 0.9789329421503687
+          },
+          {
+            "midi": 74,
+            "strength": 60.26582722202032
+          },
+          {
+            "midi": 75,
+            "strength": 1.3275913949990858
+          },
+          {
+            "midi": 76,
+            "strength": 0.0
+          },
+          {
+            "midi": 77,
+            "strength": 0.0
+          },
+          {
+            "midi": 78,
+            "strength": 1.097741046187707
+          },
+          {
+            "midi": 79,
+            "strength": 0.0
+          },
+          {
+            "midi": 80,
+            "strength": 11.075515809870389
+          },
+          {
+            "midi": 81,
+            "strength": 0.0
+          },
+          {
+            "midi": 82,
+            "strength": 0.0
+          },
+          {
+            "midi": 83,
+            "strength": 0.0
+          },
+          {
+            "midi": 84,
+            "strength": 0.0
+          },
+          {
+            "midi": 85,
+            "strength": 10.160029484778757
+          },
+          {
+            "midi": 86,
+            "strength": 0.0
+          },
+          {
+            "midi": 87,
+            "strength": 0.17537934194878257
+          },
+          {
+            "midi": 88,
+            "strength": 0.0
+          }
+        ]
+      },
+      {
+        "sampleEnd": 16384,
+        "timeMs": 371.51927437641723,
+        "relativeError": 0.39831023526750603,
+        "tuningCents": 5,
+        "notes": [
+          {
+            "midi": 40,
+            "strength": 33.94303785191073
+          },
+          {
+            "midi": 41,
+            "strength": 0.0
+          },
+          {
+            "midi": 42,
+            "strength": 0.0
+          },
+          {
+            "midi": 43,
+            "strength": 11.882122875288445
+          },
+          {
+            "midi": 44,
+            "strength": 0.0
+          },
+          {
+            "midi": 45,
+            "strength": 0.0
+          },
+          {
+            "midi": 46,
+            "strength": 3.0412854396121602
+          },
+          {
+            "midi": 47,
+            "strength": 89.31312626023005
+          },
+          {
+            "midi": 48,
+            "strength": 11.684562580914232
+          },
+          {
+            "midi": 49,
+            "strength": 0.0
+          },
+          {
+            "midi": 50,
+            "strength": 0.0
+          },
+          {
+            "midi": 51,
+            "strength": 30.01474144535237
+          },
+          {
+            "midi": 52,
+            "strength": 303.8123594539481
+          },
+          {
+            "midi": 53,
+            "strength": 0.0
+          },
+          {
+            "midi": 54,
+            "strength": 0.0
+          },
+          {
+            "midi": 55,
+            "strength": 52.029880509435415
+          },
+          {
+            "midi": 56,
+            "strength": 0.0
+          },
+          {
+            "midi": 57,
+            "strength": 0.0
+          },
+          {
+            "midi": 58,
+            "strength": 0.0
+          },
+          {
+            "midi": 59,
+            "strength": 0.0
+          },
+          {
+            "midi": 60,
+            "strength": 0.0
+          },
+          {
+            "midi": 61,
+            "strength": 0.0
+          },
+          {
+            "midi": 62,
+            "strength": 0.0
+          },
+          {
+            "midi": 63,
+            "strength": 0.0
+          },
+          {
+            "midi": 64,
+            "strength": 0.0
+          },
+          {
+            "midi": 65,
+            "strength": 0.8655844969514801
+          },
+          {
+            "midi": 66,
+            "strength": 2.286578485216559
+          },
+          {
+            "midi": 67,
+            "strength": 33.39402949050883
+          },
+          {
+            "midi": 68,
+            "strength": 1.1489599552928809
+          },
+          {
+            "midi": 69,
+            "strength": 0.0
+          },
+          {
+            "midi": 70,
+            "strength": 0.0
+          },
+          {
+            "midi": 71,
+            "strength": 0.0
+          },
+          {
+            "midi": 72,
+            "strength": 0.0
+          },
+          {
+            "midi": 73,
+            "strength": 2.332518076783412
+          },
+          {
+            "midi": 74,
+            "strength": 70.66186559853296
+          },
+          {
+            "midi": 75,
+            "strength": 1.9030949519209024
+          },
+          {
+            "midi": 76,
+            "strength": 0.0
+          },
+          {
+            "midi": 77,
+            "strength": 0.0
+          },
+          {
+            "midi": 78,
+            "strength": 1.9100327769755907
+          },
+          {
+            "midi": 79,
+            "strength": 0.0
+          },
+          {
+            "midi": 80,
+            "strength": 3.7506671673271796
+          },
+          {
+            "midi": 81,
+            "strength": 0.0
+          },
+          {
+            "midi": 82,
+            "strength": 0.0
+          },
+          {
+            "midi": 83,
+            "strength": 2.4090302231147973
+          },
+          {
+            "midi": 84,
+            "strength": 0.0
+          },
+          {
+            "midi": 85,
+            "strength": 9.439756212847538
+          },
+          {
+            "midi": 86,
+            "strength": 0.0
+          },
+          {
+            "midi": 87,
+            "strength": 0.4433689058048431
+          },
+          {
+            "midi": 88,
+            "strength": 0.0
+          }
+        ]
+      },
+      {
+        "sampleEnd": 18432,
+        "timeMs": 417.9591836734694,
+        "relativeError": 0.41064439250009077,
+        "tuningCents": 5,
+        "notes": [
+          {
+            "midi": 40,
+            "strength": 36.549093265805254
+          },
+          {
+            "midi": 41,
+            "strength": 0.0
+          },
+          {
+            "midi": 42,
+            "strength": 0.0
+          },
+          {
+            "midi": 43,
+            "strength": 7.918553192316651
+          },
+          {
+            "midi": 44,
+            "strength": 0.0
+          },
+          {
+            "midi": 45,
+            "strength": 0.0
+          },
+          {
+            "midi": 46,
+            "strength": 4.045422928910902
+          },
+          {
+            "midi": 47,
+            "strength": 83.76738661740059
+          },
+          {
+            "midi": 48,
+            "strength": 12.572277612554785
+          },
+          {
+            "midi": 49,
+            "strength": 0.0
+          },
+          {
+            "midi": 50,
+            "strength": 0.0
+          },
+          {
+            "midi": 51,
+            "strength": 29.548008979073913
+          },
+          {
+            "midi": 52,
+            "strength": 282.61185434733943
+          },
+          {
+            "midi": 53,
+            "strength": 1.7563023378643337
+          },
+          {
+            "midi": 54,
+            "strength": 0.0
+          },
+          {
+            "midi": 55,
+            "strength": 37.536276404738416
+          },
+          {
+            "midi": 56,
+            "strength": 0.0
+          },
+          {
+            "midi": 57,
+            "strength": 0.0
+          },
+          {
+            "midi": 58,
+            "strength": 0.0
+          },
+          {
+            "midi": 59,
+            "strength": 0.0
+          },
+          {
+            "midi": 60,
+            "strength": 0.0
+          },
+          {
+            "midi": 61,
+            "strength": 0.0
+          },
+          {
+            "midi": 62,
+            "strength": 0.08622092643525292
+          },
+          {
+            "midi": 63,
+            "strength": 0.0
+          },
+          {
+            "midi": 64,
+            "strength": 0.0
+          },
+          {
+            "midi": 65,
+            "strength": 0.16513888374142383
+          },
+          {
+            "midi": 66,
+            "strength": 1.5406957763634423
+          },
+          {
+            "midi": 67,
+            "strength": 28.379504926852526
+          },
+          {
+            "midi": 68,
+            "strength": 1.83325070780651
+          },
+          {
+            "midi": 69,
+            "strength": 0.0
+          },
+          {
+            "midi": 70,
+            "strength": 0.0
+          },
+          {
+            "midi": 71,
+            "strength": 0.0
+          },
+          {
+            "midi": 72,
+            "strength": 0.0
+          },
+          {
+            "midi": 73,
+            "strength": 2.961167911307916
+          },
+          {
+            "midi": 74,
+            "strength": 77.05345369616703
+          },
+          {
+            "midi": 75,
+            "strength": 1.301613048054243
+          },
+          {
+            "midi": 76,
+            "strength": 0.0
+          },
+          {
+            "midi": 77,
+            "strength": 0.0
+          },
+          {
+            "midi": 78,
+            "strength": 2.7849435565414637
+          },
+          {
+            "midi": 79,
+            "strength": 0.0
+          },
+          {
+            "midi": 80,
+            "strength": 0.0
+          },
+          {
+            "midi": 81,
+            "strength": 0.0
+          },
+          {
+            "midi": 82,
+            "strength": 0.0
+          },
+          {
+            "midi": 83,
+            "strength": 0.0
+          },
+          {
+            "midi": 84,
+            "strength": 0.0
+          },
+          {
+            "midi": 85,
+            "strength": 6.823406434706509
+          },
+          {
+            "midi": 86,
+            "strength": 0.0
+          },
+          {
+            "midi": 87,
+            "strength": 0.24278040380383992
+          },
+          {
+            "midi": 88,
+            "strength": 0.0
+          }
+        ]
+      },
+      {
+        "sampleEnd": 20480,
+        "timeMs": 464.39909297052156,
+        "relativeError": 0.3752389186851737,
+        "tuningCents": 5,
+        "notes": [
+          {
+            "midi": 40,
+            "strength": 40.41609331941578
+          },
+          {
+            "midi": 41,
+            "strength": 0.0
+          },
+          {
+            "midi": 42,
+            "strength": 0.0
+          },
+          {
+            "midi": 43,
+            "strength": 7.95614757162997
+          },
+          {
+            "midi": 44,
+            "strength": 0.0
+          },
+          {
+            "midi": 45,
+            "strength": 0.0
+          },
+          {
+            "midi": 46,
+            "strength": 0.0
+          },
+          {
+            "midi": 47,
+            "strength": 99.1036955132669
+          },
+          {
+            "midi": 48,
+            "strength": 5.4602376857148585
+          },
+          {
+            "midi": 49,
+            "strength": 0.0
+          },
+          {
+            "midi": 50,
+            "strength": 0.0
+          },
+          {
+            "midi": 51,
+            "strength": 24.97577188566224
+          },
+          {
+            "midi": 52,
+            "strength": 274.9426358239309
+          },
+          {
+            "midi": 53,
+            "strength": 0.0
+          },
+          {
+            "midi": 54,
+            "strength": 0.0
+          },
+          {
+            "midi": 55,
+            "strength": 31.390333176725917
+          },
+          {
+            "midi": 56,
+            "strength": 0.0
+          },
+          {
+            "midi": 57,
+            "strength": 0.0
+          },
+          {
+            "midi": 58,
+            "strength": 0.0
+          },
+          {
+            "midi": 59,
+            "strength": 8.487597452072393
+          },
+          {
+            "midi": 60,
+            "strength": 2.639044521436041
+          },
+          {
+            "midi": 61,
+            "strength": 0.0
+          },
+          {
+            "midi": 62,
+            "strength": 0.0
+          },
+          {
+            "midi": 63,
+            "strength": 0.0
+          },
+          {
+            "midi": 64,
+            "strength": 0.0
+          },
+          {
+            "midi": 65,
+            "strength": 1.8118339417232328
+          },
+          {
+            "midi": 66,
+            "strength": 0.0
+          },
+          {
+            "midi": 67,
+            "strength": 31.76868341474129
+          },
+          {
+            "midi": 68,
+            "strength": 6.224338880063762
+          },
+          {
+            "midi": 69,
+            "strength": 0.0
+          },
+          {
+            "midi": 70,
+            "strength": 0.0
+          },
+          {
+            "midi": 71,
+            "strength": 0.0
+          },
+          {
+            "midi": 72,
+            "strength": 0.0
+          },
+          {
+            "midi": 73,
+            "strength": 2.944467748677674
+          },
+          {
+            "midi": 74,
+            "strength": 68.40957627274445
+          },
+          {
+            "midi": 75,
+            "strength": 0.0
+          },
+          {
+            "midi": 76,
+            "strength": 0.0
+          },
+          {
+            "midi": 77,
+            "strength": 0.0
+          },
+          {
+            "midi": 78,
+            "strength": 0.011932936323951537
+          },
+          {
+            "midi": 79,
+            "strength": 0.0
+          },
+          {
+            "midi": 80,
+            "strength": 0.0
+          },
+          {
+            "midi": 81,
+            "strength": 0.0
+          },
+          {
+            "midi": 82,
+            "strength": 0.46764667451951647
+          },
+          {
+            "midi": 83,
+            "strength": 0.0
+          },
+          {
+            "midi": 84,
+            "strength": 0.0
+          },
+          {
+            "midi": 85,
+            "strength": 3.6463025454297036
+          },
+          {
+            "midi": 86,
+            "strength": 0.0
+          },
+          {
+            "midi": 87,
+            "strength": 0.47218223349356325
+          },
+          {
+            "midi": 88,
+            "strength": 0.0
+          }
+        ]
+      },
+      {
+        "sampleEnd": 22528,
+        "timeMs": 510.83900226757373,
+        "relativeError": 0.36511074373150865,
+        "tuningCents": 10,
+        "notes": [
+          {
+            "midi": 40,
+            "strength": 44.84124113644549
+          },
+          {
+            "midi": 41,
+            "strength": 0.0
+          },
+          {
+            "midi": 42,
+            "strength": 0.0
+          },
+          {
+            "midi": 43,
+            "strength": 6.400430024262079
+          },
+          {
+            "midi": 44,
+            "strength": 0.0
+          },
+          {
+            "midi": 45,
+            "strength": 0.0
+          },
+          {
+            "midi": 46,
+            "strength": 1.0561825990454494
+          },
+          {
+            "midi": 47,
+            "strength": 101.09371750249232
+          },
+          {
+            "midi": 48,
+            "strength": 1.0733234574815071
+          },
+          {
+            "midi": 49,
+            "strength": 0.0
+          },
+          {
+            "midi": 50,
+            "strength": 0.0
+          },
+          {
+            "midi": 51,
+            "strength": 34.79589876276661
+          },
+          {
+            "midi": 52,
+            "strength": 249.37538776867092
+          },
+          {
+            "midi": 53,
+            "strength": 0.0
+          },
+          {
+            "midi": 54,
+            "strength": 0.0
+          },
+          {
+            "midi": 55,
+            "strength": 32.711611751675534
+          },
+          {
+            "midi": 56,
+            "strength": 0.0
+          },
+          {
+            "midi": 57,
+            "strength": 0.0
+          },
+          {
+            "midi": 58,
+            "strength": 0.0
+          },
+          {
+            "midi": 59,
+            "strength": 9.21183247943344
+          },
+          {
+            "midi": 60,
+            "strength": 2.691622017578421
+          },
+          {
+            "midi": 61,
+            "strength": 0.0
+          },
+          {
+            "midi": 62,
+            "strength": 0.5069849212616617
+          },
+          {
+            "midi": 63,
+            "strength": 0.0
+          },
+          {
+            "midi": 64,
+            "strength": 0.0
+          },
+          {
+            "midi": 65,
+            "strength": 1.2862469025560355
+          },
+          {
+            "midi": 66,
+            "strength": 0.0
+          },
+          {
+            "midi": 67,
+            "strength": 38.42929074664663
+          },
+          {
+            "midi": 68,
+            "strength": 1.8794585525723342
+          },
+          {
+            "midi": 69,
+            "strength": 0.0
+          },
+          {
+            "midi": 70,
+            "strength": 0.0
+          },
+          {
+            "midi": 71,
+            "strength": 0.0
+          },
+          {
+            "midi": 72,
+            "strength": 0.0
+          },
+          {
+            "midi": 73,
+            "strength": 0.7537846574520577
+          },
+          {
+            "midi": 74,
+            "strength": 77.27647602725595
+          },
+          {
+            "midi": 75,
+            "strength": 0.0
+          },
+          {
+            "midi": 76,
+            "strength": 0.0
+          },
+          {
+            "midi": 77,
+            "strength": 0.0
+          },
+          {
+            "midi": 78,
+            "strength": 0.0
+          },
+          {
+            "midi": 79,
+            "strength": 0.0
+          },
+          {
+            "midi": 80,
+            "strength": 0.0
+          },
+          {
+            "midi": 81,
+            "strength": 0.0
+          },
+          {
+            "midi": 82,
+            "strength": 2.068652871581082
+          },
+          {
+            "midi": 83,
+            "strength": 0.0
+          },
+          {
+            "midi": 84,
+            "strength": 0.0
+          },
+          {
+            "midi": 85,
+            "strength": 1.3766626600259944
+          },
+          {
+            "midi": 86,
+            "strength": 0.0
+          },
+          {
+            "midi": 87,
+            "strength": 0.0
+          },
+          {
+            "midi": 88,
+            "strength": 0.0
+          }
+        ]
+      },
+      {
+        "sampleEnd": 24576,
+        "timeMs": 557.2789115646258,
+        "relativeError": 0.38731817938298757,
+        "tuningCents": 10,
+        "notes": [
+          {
+            "midi": 40,
+            "strength": 50.57650094406674
+          },
+          {
+            "midi": 41,
+            "strength": 0.0
+          },
+          {
+            "midi": 42,
+            "strength": 0.0
+          },
+          {
+            "midi": 43,
+            "strength": 5.77618644538137
+          },
+          {
+            "midi": 44,
+            "strength": 3.4509530459444875
+          },
+          {
+            "midi": 45,
+            "strength": 0.0
+          },
+          {
+            "midi": 46,
+            "strength": 13.163924575348155
+          },
+          {
+            "midi": 47,
+            "strength": 88.51877390391535
+          },
+          {
+            "midi": 48,
+            "strength": 5.39002732212046
+          },
+          {
+            "midi": 49,
+            "strength": 0.0
+          },
+          {
+            "midi": 50,
+            "strength": 0.0
+          },
+          {
+            "midi": 51,
+            "strength": 40.481131437624796
+          },
+          {
+            "midi": 52,
+            "strength": 216.26409826426368
+          },
+          {
+            "midi": 53,
+            "strength": 0.0
+          },
+          {
+            "midi": 54,
+            "strength": 4.1505893754978445
+          },
+          {
+            "midi": 55,
+            "strength": 47.92309044229813
+          },
+          {
+            "midi": 56,
+            "strength": 10.894386811495309
+          },
+          {
+            "midi": 57,
+            "strength": 0.0
+          },
+          {
+            "midi": 58,
+            "strength": 0.0
+          },
+          {
+            "midi": 59,
+            "strength": 8.046915479426886
+          },
+          {
+            "midi": 60,
+            "strength": 5.918550691173845
+          },
+          {
+            "midi": 61,
+            "strength": 6.706452974142934
+          },
+          {
+            "midi": 62,
+            "strength": 9.089380833472731
+          },
+          {
+            "midi": 63,
+            "strength": 0.0
+          },
+          {
+            "midi": 64,
+            "strength": 0.0
+          },
+          {
+            "midi": 65,
+            "strength": 5.0340415549137205
+          },
+          {
+            "midi": 66,
+            "strength": 0.0
+          },
+          {
+            "midi": 67,
+            "strength": 40.94852758796581
+          },
+          {
+            "midi": 68,
+            "strength": 0.0
+          },
+          {
+            "midi": 69,
+            "strength": 0.0
+          },
+          {
+            "midi": 70,
+            "strength": 0.0
+          },
+          {
+            "midi": 71,
+            "strength": 0.0
+          },
+          {
+            "midi": 72,
+            "strength": 0.0
+          },
+          {
+            "midi": 73,
+            "strength": 0.0
+          },
+          {
+            "midi": 74,
+            "strength": 58.84565052507398
+          },
+          {
+            "midi": 75,
+            "strength": 0.0
+          },
+          {
+            "midi": 76,
+            "strength": 0.0
+          },
+          {
+            "midi": 77,
+            "strength": 0.0
+          },
+          {
+            "midi": 78,
+            "strength": 0.0
+          },
+          {
+            "midi": 79,
+            "strength": 0.0
+          },
+          {
+            "midi": 80,
+            "strength": 0.0
+          },
+          {
+            "midi": 81,
+            "strength": 0.0
+          },
+          {
+            "midi": 82,
+            "strength": 0.0
+          },
+          {
+            "midi": 83,
+            "strength": 0.0
+          },
+          {
+            "midi": 84,
+            "strength": 0.0
+          },
+          {
+            "midi": 85,
+            "strength": 1.1031889738775362
+          },
+          {
+            "midi": 86,
+            "strength": 0.0
+          },
+          {
+            "midi": 87,
+            "strength": 0.0
+          },
+          {
+            "midi": 88,
+            "strength": 0.0
+          }
+        ]
+      },
+      {
+        "sampleEnd": 26624,
+        "timeMs": 603.7188208616781,
+        "relativeError": 0.36577194501118543,
+        "tuningCents": 10,
+        "notes": [
+          {
+            "midi": 40,
+            "strength": 53.21894155301413
+          },
+          {
+            "midi": 41,
+            "strength": 0.0
+          },
+          {
+            "midi": 42,
+            "strength": 0.0
+          },
+          {
+            "midi": 43,
+            "strength": 22.77436936364805
+          },
+          {
+            "midi": 44,
+            "strength": 21.37204362046694
+          },
+          {
+            "midi": 45,
+            "strength": 15.060707804821163
+          },
+          {
+            "midi": 46,
+            "strength": 9.167904280377357
+          },
+          {
+            "midi": 47,
+            "strength": 73.33013677031039
+          },
+          {
+            "midi": 48,
+            "strength": 9.051325299917593
+          },
+          {
+            "midi": 49,
+            "strength": 0.0
+          },
+          {
+            "midi": 50,
+            "strength": 0.0
+          },
+          {
+            "midi": 51,
+            "strength": 34.008390516946605
+          },
+          {
+            "midi": 52,
+            "strength": 204.79534881451733
+          },
+          {
+            "midi": 53,
+            "strength": 0.0
+          },
+          {
+            "midi": 54,
+            "strength": 20.82438486756933
+          },
+          {
+            "midi": 55,
+            "strength": 80.80840835596041
+          },
+          {
+            "midi": 56,
+            "strength": 23.592706153828154
+          },
+          {
+            "midi": 57,
+            "strength": 2.0031057405862214
+          },
+          {
+            "midi": 58,
+            "strength": 8.981081437430095
+          },
+          {
+            "midi": 59,
+            "strength": 44.96606980690942
+          },
+          {
+            "midi": 60,
+            "strength": 8.281495616102298
+          },
+          {
+            "midi": 61,
+            "strength": 2.942669382585283
+          },
+          {
+            "midi": 62,
+            "strength": 9.023238783895692
+          },
+          {
+            "midi": 63,
+            "strength": 0.0
+          },
+          {
+            "midi": 64,
+            "strength": 0.0
+          },
+          {
+            "midi": 65,
+            "strength": 10.784844387155331
+          },
+          {
+            "midi": 66,
+            "strength": 0.0
+          },
+          {
+            "midi": 67,
+            "strength": 33.50100242489249
+          },
+          {
+            "midi": 68,
+            "strength": 0.0
+          },
+          {
+            "midi": 69,
+            "strength": 0.0
+          },
+          {
+            "midi": 70,
+            "strength": 0.0
+          },
+          {
+            "midi": 71,
+            "strength": 0.0
+          },
+          {
+            "midi": 72,
+            "strength": 0.0
+          },
+          {
+            "midi": 73,
+            "strength": 0.0
+          },
+          {
+            "midi": 74,
+            "strength": 46.484069109095856
+          },
+          {
+            "midi": 75,
+            "strength": 0.0
+          },
+          {
+            "midi": 76,
+            "strength": 0.0
+          },
+          {
+            "midi": 77,
+            "strength": 0.0
+          },
+          {
+            "midi": 78,
+            "strength": 0.0
+          },
+          {
+            "midi": 79,
+            "strength": 0.0
+          },
+          {
+            "midi": 80,
+            "strength": 0.0
+          },
+          {
+            "midi": 81,
+            "strength": 0.0
+          },
+          {
+            "midi": 82,
+            "strength": 0.0
+          },
+          {
+            "midi": 83,
+            "strength": 0.0
+          },
+          {
+            "midi": 84,
+            "strength": 0.0
+          },
+          {
+            "midi": 85,
+            "strength": 0.0
+          },
+          {
+            "midi": 86,
+            "strength": 0.0
+          },
+          {
+            "midi": 87,
+            "strength": 0.0
+          },
+          {
+            "midi": 88,
+            "strength": 0.0
+          }
+        ]
+      },
+      {
+        "sampleEnd": 28672,
+        "timeMs": 650.1587301587301,
+        "relativeError": 0.37534331310329594,
+        "tuningCents": 10,
+        "notes": [
+          {
+            "midi": 40,
+            "strength": 41.53500197064679
+          },
+          {
+            "midi": 41,
+            "strength": 0.0
+          },
+          {
+            "midi": 42,
+            "strength": 0.0
+          },
+          {
+            "midi": 43,
+            "strength": 27.798057700472626
+          },
+          {
+            "midi": 44,
+            "strength": 29.29009466171857
+          },
+          {
+            "midi": 45,
+            "strength": 5.452724565093149
+          },
+          {
+            "midi": 46,
+            "strength": 17.000645556628896
+          },
+          {
+            "midi": 47,
+            "strength": 78.05686255051754
+          },
+          {
+            "midi": 48,
+            "strength": 7.750728785319538
+          },
+          {
+            "midi": 49,
+            "strength": 0.0
+          },
+          {
+            "midi": 50,
+            "strength": 0.0
+          },
+          {
+            "midi": 51,
+            "strength": 20.518025317971066
+          },
+          {
+            "midi": 52,
+            "strength": 198.02469177300875
+          },
+          {
+            "midi": 53,
+            "strength": 0.0
+          },
+          {
+            "midi": 54,
+            "strength": 10.534870062609954
+          },
+          {
+            "midi": 55,
+            "strength": 61.576670980132675
+          },
+          {
+            "midi": 56,
+            "strength": 6.132885176311099
+          },
+          {
+            "midi": 57,
+            "strength": 0.0
+          },
+          {
+            "midi": 58,
+            "strength": 0.6671815519633135
+          },
+          {
+            "midi": 59,
+            "strength": 70.53866829281839
+          },
+          {
+            "midi": 60,
+            "strength": 0.0
+          },
+          {
+            "midi": 61,
+            "strength": 0.0
+          },
+          {
+            "midi": 62,
+            "strength": 0.0
+          },
+          {
+            "midi": 63,
+            "strength": 0.0
+          },
+          {
+            "midi": 64,
+            "strength": 0.0
+          },
+          {
+            "midi": 65,
+            "strength": 2.070246739126624
+          },
+          {
+            "midi": 66,
+            "strength": 0.0
+          },
+          {
+            "midi": 67,
+            "strength": 46.70927788340809
+          },
+          {
+            "midi": 68,
+            "strength": 0.0
+          },
+          {
+            "midi": 69,
+            "strength": 0.0
+          },
+          {
+            "midi": 70,
+            "strength": 0.0
+          },
+          {
+            "midi": 71,
+            "strength": 17.554932777877326
+          },
+          {
+            "midi": 72,
+            "strength": 0.0
+          },
+          {
+            "midi": 73,
+            "strength": 0.0
+          },
+          {
+            "midi": 74,
+            "strength": 51.43815062812352
+          },
+          {
+            "midi": 75,
+            "strength": 0.0
+          },
+          {
+            "midi": 76,
+            "strength": 0.0
+          },
+          {
+            "midi": 77,
+            "strength": 0.014791813116418417
+          },
+          {
+            "midi": 78,
+            "strength": 0.0
+          },
+          {
+            "midi": 79,
+            "strength": 0.0
+          },
+          {
+            "midi": 80,
+            "strength": 0.0
+          },
+          {
+            "midi": 81,
+            "strength": 0.0
+          },
+          {
+            "midi": 82,
+            "strength": 0.0
+          },
+          {
+            "midi": 83,
+            "strength": 0.0
+          },
+          {
+            "midi": 84,
+            "strength": 0.0
+          },
+          {
+            "midi": 85,
+            "strength": 0.0
+          },
+          {
+            "midi": 86,
+            "strength": 0.0
+          },
+          {
+            "midi": 87,
+            "strength": 0.0
+          },
+          {
+            "midi": 88,
+            "strength": 0.0
+          }
+        ]
+      }
+    ]
+  }
+}

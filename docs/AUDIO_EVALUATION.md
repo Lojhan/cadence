@@ -335,7 +335,7 @@ pnpm --silent eval:audio artifacts/guitarset/calibration-confusions.json balance
 ```
 
 This independent diagnostic fits nonnegative note strengths to magnitude spectra.
-Its fixed prior uses MIDI 40–88 at A440, up to ten harmonics with 1/h amplitude,
+The initial fixed prior used MIDI 40–88 at A440, up to ten harmonics with 1/h amplitude,
 a 4 kHz/Nyquist cutoff, an 8192-sample Hann window and a 2048-sample hop. Columns
 are normalized before coordinate descent (at most 200 sweeps). It is an initial
 experimental model, not a reproduction of the referenced paper or its software.
@@ -382,3 +382,31 @@ persistence and isolation between selected inputs. Unit coverage checks gain
 conversion, graph routing, cleanup and rejection of invalid values before capture.
 Physical iPhone/iPad retesting remains required; no Safari-specific root cause is
 claimed from this simulated signal.
+
+## Tuning-aware offline note fit
+
+The offline `--notes-case` probe now compares 17 dictionaries shifted from
+−40 to +40 cents in 5-cent steps, retaining the lowest relative reconstruction
+error independently for each frame. Zero cents is evaluated first and retained
+on exact ties, including silence. Every frame reports `tuningCents`; this is a
+model-fit choice, not a calibrated instrument-tuning measurement. The prior,
+window, solver and note range are otherwise unchanged. This increases offline
+cost and is not implemented in the browser or real-time recognition path.
+
+The Poku Rust harness first failed on a +25-cent synthetic note (relative error
+0.750), then passed with a fitted +25-cent dictionary, error below 0.02 and more
+than 99% of fitted activation in the played note. Silence still returns zero
+activation/error with zero tuning. CLI checks bound the reported tuning choice,
+retain C/E/G tones, and verify identical recognition decisions with and without
+the diagnostic.
+
+[Focused calibration evidence](evaluation/guitarset-em-tuning-note-probe.json)
+selects +5 to +10 cents for the known Em/Em7 failure. At 418 ms, relative error
+improves from 0.427 to 0.411, but false D5 activation **increases** from 69.2 to
+77.1 (E3 changes from 284.9 to 282.6). Tuning correction alone is rejected as a
+solution. This narrows the investigation toward the harmonic-envelope assumption;
+it does not establish that a different envelope will resolve the ambiguity.
+The fixed-A440 baseline remains in the earlier evidence file. No held-out data
+was examined, no recognition thresholds changed, and no accuracy improvement is
+claimed. The original [NNLS-chroma method](https://github.com/c4dm/nnls-chroma) also addresses tuning, but this bounded
+raw-spectrum search is an independent diagnostic, not its reproduction.

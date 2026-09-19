@@ -223,3 +223,12 @@ recognition/device limits. A Poku regression failed before the validator existed
 then passed matching-version, stale-version, absent-version and non-alpha cases.
 The release workflow checks note identity before its build. Biome and types pass.
 Published descriptions are corrected separately from immutable package assets.
+
+Offline note-tuning experiment: a +25-cent synthetic note initially failed the
+Poku Rust harness with 0.750 reconstruction error. The evaluator now compares
+bounded per-frame dictionary shifts and reports the selected cents. Rust/CLI
+regressions pass. Focused calibration reduces reconstruction error but strengthens
+the spurious D5, rejecting tuning alone as a live-recognition fix. Evidence and
+model limitations are recorded in AUDIO_EVALUATION.md; production DSP is unchanged.
+Full verification for the tuning diagnostic passed: build, Biome, TypeScript,
+Rust format/Clippy, and all 30 Poku suites (including native/WASM and browser paths).

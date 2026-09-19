@@ -19,6 +19,7 @@ pub struct Frame {
     sample_end: usize,
     time_ms: f64,
     relative_error: f64,
+    tuning_cents: i16,
     notes: Vec<Note>,
 }
 #[derive(Serialize)]
@@ -49,6 +50,21 @@ fn solve(gram: &[Vec<f64>], cross: &[f64]) -> Vec<f64> {
 }
 
 pub fn probe(case_id: String, samples: &[f32], rate: u32) -> NoteProbe {
+    let mut best = probe_at_tuning(case_id.clone(), samples, rate, 0);
+    // Offline experiment: compare complete fits, without consulting target labels.
+    // Start at zero so silence and equal-error ties retain standard tuning.
+    for cents in (-40..=40).step_by(5).filter(|cents| *cents != 0) {
+        let candidate = probe_at_tuning(case_id.clone(), samples, rate, cents);
+        for (best_frame, candidate_frame) in best.frames.iter_mut().zip(candidate.frames) {
+            if candidate_frame.relative_error < best_frame.relative_error {
+                *best_frame = candidate_frame;
+            }
+        }
+    }
+    best
+}
+
+fn probe_at_tuning(case_id: String, samples: &[f32], rate: u32, cents: i16) -> NoteProbe {
     let fft = FftPlanner::<f64>::new().plan_fft_forward(WINDOW);
     let window: Vec<f64> = (0..WINDOW)
         .map(|i| 0.5 - 0.5 * (std::f64::consts::TAU * i as f64 / WINDOW as f64).cos())
@@ -72,7 +88,8 @@ pub fn probe(case_id: String, samples: &[f32], rate: u32) -> NoteProbe {
     // This is not an instrument model or a transcription accuracy claim.
     let dictionary: Vec<Vec<f64>> = (FIRST..=LAST)
         .map(|midi| {
-            let frequency = 440.0 * 2_f64.powf((f64::from(midi) - 69.0) / 12.0);
+            let frequency =
+                440.0 * 2_f64.powf((f64::from(midi) - 69.0) / 12.0 + f64::from(cents) / 1200.0);
             let tone: Vec<f64> = (0..WINDOW)
                 .map(|i| {
                     (1..=10)
@@ -127,6 +144,7 @@ pub fn probe(case_id: String, samples: &[f32], rate: u32) -> NoteProbe {
         let energy = dot(&measured, &measured);
         frames.push(Frame {
             sample_end: end,
+            tuning_cents: cents,
             time_ms: end as f64 / f64::from(rate) * 1000.0,
             relative_error: if energy > 0.0 {
                 (error / energy).sqrt()
@@ -158,10 +176,47 @@ mod tests {
         assert_eq!(weights[2], 0.0);
     }
     #[test]
+    fn fits_a_detuned_note_without_inventing_adjacent_notes() {
+        let rate = 48000;
+        let samples: Vec<f32> = (0..WINDOW)
+            .map(|i| {
+                (1..=10)
+                    .map(|h| {
+                        let frequency = 440.0 * 2_f64.powf((60.0 - 69.0) / 12.0 + 25.0 / 1200.0);
+                        (std::f64::consts::TAU * frequency * f64::from(h) * i as f64
+                            / f64::from(rate))
+                        .sin()
+                            / f64::from(h)
+                    })
+                    .sum::<f64>() as f32
+            })
+            .collect();
+        let result = probe("detuned".into(), &samples, rate);
+        assert!(
+            result.frames[0].relative_error < 0.02,
+            "detuned model error: {}",
+            result.frames[0].relative_error
+        );
+        let total: f64 = result.frames[0]
+            .notes
+            .iter()
+            .map(|note| note.strength)
+            .sum();
+        let correct = result.frames[0]
+            .notes
+            .iter()
+            .find(|note| note.midi == 60)
+            .unwrap()
+            .strength;
+        assert!(correct / total > 0.99);
+        assert_eq!(result.frames[0].tuning_cents, 25);
+    }
+    #[test]
     fn silence_has_no_notes_or_error() {
         let result = probe("silence".into(), &vec![0.0; WINDOW], 48000);
         assert_eq!(result.frames.len(), 1);
         assert_eq!(result.frames[0].relative_error, 0.0);
+        assert_eq!(result.frames[0].tuning_cents, 0);
         assert!(result.frames[0]
             .notes
             .iter()
