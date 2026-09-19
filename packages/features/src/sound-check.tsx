@@ -34,9 +34,12 @@ export function SoundCheck({
     setBusy(true);
     setError("");
     const input = new Microphone((event) => {
-      if (!active.current) return;
+      if (!active.current || microphone.current !== input) return;
       if (event.type === "metrics") setLevel(event.level);
       if (event.type === "error") {
+        input.dispose();
+        microphone.current = null;
+        setLevel(0);
         setError(event.message);
         setListening(false);
       }
@@ -44,10 +47,12 @@ export function SoundCheck({
     microphone.current = input;
     try {
       await input.open(device, profile);
-      if (!active.current) return;
+      if (!active.current || microphone.current !== input) return;
       await input.unmute({ sessionId: "sound-check", epoch: 1, mask: 145 });
-      setListening(true);
+      if (active.current && microphone.current === input) setListening(true);
     } catch (error) {
+      input.dispose();
+      if (microphone.current === input) microphone.current = null;
       if (active.current)
         setError(
           error instanceof Error ? error.message : "Microphone unavailable",

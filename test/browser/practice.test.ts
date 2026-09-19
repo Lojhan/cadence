@@ -110,7 +110,11 @@ try {
   page.on("pageerror", (error) => errors.push(error.message));
   await page.addInitScript((nativeCapture: boolean) => {
     const events: unknown[] = [];
-    Object.assign(window, { cadenceTestEvents: events });
+    const streams: MediaStream[] = [];
+    Object.assign(window, {
+      cadenceTestEvents: events,
+      cadenceTestStreams: streams,
+    });
     // This fixture replaces only the physical microphone boundary. The application
     // still uses its actual MediaStream source, AudioWorklet, worker and WASM.
     if (!nativeCapture) {
@@ -145,6 +149,7 @@ try {
         source.start();
         await context.resume();
         events.push({ type: "synthetic-stream-ready" });
+        streams.push(destination.stream);
         return destination.stream;
       };
     }
@@ -175,6 +180,33 @@ try {
       ?.getAttribute("aria-label")
       ?.includes("left-handed"),
   );
+  await page
+    .getByRole("button", { name: "Check microphone", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Stop sound check", exact: true })
+    .waitFor();
+  await page
+    .getByRole("combobox", { name: "Chord matching", exact: true })
+    .selectOption("precise");
+  await page
+    .getByRole("button", { name: "Check microphone", exact: true })
+    .waitFor({ timeout: 3000 });
+  if (process.env.CADENCE_NATIVE_MIC !== "1")
+    assert.equal(
+      await page.evaluate(() =>
+        (
+          window as unknown as { cadenceTestStreams: MediaStream[] }
+        ).cadenceTestStreams.every((stream) =>
+          stream.getTracks().every((track) => track.readyState === "ended"),
+        ),
+      ),
+      true,
+      "changing setup releases the previous microphone",
+    );
+  await page
+    .getByRole("combobox", { name: "Chord matching", exact: true })
+    .selectOption("balanced");
   await page.getByRole("button", { name: "Close", exact: true }).click();
   await page.getByRole("button", { name: "Next chord", exact: true }).click();
   await page.getByRole("heading", { name: "G", exact: true }).waitFor();

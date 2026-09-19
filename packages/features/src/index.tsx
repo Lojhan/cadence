@@ -855,7 +855,11 @@ export function PracticeApp({
                   }
                 />
               ) : null}
-              <SoundCheck device={device} profile={prefs.profile} />
+              <SoundCheck
+                key={`${device}:${prefs.profile}`}
+                device={device}
+                profile={prefs.profile}
+              />
               <p className="note">
                 Open circles mean open strings. Crossed strings stay silent.
                 Play the chord when you are ready; Cadence listens on this
