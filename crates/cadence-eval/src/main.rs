@@ -17,11 +17,16 @@ struct Case {
     duration_seconds: f64,
     split: String,
     chord: String,
+    #[serde(default)]
+    target_chord: Option<String>,
 }
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 struct ResultRow {
     id: String,
+    target_mask: u16,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    target_chord: Option<String>,
     split: String,
     chord: String,
     expected_match: bool,
@@ -71,6 +76,7 @@ struct Report {
     profile: &'static str,
     summary: Summary,
     groups: BTreeMap<String, Summary>,
+    confusions: BTreeMap<String, Summary>,
     cases: Vec<ResultRow>,
 }
 fn read_wave(path: &Path) -> Result<(u32, Vec<f32>), Box<dyn Error>> {
@@ -98,17 +104,28 @@ fn read_wave(path: &Path) -> Result<(u32, Vec<f32>), Box<dyn Error>> {
     ))
 }
 fn main() -> Result<(), Box<dyn Error>> {
-    let file = std::env::args()
-        .nth(1)
-        .ok_or("Usage: cadence-eval MANIFEST.json")?;
+    let mut arguments = std::env::args().skip(1);
+    let file = arguments
+        .next()
+        .ok_or("Usage: cadence-eval MANIFEST.json [gentle|balanced|precise]")?;
+    let (profile, profile_name) = match arguments.next().as_deref().unwrap_or("balanced") {
+        "gentle" => (Profile::Gentle, "gentle"),
+        "balanced" => (Profile::Balanced, "balanced"),
+        "precise" => (Profile::Precise, "precise"),
+        _ => return Err("Unknown recognition profile".into()),
+    };
+    if arguments.next().is_some() {
+        return Err("Unexpected evaluation argument".into());
+    }
     let manifest_path = Path::new(&file);
     let manifest: Manifest = serde_json::from_slice(&fs::read(manifest_path)?)?;
     let directory = manifest_path.parent().ok_or("Manifest has no parent")?;
     let mut report = Report {
         engine_version: env!("CARGO_PKG_VERSION"),
-        profile: "balanced",
+        profile: profile_name,
         summary: Summary::default(),
         groups: BTreeMap::new(),
+        confusions: BTreeMap::new(),
         cases: vec![],
     };
     let mut previous_file = String::new();
@@ -131,7 +148,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         if start >= end || end > samples.len() {
             return Err(format!("{}: interval outside audio", case.id).into());
         }
-        let mut engine = Engine::new(rate as f32, Profile::Balanced)?;
+        let mut engine = Engine::new(rate as f32, profile)?;
         engine.arm(case.target_mask)?;
         let mut latency_ms = None;
         let mut consumed = 0;
@@ -144,6 +161,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         let row = ResultRow {
             id: case.id,
+            target_mask: case.target_mask,
+            target_chord: case.target_chord,
             split: case.split,
             chord: case.chord,
             expected_match: case.expected_match,
@@ -157,10 +176,23 @@ fn main() -> Result<(), Box<dyn Error>> {
             .entry(format!("{}:{}", row.split, row.chord))
             .or_default()
             .add(&row);
+        let target = row
+            .target_chord
+            .clone()
+            .unwrap_or_else(|| format!("mask:{}", row.target_mask));
+        report
+            .confusions
+            .entry(format!("{}:{}→{}", row.split, row.chord, target))
+            .or_default()
+            .add(&row);
         report.cases.push(row);
     }
     report.summary.finish();
-    for group in report.groups.values_mut() {
+    for group in report
+        .groups
+        .values_mut()
+        .chain(report.confusions.values_mut())
+    {
         group.finish();
     }
     println!("{}", serde_json::to_string_pretty(&report)?);

@@ -41,6 +41,7 @@ try {
       durationSeconds: 2,
       split: "engineering",
       chord: "C",
+      targetChord: "C",
     },
     {
       id: "wrong",
@@ -50,7 +51,8 @@ try {
       startSeconds: 0,
       durationSeconds: 2,
       split: "engineering",
-      chord: "Cm",
+      chord: "C",
+      targetChord: "Cm",
     },
   ];
   writeFileSync(join(directory, "manifest.json"), JSON.stringify({ cases }));
@@ -74,6 +76,56 @@ try {
   assert.ok(report.cases[0].latencyMs > 0);
   assert.equal(report.summary.truePositive, 1);
   assert.equal(report.summary.falsePositive, 0);
+  for (const profile of ["gentle", "precise"]) {
+    const evaluation = spawnSync(
+      "cargo",
+      [
+        "run",
+        "--quiet",
+        "--locked",
+        "-p",
+        "cadence-eval",
+        "--",
+        join(directory, "manifest.json"),
+        profile,
+      ],
+      { encoding: "utf8" },
+    );
+    assert.equal(evaluation.status, 0, evaluation.stderr);
+    const measured = JSON.parse(evaluation.stdout);
+    assert.equal(
+      measured.profile,
+      profile,
+      "evaluation uses the requested matching profile",
+    );
+    assert.equal(measured.summary.truePositive, 1);
+    assert.equal(measured.summary.falsePositive, 0);
+  }
+  const invalidProfile = spawnSync(
+    "cargo",
+    [
+      "run",
+      "--quiet",
+      "--locked",
+      "-p",
+      "cadence-eval",
+      "--",
+      join(directory, "manifest.json"),
+      "unknown",
+    ],
+    { encoding: "utf8" },
+  );
+  assert.notEqual(
+    invalidProfile.status,
+    0,
+    "unknown profiles cannot silently use Balanced",
+  );
+
+  assert.equal(
+    report.confusions["engineering:C→Cm"].trueNegative,
+    1,
+    "confusion report separates performed and target chords",
+  );
 } finally {
   rmSync(directory, { recursive: true, force: true });
 }

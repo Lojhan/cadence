@@ -44,8 +44,8 @@ of recognition output. Both broad and subset results must be retained, including
 excluded-case counts. A partial download is accepted only with `--allow-partial`
 and is explicitly labeled; it is an engineering spike, not a release evaluation.
 
-The native evaluator runs the production Rust recognition crate with Balanced
-settings, 2048-sample blocks, mono downmixing, and each file's sample rate. Each
+The native evaluator runs the production Rust recognition crate (Balanced by
+default; an optional final `gentle`, `balanced`, or `precise` argument selects a profile), 2048-sample blocks, mono downmixing, and each file's sample rate. Each
 case starts with a fresh armed engine. Reports include true/false positives and
 negatives, per-chord groups, and p95 matched-case latency. Latency starts at the
 selected annotated onset and ends at the reporting block boundary. It excludes
@@ -79,6 +79,9 @@ prepared. Only calibration players 00–03 were evaluated. The corrected strum
 selection produces 233 positive cases and 203 wrong-quality targets; 1,129 broad
 cases do not meet its selection rules. Player 04–05 evaluation remains untouched.
 
+This comparison uses major/minor counterparts only. The expanded checks below
+also test seventh chords and related roots.
+
 | Balanced engine | Correct strums recognized | Wrong-quality matches | Matched-case p95 |
 | --- | --- | --- | --- |
 | Original alpha engine | 134 / 233 (57.5%) | 0 / 203 | 1,068 ms |
@@ -100,3 +103,40 @@ requires each expected pitch class to dominate unexplained classes; small score
 dips decay evidence instead of always discarding it. Repeated identical chords
 retain attack/release gating, while a genuinely different target can match a
 continuous chord change without requiring a silent gap.
+
+
+## Expanded confusion checks
+
+The original negative set was too narrow to assess the supported chord vocabulary.
+Generate nearby targets from the verified strum windows, independently of engine
+output:
+
+```sh
+python3 tooling/prepare-confusions.py artifacts/guitarset/calibration-strums.json artifacts/guitarset/calibration-confusions.json
+pnpm --silent eval:audio artifacts/guitarset/calibration-confusions.json balanced > artifacts/guitarset/calibration-confusions-report.json
+```
+
+The target vocabulary is major, minor, dominant seventh, minor seventh and major
+seventh in all 12 roots. Include every different target sharing at least two pitch
+classes and differing in one or two classes. This includes adding/removing a
+seventh and confusing related roots, such as C with Am. Each target receives the
+same audio interval; the generator replaces the older major/minor-only negatives
+rather than duplicating them. The evaluator reports performed→target confusion
+counts as well as per-case target masks and labels.
+
+| Profile | Correct strums recognized | Wrong targets accepted | Matched-case p95 |
+| --- | --- | --- | --- |
+| Gentle | 216 / 233 (92.7%) | 52 / 1,313 (4.0%) | 418 ms |
+| Balanced | 209 / 233 (89.7%) | 27 / 1,313 (2.1%) | 511 ms |
+| Precise | 152 / 233 (65.2%) | 6 / 1,313 (0.5%) | 882 ms |
+
+[The detailed report](evaluation/guitarset-confusions.json) contains the confusion
+matrix and false matches for every profile. None meets all proposed acceptance
+targets. In particular, the earlier 0/203 major/minor result cannot be generalized
+to all wrong chords. These per-target comparison rates are not an end-to-end
+practice false-advance rate. All results remain calibration measurements on one
+dataset; held-out players and real-device validation are still outstanding.
+
+Two calibration experiments were rejected: lowering the peak cutoff lost an
+existing correct match, and averaging chroma across frames increased false matches.
+Neither experiment changed the committed runtime engine.
