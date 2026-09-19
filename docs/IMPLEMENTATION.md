@@ -194,3 +194,11 @@ Input-switching coverage exposed a stale post-permission device list, now refres
 before offering the newly available inputs. Separate Poku coverage verifies graph
 routing, gain conversion, cleanup and invalid settings. Physical Safari retesting
 is still required; simulated quiet audio does not establish its root cause.
+
+Alpha.5 publication: workflow 35470542334 passed full checks, PostgreSQL parity
+and native AMD64/ARM64 installed-container checks for clean source 542712e.
+Downloaded public release assets match the verified CI artifact byte-for-byte.
+The isolated package consumer and published-container Poku suites pass locally.
+This alpha includes dialog focus restoration and device-local microphone boost.
+The owner's Safari capture failure remains pending physical retesting; neither
+this release nor simulated quiet-input checks establish real-instrument accuracy.
