@@ -116,6 +116,7 @@ try {
       cadenceTestEvents: events,
       cadenceTestStreams: streams,
       cadenceTestContexts: contexts,
+      cadenceTestDenyMicrophone: false,
     });
     // This fixture replaces only the physical microphone boundary. The application
     // still uses its actual MediaStream source, AudioWorklet, worker and WASM.
@@ -146,6 +147,11 @@ try {
           : [];
       };
       navigator.mediaDevices.getUserMedia = async () => {
+        if (
+          (window as unknown as { cadenceTestDenyMicrophone: boolean })
+            .cadenceTestDenyMicrophone
+        )
+          throw new DOMException("Permission denied", "NotAllowedError");
         const context = new AudioContext({ sampleRate: 48000 });
         contexts.push(context);
         const destination = context.createMediaStreamDestination();
@@ -222,6 +228,39 @@ try {
   await page
     .getByRole("combobox", { name: "Playing hand", exact: true })
     .selectOption("left");
+  if (process.env.CADENCE_NATIVE_MIC !== "1") {
+    await page.evaluate(() =>
+      Object.assign(window, { cadenceTestDenyMicrophone: true }),
+    );
+    await page
+      .getByRole("button", { name: "Check microphone", exact: true })
+      .click();
+    await page
+      .getByRole("alert")
+      .filter({
+        hasText: "Allow microphone access in your browser or system settings",
+      })
+      .waitFor();
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Finish setup", exact: true })
+        .isDisabled(),
+      true,
+      "denied permission cannot complete setup",
+    );
+    assert.equal(
+      await page.evaluate(
+        () =>
+          (window as unknown as { cadenceTestStreams: MediaStream[] })
+            .cadenceTestStreams.length,
+      ),
+      0,
+      "denied permission creates no stream",
+    );
+    await page.evaluate(() =>
+      Object.assign(window, { cadenceTestDenyMicrophone: false }),
+    );
+  }
   await page
     .getByRole("button", { name: "Check microphone", exact: true })
     .click();

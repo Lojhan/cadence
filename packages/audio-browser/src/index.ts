@@ -26,15 +26,20 @@ export class Microphone {
     const request = ++this.generation;
     if (!navigator.mediaDevices?.getUserMedia || !window.isSecureContext)
       throw new Error("Microphone access requires HTTPS or localhost.");
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        ...(deviceId ? { deviceId: { exact: deviceId } } : {}),
-        echoCancellation: false,
-        noiseSuppression: false,
-        autoGainControl: false,
-      },
-      video: false,
-    });
+    let stream: MediaStream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          ...(deviceId ? { deviceId: { exact: deviceId } } : {}),
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+        },
+        video: false,
+      });
+    } catch (error) {
+      throw new Error(captureErrorMessage(error), { cause: error });
+    }
     if (request !== this.generation || this.disposed) {
       for (const track of stream.getTracks()) track.stop();
       return;
@@ -181,5 +186,23 @@ export class Microphone {
   dispose() {
     this.disposed = true;
     this.release();
+  }
+}
+
+function captureErrorMessage(error: unknown): string {
+  const name = error instanceof Error ? error.name : "";
+  switch (name) {
+    case "NotAllowedError":
+      return "Microphone access was blocked. Allow microphone access in your browser or system settings, then try again.";
+    case "NotFoundError":
+      return "No microphone was found. Connect a microphone and try again.";
+    case "OverconstrainedError":
+      return "The selected microphone is unavailable. Choose another input or System default.";
+    case "NotReadableError":
+      return "The microphone could not be opened. Check that it is connected and available, then try again.";
+    case "AbortError":
+      return "Microphone access was interrupted. Try again.";
+    default:
+      return "Microphone access failed. Check your input and browser permissions, then try again.";
   }
 }
