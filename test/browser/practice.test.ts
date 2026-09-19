@@ -267,6 +267,23 @@ try {
     );
   await page.reload();
   await page.getByRole("heading", { name: "C", exact: true }).waitFor();
+  if (process.env.CADENCE_NATIVE_MIC !== "1") {
+    await page.getByRole("button", { name: "Microphone options" }).click();
+    const picker = page.getByRole("combobox", {
+      name: "Microphone input",
+      exact: true,
+    });
+    assert.equal(
+      await picker.inputValue(),
+      "guitar-input",
+      "an unavailable saved input is not displayed as system default",
+    );
+    assert.equal(
+      await picker.locator("option:checked").textContent(),
+      "Saved microphone unavailable",
+    );
+    await page.getByRole("button", { name: "Microphone options" }).click();
+  }
   await page.getByRole("button", { name: "Open settings" }).click();
   await page.getByRole("combobox", { name: "Handedness" }).selectOption("left");
   await page.waitForFunction(() =>

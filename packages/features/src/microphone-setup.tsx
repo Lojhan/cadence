@@ -2,6 +2,7 @@ import type { Profile } from "@cadence/audio-browser";
 import { Button, Dialog, Select } from "@cadence/ui";
 import { Check } from "lucide-react";
 import { useState } from "react";
+import { MicrophoneOptions } from "./microphone-options.tsx";
 import { SoundCheck } from "./sound-check.tsx";
 
 export function MicrophoneSetup({
@@ -63,12 +64,7 @@ export function MicrophoneSetup({
             value={device}
             onChange={(event) => onDevice(event.target.value)}
           >
-            <option value="">System default</option>
-            {devices.map((input) => (
-              <option key={input.deviceId} value={input.deviceId}>
-                {input.label || "Microphone"}
-              </option>
-            ))}
+            <MicrophoneOptions device={device} devices={devices} />
           </Select>
         </label>
         <SoundCheck

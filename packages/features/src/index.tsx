@@ -42,6 +42,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { PracticeController } from "./controller.ts";
+import { MicrophoneOptions } from "./microphone-options.tsx";
 import { MicrophoneSetup } from "./microphone-setup.tsx";
 import { ProgressWrites } from "./progress-writes.ts";
 import { SoundCheck } from "./sound-check.tsx";
@@ -612,12 +613,7 @@ export function PracticeApp({
               void controller.prepare(event.target.value, prefs.profile);
             }}
           >
-            <option value="">System default</option>
-            {devices.map((input) => (
-              <option value={input.deviceId} key={input.deviceId}>
-                {input.label || "Microphone"}
-              </option>
-            ))}
+            <MicrophoneOptions device={device} devices={devices} />
           </Select>
         </div>
       ) : null}
