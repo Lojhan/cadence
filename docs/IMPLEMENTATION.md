@@ -90,3 +90,16 @@ Alpha.2 publication: release workflow 35459939248 passed full checks, PostgreSQL
 Progress conflict recovery: Poku first failed on the missing queue recovery operation and missing “Use saved position” action. Recovery now reads current music and its saved position before discarding the matching pending write, updates the local revision, and resumes paused. If music disappeared, it loads available default music. In-flight writes and newer navigation cannot be discarded by an older recovery request; requests invalidated by a new selection or unmount cannot apply stale results. The action is available from the save notice and library panel, alongside Retry. The two-tab browser scenario verifies a conflicting write, loading the other tab's position, and a subsequent successful save/reload.
 
 The phone review exposed a save notice covering the timeline. Notices now use a horizontal action row above the chord, with space reserved in the practice layout. Rendered 390×844 and 320×568 screenshots were inspected, and Poku verifies that the notice does not overlap the chord, fretboard or timeline. Queue tests and all 25 suites pass with the full local build/lint/type/boundary/Rust checks. The private alpha.2 integration CI also completed successfully, including its installed-container access tests.
+
+
+Rust development watcher: the new Poku suite first failed on the absent watcher.
+`pnpm dev:wasm` now polls content hashes for Rust sources, Cargo manifests/lockfile
+and the pinned toolchain. It serializes builds, coalesces changes during builds,
+stops the development server before writing generated assets and starts it only
+after a successful current build. Failed builds wait for edits; shutdown cannot
+restart the server. Poku covers these transitions and source additions/removals,
+same-size edits and exclusion of target artifacts. All 27 suites and full checks
+pass. Actual Vite verification confirmed rendered practice, no browser errors,
+automatic page reload after a Rust-source edit, paused microphone after reload,
+and server/watcher termination on SIGTERM. This development command intentionally
+restarts the whole dev server; in-memory unsaved work is not retained.

@@ -29,6 +29,14 @@ pnpm exec playwright install chromium
 pnpm check
 ```
 
+Run `pnpm dev` for UI development, or `pnpm dev:wasm` when editing Rust.
+The latter watches Rust sources, Cargo manifests/lockfile and the toolchain file,
+stops the dev server before each build, and restarts it after success. Keep only
+one development command running on port 3000. Compilation failures leave the
+server stopped until the next edit; Ctrl+C stops the watcher and its children.
+A dev-server restart reloads connected pages, so microphone capture must be
+started again. Unsaved in-memory edits can be lost during this development reload.
+
 Poku is the test runner for all integration journeys, including browser and Rust
 checks. Tests are written before behavior; CI must pass before milestone commits.
 
