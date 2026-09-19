@@ -10,15 +10,19 @@
     "test": "poku test --sequential",
     "lint": "biome check .",
     "format": "biome check --write .",
-    "typecheck": "tsc --noEmit",
-    "check": "pnpm build:wasm && pnpm lint && pnpm boundaries && pnpm typecheck && pnpm lint:rust && pnpm test",
+    "typecheck": "tsc --noEmit && pnpm --filter @cadence/web exec tsc --noEmit",
+    "check": "pnpm build && pnpm lint && pnpm boundaries && pnpm typecheck && pnpm lint:rust && pnpm test",
     "boundaries": "tsx tooling/boundaries.ts",
     "lint:rust": "cargo fmt --all -- --check && cargo clippy --workspace --all-targets --locked -- -D warnings",
     "build:wasm": "tsx tooling/build-wasm.ts",
     "db:migrate": "tsx tooling/migrate.ts",
     "db:generate:sqlite": "pnpm --filter @cadence/db exec drizzle-kit generate --config drizzle.sqlite.ts",
     "db:generate:postgres": "pnpm --filter @cadence/db exec drizzle-kit generate --config drizzle.postgres.ts",
-    "test:db": "poku test/db --sequential"
+    "test:db": "poku test/db --sequential",
+    "dev": "pnpm build:wasm && pnpm --filter @cadence/web dev",
+    "build": "pnpm build:wasm && pnpm --filter @cadence/web build",
+    "start": "pnpm --filter @cadence/web start",
+    "test:e2e": "poku test/browser --sequential"
   },
   "devDependencies": {
     "@babel/parser": "7.29.9",
@@ -27,6 +31,11 @@
     "node-gyp": "12.2.0",
     "poku": "4.5.0",
     "tsx": "4.23.13",
-    "typescript": "7.0.2"
+    "typescript": "7.0.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "playwright": "1.63.0"
   }
 }

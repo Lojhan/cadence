@@ -1,0 +1,34 @@
+{
+  "name": "@cadence/web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev --host 127.0.0.1 --port 3000",
+    "build": "vite build && node ../../tooling/copy-runtime.mjs",
+    "start": "node .output/server/index.mjs"
+  },
+  "dependencies": {
+    "@cadence/contracts": "workspace:*",
+    "@cadence/music": "workspace:*",
+    "@cadence/core": "workspace:*",
+    "@cadence/audio-browser": "workspace:*",
+    "@cadence/ui": "workspace:*",
+    "@cadence/features": "workspace:*",
+    "@cadence/application": "workspace:*",
+    "@cadence/db": "workspace:*",
+    "@tanstack/react-start": "1.168.56",
+    "@tanstack/react-router": "1.170.38",
+    "@tanstack/react-router-ssr-query": "1.167.3",
+    "@tanstack/react-query": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "zod": "catalog:",
+    "better-sqlite3": "13.0.3",
+    "pg": "8.23.0"
+  },
+  "devDependencies": {
+    "vite": "8.3.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "nitro": "3.0.260903-beta"
+  }
+}

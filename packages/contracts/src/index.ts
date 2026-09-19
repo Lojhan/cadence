@@ -7,6 +7,9 @@ export const preferencesSchema = z
     numbers: z.boolean().default(true),
     profile: z.enum(["gentle", "balanced", "precise"]).default("balanced"),
     loop: z.boolean().default(true),
+    lastSongId: z.string().max(100).default("catalog:four"),
+    diagramSize: z.enum(["standard", "large"]).default("standard"),
+    voicings: z.record(z.string().max(16), z.string().max(80)).default({}),
   })
   .strict();
 export type Preferences = z.infer<typeof preferencesSchema>;
@@ -19,6 +22,7 @@ export const songInputSchema = z
   .strict();
 export type SongInput = z.infer<typeof songInputSchema>;
 export interface Song {
+  sourceChart?: string;
   id: string;
   title: string;
   chords: string[];
@@ -77,7 +81,20 @@ export const archiveSchema = z
   .object({
     version: z.literal(1),
     preferences: preferencesSchema,
-    songs: z.array(songInputSchema).max(1000),
+    songs: z
+      .array(
+        songInputSchema.extend({
+          key: z.string().max(100).optional(),
+          position: z
+            .object({
+              index: z.number().int().nonnegative(),
+              completed: z.boolean(),
+            })
+            .strict()
+            .optional(),
+        }),
+      )
+      .max(1000),
   })
   .strict();
 export type Archive = z.infer<typeof archiveSchema>;

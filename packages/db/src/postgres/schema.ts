@@ -20,6 +20,7 @@ export const songs = pgTable(
     }),
     catalog: integer("catalog").notNull(),
     title: text("title").notNull(),
+    sourceChart: text("source_chart").notNull().default(""),
     attribution: text("attribution").notNull(),
     revision: integer("revision").notNull(),
   },

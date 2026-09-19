@@ -31,6 +31,7 @@ export function repository(query: Query): Repository {
     return {
       id: String(row.id),
       title: String(row.title),
+      sourceChart: String(row.source_chart || ""),
       attribution: String(row.attribution),
       revision: Number(row.revision),
       catalog: Number(row.catalog) === 1,
@@ -51,7 +52,7 @@ export function repository(query: Query): Repository {
     async seedCatalog(songs) {
       for (const song of songs) {
         const inserted = await query(
-          sql`INSERT INTO songs (id, owner_id, catalog, title, attribution, revision) VALUES (${song.id}, NULL, 1, ${song.title}, ${song.attribution}, ${song.revision}) ON CONFLICT (id) DO NOTHING RETURNING id`,
+          sql`INSERT INTO songs (id, owner_id, catalog, title, attribution, revision, source_chart) VALUES (${song.id}, NULL, 1, ${song.title}, ${song.attribution}, ${song.revision}, ${song.sourceChart ?? song.chords.join(" ")}) ON CONFLICT (id) DO NOTHING RETURNING id`,
         );
         if (inserted.length) await events(song);
       }
@@ -77,10 +78,10 @@ export function repository(query: Query): Repository {
       const rows =
         expected === 0
           ? await query(
-              sql`INSERT INTO songs (id, owner_id, catalog, title, attribution, revision) VALUES (${song.id}, ${userId}, 0, ${song.title}, ${song.attribution}, ${song.revision}) ON CONFLICT (id) DO NOTHING RETURNING id`,
+              sql`INSERT INTO songs (id, owner_id, catalog, title, attribution, revision, source_chart) VALUES (${song.id}, ${userId}, 0, ${song.title}, ${song.attribution}, ${song.revision}, ${song.sourceChart ?? song.chords.join(" ")}) ON CONFLICT (id) DO NOTHING RETURNING id`,
             )
           : await query(
-              sql`UPDATE songs SET title = ${song.title}, attribution = ${song.attribution}, revision = ${song.revision} WHERE id = ${song.id} AND owner_id = ${userId} AND revision = ${expected} RETURNING id`,
+              sql`UPDATE songs SET source_chart = ${song.sourceChart ?? song.chords.join(" ")}, title = ${song.title}, attribution = ${song.attribution}, revision = ${song.revision} WHERE id = ${song.id} AND owner_id = ${userId} AND revision = ${expected} RETURNING id`,
             );
       if (!rows.length) throw conflict();
       await events(song);

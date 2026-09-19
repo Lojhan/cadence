@@ -10,7 +10,8 @@
       "**",
       "!!design/prototype.html",
       "!!pnpm-lock.yaml",
-      "!!packages/audio-engine/generated"
+      "!!packages/audio-engine/generated",
+      "!!apps/*/src/routeTree.gen.ts"
     ]
   },
   "formatter": {

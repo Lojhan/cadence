@@ -4,7 +4,7 @@ import { openPostgres } from "../../packages/db/src/postgres/index.ts";
 import { openSqlite } from "../../packages/db/src/sqlite/index.ts";
 
 const store = process.env.CADENCE_TEST_DATABASE_URL
-  ? await openPostgres(process.env.CADENCE_TEST_DATABASE_URL)
+  ? await openPostgres(process.env.CADENCE_TEST_DATABASE_URL, true)
   : await openSqlite(":memory:");
 const app = createApplication(store, () => crypto.randomUUID());
 const alice = {
@@ -143,10 +143,22 @@ try {
     "concurrent updates cannot overwrite each other",
   );
   const archive = await app.exportData(alice);
+  assert.equal(
+    archive.songs[0]?.position?.index,
+    1,
+    "export preserves progress",
+  );
   await app.importData(bob, archive);
   assert.equal(
     (await app.library(bob)).filter((item) => !item.catalog).length,
     1,
+  );
+  const importedSong = (await app.library(bob)).find((item) => !item.catalog);
+  if (!importedSong) throw new Error("Missing imported song");
+  assert.equal(
+    (await app.position(bob, importedSong.id))?.index,
+    1,
+    "import remaps progress to new IDs",
   );
   const defaultSong = initial[0];
   if (!defaultSong) throw new Error("Missing catalog");

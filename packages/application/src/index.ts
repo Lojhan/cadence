@@ -100,6 +100,7 @@ export function createApplication(store: Store, newId: () => string) {
           attribution: input.attribution,
           revision: expected + 1,
           catalog: false,
+          sourceChart: input.chart,
         };
         await repo.putSong(principal.userId, song, expected);
         return song;
@@ -140,17 +141,32 @@ export function createApplication(store: Store, newId: () => string) {
       });
     },
     exportData(principal: Principal): Promise<Archive> {
-      return run(principal, async (repo) => ({
-        version: 1,
-        preferences: (await repo.getPreferences(principal.userId)).values,
-        songs: (await repo.listSongs(principal.userId))
-          .filter((song) => !song.catalog)
-          .map((song) => ({
+      return run(principal, async (repo) => {
+        const songs: Archive["songs"] = [];
+        for (const song of await repo.listSongs(principal.userId)) {
+          if (song.catalog) continue;
+          const position = await repo.getPosition(principal.userId, song.id);
+          songs.push({
+            key: song.id,
             title: song.title,
-            chart: song.chords.join(" "),
+            chart: song.sourceChart || song.chords.join(" "),
             attribution: song.attribution,
-          })),
-      }));
+            ...(position?.songRevision === song.revision
+              ? {
+                  position: {
+                    index: position.index,
+                    completed: position.completed,
+                  },
+                }
+              : {}),
+          });
+        }
+        return {
+          version: 1,
+          preferences: (await repo.getPreferences(principal.userId)).values,
+          songs,
+        };
+      });
     },
     async importData(principal: Principal, raw: unknown) {
       if (new TextEncoder().encode(JSON.stringify(raw)).length > 10_485_760)
@@ -161,24 +177,59 @@ export function createApplication(store: Store, newId: () => string) {
         chords: parseChart(song.chart).chords,
       }));
       return run(principal, async (repo) => {
-        for (const song of songs)
+        let lastSongId = input.preferences.lastSongId.startsWith("catalog:")
+          ? input.preferences.lastSongId
+          : "catalog:four";
+        const seen = new Set<string>();
+        for (const song of songs) {
+          if (song.key && seen.has(song.key))
+            throw new CadenceError(
+              "INVALID_CHART",
+              "Duplicate song key in archive",
+            );
+          if (song.key) seen.add(song.key);
+          const id = newId();
           await repo.putSong(
             principal.userId,
             {
-              id: newId(),
+              id,
               title: song.title,
               attribution: song.attribution,
               chords: song.chords,
+              sourceChart: song.chart,
               revision: 1,
               catalog: false,
             },
             0,
           );
+          if (song.position) {
+            if (song.position.index >= song.chords.length)
+              throw new CadenceError(
+                "INVALID_CHART",
+                "Archive position is outside the song",
+              );
+            await repo.putPosition(
+              principal.userId,
+              {
+                songId: id,
+                songRevision: 1,
+                index: song.position.index,
+                completed: song.position.completed,
+                revision: 1,
+              },
+              0,
+            );
+          }
+          if (song.key === input.preferences.lastSongId) lastSongId = id;
+        }
         const old = await repo.getPreferences(principal.userId);
         await repo.putPreferences(
           principal.userId,
           {
-            values: preferencesSchema.parse(input.preferences),
+            values: {
+              ...preferencesSchema.parse(input.preferences),
+              lastSongId,
+            },
             revision: old.revision + 1,
           },
           old.revision,

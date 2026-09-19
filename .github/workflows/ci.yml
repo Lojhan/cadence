@@ -32,6 +32,7 @@ jobs:
           targets: wasm32-unknown-unknown
       - run: pnpm install --frozen-lockfile
       - run: cargo install wasm-bindgen-cli --version 0.2.128 --locked
+      - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm check
       - run: pnpm exec poku test/db --sequential
         env:

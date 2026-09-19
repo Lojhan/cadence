@@ -1,0 +1,23 @@
+{
+  "name": "@cadence/features",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.tsx"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@cadence/contracts": "workspace:*",
+    "@cadence/music": "workspace:*",
+    "@cadence/core": "workspace:*",
+    "@cadence/audio-browser": "workspace:*",
+    "@cadence/ui": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "lucide-react": "catalog:",
+    "@tanstack/react-query": "catalog:"
+  }
+}

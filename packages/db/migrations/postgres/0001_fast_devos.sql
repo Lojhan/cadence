@@ -1,0 +1,1 @@
+ALTER TABLE "songs" ADD COLUMN "source_chart" text DEFAULT '' NOT NULL;
