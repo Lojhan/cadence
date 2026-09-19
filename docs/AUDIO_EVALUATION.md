@@ -486,3 +486,53 @@ with 1/38 attack windows. The late median third/fundamental ratio is about 1.23,
 versus 0.39 at attack. This motivates testing measured, time-dependent templates;
 it does not establish that they will improve classification. No trained model
 or runtime change is included in this preparation step.
+
+## Rejected measured-profile classifier
+
+The isolated-note inventory was used to fit an offline candidate. Windows below
+RMS 0.003 or with less than 80% of spectral energy inside the first ten harmonic
+neighborhoods were excluded. Harmonic magnitudes (8192-point periodic Hann FFT,
+peak within ±2 bins, below 4 kHz/Nyquist) were normalized by their L2 norm.
+For each MIDI note, deterministic farthest-point initialization and up to 50
+Euclidean clustering iterations produced at most four profiles across all phases.
+Only clusters with at least five distinct annotated note events were retained.
+This produced 71 profiles; repeated windows were not counted as distinct events.
+
+The candidate added these profiles to the original 1/h dictionary and retained
+the ±40-cent search. Fitted note strengths were folded to chroma after division
+by the square root of their nominal frequency. An experimental, diagnostics-only
+feature override fed those frames through the existing recognition engine's
+unchanged level/clipping, coverage, confidence and hold rules. Reports explicitly
+identify the experimental feature source. This was an offline comparison, not a
+browser implementation or an end-to-end latency measurement.
+
+The focused Em/Em7 failure improved: at 418 ms false D5 activation became zero
+(previously 77.1), while E3/G3/B2 remained supported, and reconstruction error fell
+from 0.411 to 0.306. A Poku Rust regression confirmed a synthetic real D5 still
+survived. However, the complete 772-comparison calibration run rejected the model:
+
+| Balanced | Correct / 116 | False matches / 656 | p95 matched sample latency |
+| --- | ---: | ---: | ---: |
+| Baseline | 97 | 10 | 511 ms |
+| Measured-profile candidate | 79 | 27 | 557 ms |
+
+It recovered three positive attempts but lost 21 previously detected positives;
+it removed eight false matches but introduced 25 new ones. This is a regression,
+not a deployable fix. Held-out players were never evaluated. The offline tuning
+search and decomposition cost are excluded from the reported sample latency.
+
+The [full result and changed decisions](evaluation/guitarset-measured-cluster-rejected.json),
+[derived profiles](evaluation/guitarset-measured-cluster-model.json),
+[fitting script](evaluation/fit_measured_cluster_profiles.py), and
+[rejected Rust patch](evaluation/guitarset-measured-cluster-rejected.patch) preserve
+the experiment. To reproduce it, prepare the isolated windows, run the fitting
+script with NumPy 2.5.3, and apply the patch at source revision `8e67665`. Then run
+`CADENCE_NOTE_MODEL=measured-cluster pnpm --silent eval:audio artifacts/guitarset/calibration-confusions.json balanced`.
+The patch deliberately references the generated local model and is not supported
+as a shipping package. Restoring the source reproduced every baseline decision
+and latency exactly. No new model, API, or recognition behavior remains in runtime.
+
+The derived profiles retain GuitarSet's CC BY 4.0 license, separately from the
+MIT code. Attribution: Qingyang Xi, Rachel M. Bittner, Johan Pauwels, Xuzhou Ye,
+and Juan Pablo Bello (2018), NYU MARL; DOI 10.5281/zenodo.3371780. These research
+artifacts are not bundled into application packages or container runtime files.

@@ -250,3 +250,15 @@ coverage and source/manifest hashes are recorded. This is preparation for a new
 recognition candidate, not a trained model or an accuracy improvement.
 Full verification passed: build, Biome, boundaries, TypeScript, Rust format/Clippy,
 and all 31 Poku suites. The raw corpus and generated training manifest remain local.
+
+Measured-template classifier experiment: 71 clustered profiles fitted from
+verified calibration-only isolated notes eliminated D5 in the focused Em frame
+and retained a real D5 in a Poku Rust regression. Full Balanced calibration
+regressed from 97/116 true positives and 10/656 false matches to 79/116 and 27/656.
+The candidate, diagnostics override, and extra synthetic test were all reverted.
+Reproduction scripts, derived CC BY 4.0 profiles, source hashes and all case
+results are recorded. The restored full report exactly matches baseline; no
+held-out data was inspected and no shipping accuracy improvement is claimed.
+After restoration, both Rust/evaluator Poku suites and Biome pass. The archived
+fitting script reproduces the original generated model SHA-256; its formatted
+checked-in profile data is JSON-equivalent. All runtime source files match HEAD.

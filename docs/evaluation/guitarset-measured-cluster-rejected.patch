@@ -1,0 +1,261 @@
+diff --git a/crates/cadence-eval/src/main.rs b/crates/cadence-eval/src/main.rs
+index 3abf21d..a09d04e 100644
+--- a/crates/cadence-eval/src/main.rs
++++ b/crates/cadence-eval/src/main.rs
+@@ -74,6 +74,8 @@ impl Summary {
+ #[serde(rename_all = "camelCase")]
+ struct Report {
+     engine_version: &'static str,
++    #[serde(skip_serializing_if = "Option::is_none")]
++    experimental_feature_source: Option<&'static str>,
+     profile: &'static str,
+     summary: Summary,
+     groups: BTreeMap<String, Summary>,
+@@ -162,7 +164,11 @@ fn main() -> Result<(), Box<dyn Error>> {
+         }
+     }
+     let directory = manifest_path.parent().ok_or("Manifest has no parent")?;
++    let experimental = std::env::var("CADENCE_NOTE_MODEL").as_deref() == Ok("measured-cluster");
++    let mut feature_cache = BTreeMap::<String, Vec<(usize, [f32; 12])>>::new();
+     let mut report = Report {
++        experimental_feature_source: experimental
++            .then_some("measured-cluster-NNLS-offline; not the shipping engine"),
+         note_probe: None,
+         engine_version: env!("CARGO_PKG_VERSION"),
+         profile: profile_name,
+@@ -200,10 +206,31 @@ fn main() -> Result<(), Box<dyn Error>> {
+         if notes_case.as_ref() == Some(&case.id) {
+             report.note_probe = Some(notes::probe(case.id.clone(), &samples[start..end], rate));
+         }
++        let key = format!("{previous_file}:{start}:{end}");
++        if experimental && !feature_cache.contains_key(&key) {
++            eprintln!("Fitting calibration interval {}", feature_cache.len() + 1);
++            let probe = notes::probe(case.id.clone(), &samples[start..end], rate);
++            feature_cache.insert(
++                key.clone(),
++                probe
++                    .frames
++                    .iter()
++                    .map(|frame| (frame.sample_end, frame.chroma()))
++                    .collect(),
++            );
++        }
+         let mut latency_ms = None;
+         let mut consumed = 0;
+         for chunk in samples[start..end].chunks(2048) {
+             consumed += chunk.len();
++            if experimental {
++                engine.set_diagnostic_chroma(
++                    feature_cache[&key]
++                        .iter()
++                        .find(|(end, _)| *end == consumed)
++                        .map(|(_, chroma)| *chroma),
++                );
++            }
+             let measured = engine.process(chunk);
+             if let Some(trace) = &mut report.trace {
+                 if trace.case_id == case.id {
+diff --git a/crates/cadence-eval/src/notes.rs b/crates/cadence-eval/src/notes.rs
+index f43a7ad..4e508ee 100644
+--- a/crates/cadence-eval/src/notes.rs
++++ b/crates/cadence-eval/src/notes.rs
+@@ -16,7 +16,7 @@ pub struct NoteProbe {
+ #[derive(Serialize)]
+ #[serde(rename_all = "camelCase")]
+ pub struct Frame {
+-    sample_end: usize,
++    pub sample_end: usize,
+     time_ms: f64,
+     relative_error: f64,
+     tuning_cents: i16,
+@@ -84,23 +84,43 @@ fn probe_at_tuning(case_id: String, samples: &[f32], rate: u32, cents: i16) -> N
+             .map(|bin| bin.norm())
+             .collect::<Vec<_>>()
+     };
+-    // An explicit experimental prior: ten harmonics with 1/h amplitude.
+-    // This is not an instrument model or a transcription accuracy claim.
+-    let dictionary: Vec<Vec<f64>> = (FIRST..=LAST)
+-        .map(|midi| {
++    let model: serde_json::Value = serde_json::from_str(include_str!(concat!(
++        env!("CARGO_MANIFEST_DIR"),
++        "/../../artifacts/guitarset/measured-note-profiles.json"
++    )))
++    .unwrap();
++    let mut dictionary = Vec::new();
++    let mut note_ids = Vec::new();
++    for midi in FIRST..=LAST {
++        let mut profiles: Vec<Vec<f64>> = vec![(1..=10).map(|h| 1.0 / f64::from(h)).collect()];
++        for profile in model["profiles"].as_array().unwrap() {
++            if profile["midi"].as_u64() == Some(u64::from(midi)) {
++                profiles.push(
++                    profile["harmonics"]
++                        .as_array()
++                        .unwrap()
++                        .iter()
++                        .map(|value| value.as_f64().unwrap())
++                        .collect(),
++                );
++            }
++        }
++        for harmonics in profiles {
+             let frequency =
+                 440.0 * 2_f64.powf((f64::from(midi) - 69.0) / 12.0 + f64::from(cents) / 1200.0);
+             let tone: Vec<f64> = (0..WINDOW)
+                 .map(|i| {
+-                    (1..=10)
+-                        .filter(|h| {
+-                            frequency * f64::from(*h) < 4000.0_f64.min(f64::from(rate) / 2.0)
++                    harmonics
++                        .iter()
++                        .enumerate()
++                        .filter(|(h, _)| {
++                            frequency * ((*h + 1) as f64) < 4000.0_f64.min(f64::from(rate) / 2.0)
+                         })
+-                        .map(|h| {
+-                            (std::f64::consts::TAU * frequency * f64::from(h) * i as f64
+-                                / f64::from(rate))
+-                            .sin()
+-                                / f64::from(h)
++                        .map(|(h, amplitude)| {
++                            amplitude
++                                * (std::f64::consts::TAU * frequency * (h + 1) as f64 * i as f64
++                                    / f64::from(rate))
++                                .sin()
+                         })
+                         .sum()
+                 })
+@@ -110,9 +130,10 @@ fn probe_at_tuning(case_id: String, samples: &[f32], rate: u32, cents: i16) -> N
+             for value in &mut column {
+                 *value /= norm;
+             }
+-            column
+-        })
+-        .collect();
++            dictionary.push(column);
++            note_ids.push(midi);
++        }
++    }
+     let gram: Vec<Vec<f64>> = dictionary
+         .iter()
+         .map(|a| dictionary.iter().map(|b| dot(a, b)).collect())
+@@ -152,8 +173,15 @@ fn probe_at_tuning(case_id: String, samples: &[f32], rate: u32, cents: i16) -> N
+                 0.0
+             },
+             notes: (FIRST..=LAST)
+-                .zip(weights)
+-                .map(|(midi, strength)| Note { midi, strength })
++                .map(|midi| Note {
++                    midi,
++                    strength: note_ids
++                        .iter()
++                        .zip(&weights)
++                        .filter(|(id, _)| **id == midi)
++                        .map(|(_, weight)| weight)
++                        .sum(),
++                })
+                 .collect(),
+         });
+     }
+@@ -212,6 +240,45 @@ mod tests {
+         assert_eq!(result.frames[0].tuning_cents, 25);
+     }
+     #[test]
++    fn measured_profiles_preserve_a_real_upper_d() {
++        let rate = 48000;
++        let played = [52, 55, 74];
++        let samples: Vec<f32> = (0..WINDOW)
++            .map(|i| {
++                played
++                    .iter()
++                    .map(|midi| {
++                        let frequency = 440.0 * 2_f64.powf((f64::from(*midi) - 69.0) / 12.0);
++                        (1..=10)
++                            .filter(|h| frequency * f64::from(*h) < 4000.0)
++                            .map(|h| {
++                                (std::f64::consts::TAU * frequency * f64::from(h) * i as f64
++                                    / f64::from(rate))
++                                .sin()
++                                    / f64::from(h)
++                            })
++                            .sum::<f64>()
++                    })
++                    .sum::<f64>() as f32
++            })
++            .collect();
++        let result = probe_at_tuning("real-d".into(), &samples, rate, 0);
++        let frame = &result.frames[0];
++        assert!(frame.relative_error < 0.05);
++        let total: f64 = frame.notes.iter().map(|note| note.strength).sum();
++        assert!(
++            frame
++                .notes
++                .iter()
++                .find(|note| note.midi == 74)
++                .unwrap()
++                .strength
++                / total
++                > 0.1,
++            "a real upper D must survive"
++        );
++    }
++    #[test]
+     fn silence_has_no_notes_or_error() {
+         let result = probe("silence".into(), &vec![0.0; WINDOW], 48000);
+         assert_eq!(result.frames.len(), 1);
+@@ -223,3 +290,14 @@ mod tests {
+             .all(|note| note.strength == 0.0));
+     }
+ }
++
++impl Frame {
++    pub fn chroma(&self) -> [f32; 12] {
++        let mut values = [0.0_f32; 12];
++        for note in &self.notes {
++            let frequency = 440.0 * 2_f64.powf((f64::from(note.midi) - 69.0) / 12.0);
++            values[usize::from(note.midi % 12)] += (note.strength / frequency.sqrt()) as f32;
++        }
++        values
++    }
++}
+diff --git a/crates/cadence-recognition/src/lib.rs b/crates/cadence-recognition/src/lib.rs
+index d8071dc..c327f02 100644
+--- a/crates/cadence-recognition/src/lib.rs
++++ b/crates/cadence-recognition/src/lib.rs
+@@ -18,6 +18,8 @@ pub struct Report {
+ }
+ pub struct Engine {
+     analyzer: Analyzer,
++    #[cfg(feature = "diagnostics")]
++    diagnostic_chroma: Option<[f32; 12]>,
+     rate: f32,
+     profile: Profile,
+     target: u16,
+@@ -34,6 +36,8 @@ impl Engine {
+         }
+         Ok(Self {
+             analyzer: Analyzer::new(rate),
++            #[cfg(feature = "diagnostics")]
++            diagnostic_chroma: None,
+             rate,
+             profile,
+             target: 0,
+@@ -64,6 +68,10 @@ impl Engine {
+         self.stable = 0;
+         self.previous_level = 0.0;
+     }
++    #[cfg(feature = "diagnostics")]
++    pub fn set_diagnostic_chroma(&mut self, chroma: Option<[f32; 12]>) {
++        self.diagnostic_chroma = chroma;
++    }
+     pub fn process(&mut self, samples: &[f32]) -> Report {
+         let mut report = Report::default();
+         if samples.is_empty() {
+@@ -102,6 +110,8 @@ impl Engine {
+                 continue;
+             };
+             #[cfg(feature = "diagnostics")]
++            let chroma = self.diagnostic_chroma.unwrap_or(chroma);
++            #[cfg(feature = "diagnostics")]
+             {
+                 report.chroma = Some(chroma);
+             }
