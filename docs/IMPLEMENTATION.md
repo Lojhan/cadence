@@ -164,3 +164,12 @@ remains untouched.
 
 The full calibration native/WASM comparison also passes for all 772 cases across
 three profiles: 2,316 identical match decisions and sample-based latencies.
+
+Temporal harmonic investigation: diagnostic instrumentation identified a persistent
+592 Hz peak whose subtraction estimate decays to zero, creating false D evidence
+in Em. A real-recording Poku regression first failed, then passed under temporal
+harmonic suppression. Full comparisons exposed new false accepts; a conservative
+veto removed those but lost three broad valid matches and one Gentle positive.
+Shorter retention did not remove those regressions. All candidates were reverted,
+with patches and comparisons retained. The complete baseline is reproduced and
+recording/native-WASM regression tests pass. No recognition improvement is shipped.

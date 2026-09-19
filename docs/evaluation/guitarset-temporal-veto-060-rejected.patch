@@ -1,0 +1,105 @@
+--- a/crates/cadence-dsp/src/lib.rs
++++ b/crates/cadence-dsp/src/lib.rs
+@@ -3,6 +3,11 @@
+ use std::sync::Arc;
+ pub const WINDOW: usize = 8192;
+ pub const HOP: usize = 2048;
++
++pub struct Features {
++    pub chroma: [f32; 12],
++    pub supported: [f32; 12],
++}
+ 
+ pub struct Analyzer {
+     rate: f32,
+@@ -14,6 +19,8 @@
+     spectrum: Vec<Complex<f32>>,
+     scratch: Vec<Complex<f32>>,
+     fft: Arc<dyn Fft<f32>>,
++    harmonic_memory: Vec<f32>,
++    previous_peak: Vec<f32>,
+ }
+ impl Analyzer {
+     pub fn new(rate: f32) -> Self {
+@@ -31,15 +38,19 @@
+             spectrum: vec![Complex::default(); WINDOW],
+             scratch,
+             fft,
++            harmonic_memory: vec![0.0; WINDOW / 2],
++            previous_peak: vec![0.0; WINDOW / 2],
+         }
+     }
+     pub fn clear(&mut self) {
+         self.ring.fill(0.0);
++        self.harmonic_memory.fill(0.0);
++        self.previous_peak.fill(0.0);
+         self.filled = 0;
+         self.hop = 0;
+         self.position = 0;
+     }
+-    pub fn push(&mut self, sample: f32) -> Option<[f32; 12]> {
++    pub fn push(&mut self, sample: f32) -> Option<Features> {
+         self.ring[self.position] = sample;
+         self.position = (self.position + 1) % WINDOW;
+         self.filled = (self.filled + 1).min(WINDOW);
+@@ -57,6 +68,9 @@
+         self.fft
+             .process_with_scratch(&mut self.spectrum, &mut self.scratch);
+         let mut chroma = [0.0_f32; 12];
++        let mut supported = [0.0_f32; 12];
++        let retention = (-(HOP as f32) / (self.rate * 0.6)).exp();
++        for memory in &mut self.harmonic_memory { *memory *= retention; }
+         let min = (80.0 * WINDOW as f32 / self.rate).ceil() as usize;
+         let max = (1800.0 * WINDOW as f32 / self.rate).floor() as usize;
+         let peak = self.spectrum[min..=max]
+@@ -117,6 +131,14 @@
+                     }
+                 }
+             }
++            if b > self.previous_peak[i] * 1.5 {
++                self.harmonic_memory[i] = 0.0;
++            }
++            self.previous_peak[i] = b;
++            if harmonic_energy >= b * 0.9 {
++                self.harmonic_memory[i] = self.harmonic_memory[i].max(harmonic_energy.min(b));
++            }
++            let retained = (b - harmonic_energy.max(self.harmonic_memory[i])).max(0.0);
+             let b = (b - harmonic_energy).max(0.0);
+             let midi = 69.0 + 12.0 * (frequency / 440.0).log2();
+             if (midi - midi.round()).abs() > 0.35 {
+@@ -124,8 +146,10 @@
+             }
+             // Favor fundamentals over upper partials, which can introduce
+             // pitch classes not actually played (for example a fifth harmonic).
+-            chroma[(midi.round() as i32).rem_euclid(12) as usize] += b / frequency.sqrt();
++            let note = (midi.round() as i32).rem_euclid(12) as usize;
++            chroma[note] += b / frequency.sqrt();
++            supported[note] += retained / frequency.sqrt();
+         }
+-        Some(chroma)
++        Some(Features { chroma, supported })
+     }
+ }
+--- a/crates/cadence-recognition/src/lib.rs
++++ b/crates/cadence-recognition/src/lib.rs
+@@ -98,9 +98,10 @@
+             Profile::Precise => (0.92, 0.25),
+         };
+         for sample in samples {
+-            let Some(chroma) = self.analyzer.push(*sample) else {
++            let Some(features) = self.analyzer.push(*sample) else {
+                 continue;
+             };
++            let chroma = features.chroma;
+             #[cfg(feature = "diagnostics")]
+             {
+                 report.chroma = Some(chroma);
+@@ -118,7 +119,7 @@
+                 if self.target & (1 << note) != 0 {
+                     inside += energy;
+                     weakest_inside = weakest_inside.min(*energy);
+-                    covered &= *energy > maximum * 0.04;
++                    covered &= *energy > maximum * 0.04 && features.supported[note] > maximum * 0.04;
+                 } else {
+                     strongest_outside = strongest_outside.max(*energy);
+                 }

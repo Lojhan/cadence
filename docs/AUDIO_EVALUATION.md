@@ -283,3 +283,47 @@ enabled, the full 772-case native report exactly matches the unchanged baseline.
 
 Full native/WASM parity also passes: all 772 calibration cases across three
 profiles agree in decision and latency (2,316 comparisons).
+
+## Rejected temporal harmonic estimates
+
+The focused Em diagnostic has a persistent spectral peak near 592 Hz. Across the
+last five analyzed frames its raw magnitude falls only from about 112 to 96,
+while the existing harmonic subtraction falls from about 106 to zero. Its residual
+therefore grows into D chroma. This is evidence of a changing estimate, not proof
+that carrying the estimate forward is safe for every chord.
+
+A candidate retained strongly explained harmonic energy with a 0.8-second decay,
+cleared it on a 1.5× peak increase, and reset it with the analyzer. Replacing the
+original chroma fixed three wrong-target matches but introduced three others.
+A second version kept the original score/coverage checks and used the retained
+estimate only as an additional target-tone veto, preventing those new accepts.
+
+| 0.8 s veto | Correct baseline → candidate | Wrong baseline → candidate |
+| --- | --- | --- |
+| Clean Balanced | 97 → 97 / 116 | 10 → 7 / 656 |
+| Clean Gentle | 102 → 101 / 116 | 18 → 16 / 656 |
+| Clean Precise | 72 → 72 / 116 | 2 → 1 / 656 |
+| Broad Balanced | 557 → 554 / 889 | 5 → 5 / 676 |
+
+The veto passes the focused Em/Em7 regression but loses valid broader cases:
+`03_BN3-119-G_comp:8:correct`, `03_Jazz2-110-Bb_comp:9:correct`, and
+`03_SS3-84-Bb_comp:10:correct`. Shortening retention to 0.6 seconds still loses
+those cases and the Gentle positive, while fixing fewer false matches. Both veto
+variants and the replacement are rejected; the runtime is unchanged. The restored
+engine reproduces every baseline decision and latency. Held-out players were not
+inspected.
+
+[Detailed results and peak measurements](evaluation/guitarset-temporal-harmonics-rejected.json)
+include source/manifest hashes and all changed decisions. Experimental patches:
+[replacement](evaluation/guitarset-temporal-replacement-080-rejected.patch),
+[0.8-second veto](evaluation/guitarset-temporal-veto-080-rejected.patch), and
+[0.6-second veto](evaluation/guitarset-temporal-veto-060-rejected.patch).
+The next model must distinguish valid overlapping chord tones from harmonics;
+retaining subtraction estimates alone does not achieve that.
+
+A research candidate for the next spike is approximate note decomposition before
+folding into chroma. [Mauch and Dixon (ISMIR 2010)](https://webspace.eecs.qmul.ac.uk/s.e.dixon/pub/2010/Mauch-Dixon-ISMIR-2010.pdf)
+evaluate non-negative least-squares note activation specifically to reduce
+fundamental/partial confusion in difficult chords. Their dataset and metrics are
+not Cadence's release evidence; any implementation needs our own bounded-memory,
+latency, calibration and regression checks before adoption.

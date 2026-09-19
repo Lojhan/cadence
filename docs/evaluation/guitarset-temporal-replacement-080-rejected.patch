@@ -1,0 +1,50 @@
+--- a/crates/cadence-dsp/src/lib.rs
++++ b/crates/cadence-dsp/src/lib.rs
+@@ -14,6 +14,8 @@
+     spectrum: Vec<Complex<f32>>,
+     scratch: Vec<Complex<f32>>,
+     fft: Arc<dyn Fft<f32>>,
++    harmonic_memory: Vec<f32>,
++    previous_peak: Vec<f32>,
+ }
+ impl Analyzer {
+     pub fn new(rate: f32) -> Self {
+@@ -31,10 +33,14 @@
+             spectrum: vec![Complex::default(); WINDOW],
+             scratch,
+             fft,
++            harmonic_memory: vec![0.0; WINDOW / 2],
++            previous_peak: vec![0.0; WINDOW / 2],
+         }
+     }
+     pub fn clear(&mut self) {
+         self.ring.fill(0.0);
++        self.harmonic_memory.fill(0.0);
++        self.previous_peak.fill(0.0);
+         self.filled = 0;
+         self.hop = 0;
+         self.position = 0;
+@@ -57,6 +63,8 @@
+         self.fft
+             .process_with_scratch(&mut self.spectrum, &mut self.scratch);
+         let mut chroma = [0.0_f32; 12];
++        let retention = (-(HOP as f32) / (self.rate * 0.8)).exp();
++        for memory in &mut self.harmonic_memory { *memory *= retention; }
+         let min = (80.0 * WINDOW as f32 / self.rate).ceil() as usize;
+         let max = (1800.0 * WINDOW as f32 / self.rate).floor() as usize;
+         let peak = self.spectrum[min..=max]
+@@ -117,6 +125,14 @@
+                     }
+                 }
+             }
++            if b > self.previous_peak[i] * 1.5 {
++                self.harmonic_memory[i] = 0.0;
++            }
++            self.previous_peak[i] = b;
++            if harmonic_energy >= b * 0.9 {
++                self.harmonic_memory[i] = self.harmonic_memory[i].max(harmonic_energy.min(b));
++            }
++            harmonic_energy = harmonic_energy.max(self.harmonic_memory[i]);
+             let b = (b - harmonic_energy).max(0.0);
+             let midi = 69.0 + 12.0 * (frequency / 440.0).log2();
+             if (midi - midi.round()).abs() > 0.35 {
