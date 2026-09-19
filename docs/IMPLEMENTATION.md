@@ -211,3 +211,8 @@ duration. Modal tabs use the same directional treatment. Decorative panel headin
 were removed. A supplied account slot now owns the entire account panel, allowing
 the hosted distribution to manage accounts inside the existing modal. Browser
 navigation, layout, audio, save recovery and all 29 suites pass with the full check.
+
+Alpha.6 publication: release workflow 35471501832 passed verification and published
+nine packages and multi-architecture container images from clean source afd042a.
+Downloaded release assets passed SHA256SUMS verification, including RELEASE.json.
+The documented self-host command now uses alpha.6 with grouped chord transitions.
