@@ -112,10 +112,12 @@ try {
     const events: unknown[] = [];
     const streams: MediaStream[] = [];
     const contexts: AudioContext[] = [];
+    const audioContexts: AudioContext[] = [];
     Object.assign(window, {
       cadenceTestEvents: events,
       cadenceTestStreams: streams,
       cadenceTestContexts: contexts,
+      cadenceTestAudioContexts: audioContexts,
       cadenceTestDenyMicrophone: false,
     });
     // This fixture replaces only the physical microphone boundary. The application
@@ -128,6 +130,7 @@ try {
             ...options,
             sinkId: { type: "none" },
           } as AudioContextOptions);
+          audioContexts.push(this);
         }
       };
       navigator.mediaDevices.enumerateDevices = async () => {
@@ -389,6 +392,52 @@ try {
     "real worker/WASM capture accepts C then G without a silent gap",
   );
   if (process.env.CADENCE_NATIVE_MIC !== "1") {
+    await page
+      .getByRole("button", { name: "Unmute microphone", exact: true })
+      .click();
+    await page.evaluate(async () => {
+      const context = (
+        window as unknown as { cadenceTestAudioContexts: AudioContext[] }
+      ).cadenceTestAudioContexts.at(-1);
+      if (!context) throw new Error("No practice context");
+      await context.suspend();
+    });
+    await page
+      .getByText("Audio was interrupted. Unmute to resume practice.")
+      .waitFor();
+    await page
+      .getByRole("button", { name: "Unmute microphone", exact: true })
+      .waitFor();
+    await page.evaluate(async () => {
+      const context = (
+        window as unknown as { cadenceTestAudioContexts: AudioContext[] }
+      ).cadenceTestAudioContexts.at(-1);
+      await context?.resume();
+    });
+    assert.equal(
+      await page.evaluate(() =>
+        (
+          window as unknown as { cadenceTestStreams: MediaStream[] }
+        ).cadenceTestStreams.every((stream) =>
+          stream
+            .getTracks()
+            .every((track) => !track.enabled || track.readyState === "ended"),
+        ),
+      ),
+      true,
+      "resuming the browser context does not silently reenable capture",
+    );
+    await page
+      .getByRole("button", { name: "Unmute microphone", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Mute microphone", exact: true })
+      .click();
+    assert.equal(
+      await page.getByRole("heading", { name: "Am", exact: true }).count(),
+      1,
+      "explicit interruption recovery preserves the chord",
+    );
     const beforeReconnect = await page.evaluate(() => {
       const streams = (
         window as unknown as { cadenceTestStreams: MediaStream[] }

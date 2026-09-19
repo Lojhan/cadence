@@ -58,6 +58,19 @@ export class Microphone {
     try {
       const context = new AudioContext();
       this.context = context;
+      context.onstatechange = () => {
+        if (
+          this.context !== context ||
+          !this.listening ||
+          context.state === "running"
+        )
+          return;
+        this.mute();
+        this.emit({
+          type: "error",
+          message: "Audio was interrupted. Unmute to resume practice.",
+        });
+      };
       const worker = new Worker(new URL("./worker.ts", import.meta.url), {
         type: "module",
       });
@@ -176,6 +189,7 @@ export class Microphone {
     this.source?.disconnect();
     this.capture?.disconnect();
     this.worker?.terminate();
+    if (this.context) this.context.onstatechange = null;
     void this.context?.close();
     this.stream = undefined;
     this.source = undefined;

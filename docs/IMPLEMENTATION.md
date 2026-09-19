@@ -112,3 +112,16 @@ RELEASE.json match SHA256SUMS. The published image was pulled and passed the
 installed-container Poku suite locally. README, operations and Compose now use
 alpha.3. Recognition remains experimental; publication does not establish the
 outstanding held-out/device accuracy gates.
+
+Audio-context interruption regression: the new Poku lifecycle test first failed
+because a suspended context left its microphone track enabled. Capture now mutes
+and invalidates pending recognition whenever a listening context leaves running,
+and reports a recoverable interruption so the controller pauses. Browser recovery
+alone does not unmute; the user explicitly resumes. Initial suspended contexts
+and intentional disposal do not report failures. Tests cover suspended,
+interrupted and closed states, stale matches and explicit recovery. The built
+Chromium journey also suspends/resumes the actual practice AudioContext and
+verifies disabled capture and a preserved chord through recovery. This is
+browser lifecycle evidence, not physical-device or recognition-accuracy evidence.
+The state handling follows the documented
+[AudioContext states](https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/state).
