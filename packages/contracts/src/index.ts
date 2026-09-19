@@ -77,7 +77,7 @@ export const savePreferencesSchema = z
     values: preferencesSchema,
   })
   .strict();
-export const archiveSchema = z
+const archiveV1Schema = z
   .object({
     version: z.literal(1),
     preferences: preferencesSchema,
@@ -97,6 +97,24 @@ export const archiveSchema = z
       .max(1000),
   })
   .strict();
+export const catalogPositionSchema = z
+  .object({
+    songId: z.string().min(1).max(100),
+    chords: z.array(z.string().min(1).max(40)).min(1).max(10000),
+    index: z.number().int().nonnegative(),
+    completed: z.boolean(),
+  })
+  .strict();
+export type CatalogPosition = z.infer<typeof catalogPositionSchema>;
+export const archiveSchema = z.discriminatedUnion("version", [
+  archiveV1Schema,
+  archiveV1Schema
+    .extend({
+      version: z.literal(2),
+      catalogPositions: z.array(catalogPositionSchema).max(1000),
+    })
+    .strict(),
+]);
 export type Archive = z.infer<typeof archiveSchema>;
 export interface CadenceGateway {
   library(): Promise<Song[]>;

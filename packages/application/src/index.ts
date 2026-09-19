@@ -2,6 +2,7 @@ import {
   type Archive,
   archiveSchema,
   CadenceError,
+  type CatalogPosition,
   type Position,
   type Principal,
   positionSchema,
@@ -143,9 +144,19 @@ export function createApplication(store: Store, newId: () => string) {
     exportData(principal: Principal): Promise<Archive> {
       return run(principal, async (repo) => {
         const songs: Archive["songs"] = [];
+        const catalogPositions: CatalogPosition[] = [];
         for (const song of await repo.listSongs(principal.userId)) {
-          if (song.catalog) continue;
           const position = await repo.getPosition(principal.userId, song.id);
+          if (song.catalog) {
+            if (position?.songRevision === song.revision)
+              catalogPositions.push({
+                songId: song.id,
+                chords: song.chords,
+                index: position.index,
+                completed: position.completed,
+              });
+            continue;
+          }
           songs.push({
             key: song.id,
             title: song.title,
@@ -162,7 +173,8 @@ export function createApplication(store: Store, newId: () => string) {
           });
         }
         return {
-          version: 1,
+          version: 2,
+          catalogPositions,
           preferences: (await repo.getPreferences(principal.userId)).values,
           songs,
         };
@@ -222,6 +234,47 @@ export function createApplication(store: Store, newId: () => string) {
           }
           if (song.key === input.preferences.lastSongId) lastSongId = id;
         }
+        if (input.version === 2) {
+          const catalogIds = new Set<string>();
+          for (const position of input.catalogPositions) {
+            if (catalogIds.has(position.songId))
+              throw new CadenceError(
+                "INVALID_CHART",
+                "Duplicate catalog position in archive",
+              );
+            catalogIds.add(position.songId);
+            if (position.index >= position.chords.length)
+              throw new CadenceError(
+                "INVALID_CHART",
+                "Catalog position is outside the song",
+              );
+            const song = await repo.getSong(principal.userId, position.songId);
+            // Catalog content is owned by the installed release. A changed or
+            // missing sequence cannot safely inherit a position from an archive.
+            if (
+              !song?.catalog ||
+              song.chords.length !== position.chords.length ||
+              !song.chords.every(
+                (chord, index) => chord === position.chords[index],
+              )
+            )
+              continue;
+            const previous = await repo.getPosition(principal.userId, song.id);
+            await repo.putPosition(
+              principal.userId,
+              {
+                songId: song.id,
+                songRevision: song.revision,
+                index: position.index,
+                completed: position.completed,
+                revision: (previous?.revision ?? 0) + 1,
+              },
+              previous?.revision ?? 0,
+            );
+          }
+        }
+        if (!(await repo.getSong(principal.userId, lastSongId)))
+          lastSongId = "catalog:four";
         const old = await repo.getPreferences(principal.userId);
         await repo.putPreferences(
           principal.userId,
