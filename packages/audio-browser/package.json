@@ -1,0 +1,16 @@
+{
+  "name": "@cadence/audio-browser",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@cadence/audio-engine": "workspace:*",
+    "@cadence/contracts": "workspace:*"
+  }
+}

@@ -33,6 +33,15 @@ importers:
         specifier: 7.0.2
         version: 7.0.2
 
+  packages/audio-browser:
+    dependencies:
+      '@cadence/audio-engine':
+        specifier: workspace:*
+        version: link:../audio-engine
+      '@cadence/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+
   packages/audio-engine: {}
 
   packages/contracts:

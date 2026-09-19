@@ -1,0 +1,185 @@
+import type { AudioEvent, Target } from "./protocol.ts";
+
+export type { AudioEvent, Target } from "./protocol.ts";
+export type Profile = "gentle" | "balanced" | "precise";
+export class Microphone {
+  private stream: MediaStream | undefined;
+  private context: AudioContext | undefined;
+  private worker: Worker | undefined;
+  private capture: AudioWorkletNode | undefined;
+  private source: MediaStreamAudioSourceNode | undefined;
+  private generation = 0;
+  private streamGeneration = 0;
+  private matchSequence = 0;
+  private cancelInit: (() => void) | undefined;
+  private disposed = false;
+  private listening = false;
+  constructor(private readonly emit: (event: AudioEvent) => void) {}
+  async devices() {
+    return (await navigator.mediaDevices.enumerateDevices()).filter(
+      (device) => device.kind === "audioinput",
+    );
+  }
+  async open(deviceId: string, profile: Profile) {
+    if (this.disposed) throw new Error("Microphone has been disposed");
+    this.release();
+    const request = ++this.generation;
+    if (!navigator.mediaDevices?.getUserMedia || !window.isSecureContext)
+      throw new Error("Microphone access requires HTTPS or localhost.");
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        ...(deviceId ? { deviceId: { exact: deviceId } } : {}),
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+      },
+      video: false,
+    });
+    if (request !== this.generation || this.disposed) {
+      for (const track of stream.getTracks()) track.stop();
+      return;
+    }
+    this.stream = stream;
+    for (const track of stream.getTracks()) {
+      track.enabled = false;
+      track.onended = () => {
+        this.mute();
+        this.emit({
+          type: "error",
+          message: "Microphone disconnected. Choose an input and try again.",
+        });
+      };
+    }
+    try {
+      const context = new AudioContext();
+      this.context = context;
+      const worker = new Worker(new URL("./worker.ts", import.meta.url), {
+        type: "module",
+      });
+      this.worker = worker;
+      const channel = new MessageChannel();
+      const ready = new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(
+          () => reject(new Error("Audio engine initialization timed out")),
+          15000,
+        );
+        this.cancelInit = () => {
+          clearTimeout(timeout);
+          resolve();
+        };
+        worker.onerror = () => {
+          clearTimeout(timeout);
+          reject(new Error("Audio engine failed to load"));
+          this.mute();
+        };
+        worker.onmessage = ({ data }) => {
+          if (request !== this.generation || this.disposed) return;
+          if (data.type === "ready") {
+            clearTimeout(timeout);
+            resolve();
+          } else if (data.type === "error") {
+            clearTimeout(timeout);
+            reject(new Error(data.message));
+            this.mute();
+            this.emit(data);
+          } else if (
+            this.listening &&
+            data.generation === this.streamGeneration
+          ) {
+            this.emit(
+              data.type === "matched"
+                ? { ...data, sequence: ++this.matchSequence }
+                : data,
+            );
+          }
+        };
+      });
+      worker.postMessage(
+        {
+          type: "init",
+          protocol: 1,
+          sampleRate: context.sampleRate,
+          profile: ["gentle", "balanced", "precise"].indexOf(profile),
+          port: channel.port1,
+        },
+        [channel.port1],
+      );
+      await Promise.all([
+        ready,
+        (async () => {
+          await context.audioWorklet.addModule(
+            new URL("./capture.js", import.meta.url),
+          );
+          if (request !== this.generation || this.disposed) return;
+          const capture = new AudioWorkletNode(context, "cadence-capture");
+          this.capture = capture;
+          capture.port.postMessage({ port: channel.port2 }, [channel.port2]);
+          this.source = context.createMediaStreamSource(stream);
+          this.source.connect(capture);
+          capture.connect(context.destination);
+        })(),
+      ]);
+    } catch (error) {
+      if (request === this.generation) this.release();
+      throw error;
+    }
+  }
+  async unmute(target: Target) {
+    if (!this.worker || !this.context || !this.stream)
+      throw new Error("Choose a microphone first.");
+    const request = this.generation;
+    const streamGeneration = this.streamGeneration;
+    await this.context.resume();
+    if (
+      this.disposed ||
+      request !== this.generation ||
+      streamGeneration !== this.streamGeneration
+    )
+      return;
+    this.listening = true;
+    for (const track of this.stream.getTracks()) track.enabled = true;
+    this.arm(target);
+  }
+  arm(target: Target) {
+    if (this.listening)
+      this.worker?.postMessage({
+        type: "arm",
+        generation: this.streamGeneration,
+        target,
+      });
+  }
+  mute() {
+    this.streamGeneration++;
+    this.listening = false;
+    for (const track of this.stream?.getTracks() ?? []) track.enabled = false;
+    this.worker?.postMessage({
+      type: "mute",
+      generation: this.streamGeneration,
+    });
+    this.emit({ type: "muted" });
+  }
+  private release() {
+    this.cancelInit?.();
+    this.cancelInit = undefined;
+    this.streamGeneration++;
+    this.listening = false;
+    this.generation++;
+    for (const track of this.stream?.getTracks() ?? []) {
+      track.onended = null;
+      track.stop();
+    }
+    this.source?.disconnect();
+    this.capture?.disconnect();
+    this.worker?.terminate();
+    void this.context?.close();
+    this.stream = undefined;
+    this.source = undefined;
+    this.capture = undefined;
+    this.worker = undefined;
+    this.context = undefined;
+  }
+  dispose() {
+    this.disposed = true;
+    this.release();
+  }
+}
