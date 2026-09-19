@@ -410,3 +410,40 @@ The fixed-A440 baseline remains in the earlier evidence file. No held-out data
 was examined, no recognition thresholds changed, and no accuracy improvement is
 claimed. The original [NNLS-chroma method](https://github.com/c4dm/nnls-chroma) also addresses tuning, but this bounded
 raw-spectrum search is an independent diagnostic, not its reproduction.
+
+## Rejected harmonic-envelope mixture
+
+Three offline candidates used the same tuning search on the focused Em/Em7 case:
+geometric harmonic amplitudes `0.7^(h−1)`, `0.9^(h−1)`, and a per-note NNLS
+mixture of those two plus the original `1/h` profile. This uses mathematical
+harmonic profiles, not external model weights or copied implementation code.
+The [NNLS-chroma documentation](https://github.com/c4dm/nnls-chroma) describes
+geometric harmonic profiles; the mixture remains an independent experiment.
+
+At 418 ms:
+
+| Dictionary | Relative fit error | False D5 activation | G3 activation |
+| --- | ---: | ---: | ---: |
+| Original tuning-aware 1/h | 0.411 | 77.1 | 37.5 |
+| Geometric 0.7 | 0.456 | 52.4 | 67.1 |
+| Geometric 0.9 | 0.653 | 26.8 | 67.6 |
+| Three-profile mixture | 0.395 | 68.2 | 47.8 |
+
+The pure profiles trade reduced D5 for worse reconstruction and shifted actual
+note estimates. The mixture improves fit but retains substantial false D5.
+None is adopted as a solution to this failure. No full-corpus or held-out accuracy
+claim is made from this focused diagnostic.
+
+A test-first synthetic mixture of E3, G3 and a real D5 failed with error 0.212
+under the baseline dictionary. The candidate passed an error bound of 0.05,
+retained over 90% of activation in the played notes and kept the real D5 above
+10% of total activation. The Rust and CLI Poku suites passed, including unchanged
+recognition decisions. Passing this constructed test did not resolve the real
+recording's ambiguity. The richer dictionary also increased offline evaluation
+cost, so it was reverted instead of becoming the default diagnostic.
+
+[All frame measurements](evaluation/guitarset-envelope-mixture-rejected.json)
+and the [candidate with its synthetic test](evaluation/guitarset-envelope-mixture-rejected.patch)
+are retained. Restoring the evaluator reproduced the previous report exactly,
+including recognition results, tuning choices and every note strength. Production
+DSP and WASM sources were unchanged throughout this experiment.

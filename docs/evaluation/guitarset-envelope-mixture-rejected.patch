@@ -1,0 +1,123 @@
+diff --git a/crates/cadence-eval/src/notes.rs b/crates/cadence-eval/src/notes.rs
+index f43a7ad..1ff2096 100644
+--- a/crates/cadence-eval/src/notes.rs
++++ b/crates/cadence-eval/src/notes.rs
+@@ -84,10 +84,10 @@ fn probe_at_tuning(case_id: String, samples: &[f32], rate: u32, cents: i16) -> N
+             .map(|bin| bin.norm())
+             .collect::<Vec<_>>()
+     };
+-    // An explicit experimental prior: ten harmonics with 1/h amplitude.
+-    // This is not an instrument model or a transcription accuracy claim.
+-    let dictionary: Vec<Vec<f64>> = (FIRST..=LAST)
+-        .map(|midi| {
++    // Independent offline priors; no learned or target-specific parameters.
++    let mut dictionary = Vec::new();
++    for midi in FIRST..=LAST {
++        for shape in [0.0_f64, 0.7, 0.9] {
+             let frequency =
+                 440.0 * 2_f64.powf((f64::from(midi) - 69.0) / 12.0 + f64::from(cents) / 1200.0);
+             let tone: Vec<f64> = (0..WINDOW)
+@@ -97,10 +97,15 @@ fn probe_at_tuning(case_id: String, samples: &[f32], rate: u32, cents: i16) -> N
+                             frequency * f64::from(*h) < 4000.0_f64.min(f64::from(rate) / 2.0)
+                         })
+                         .map(|h| {
+-                            (std::f64::consts::TAU * frequency * f64::from(h) * i as f64
+-                                / f64::from(rate))
+-                            .sin()
+-                                / f64::from(h)
++                            let amplitude = if shape == 0.0 {
++                                1.0 / f64::from(h)
++                            } else {
++                                shape.powi(h - 1)
++                            };
++                            amplitude
++                                * (std::f64::consts::TAU * frequency * f64::from(h) * i as f64
++                                    / f64::from(rate))
++                                .sin()
+                         })
+                         .sum()
+                 })
+@@ -110,9 +115,9 @@ fn probe_at_tuning(case_id: String, samples: &[f32], rate: u32, cents: i16) -> N
+             for value in &mut column {
+                 *value /= norm;
+             }
+-            column
+-        })
+-        .collect();
++            dictionary.push(column);
++        }
++    }
+     let gram: Vec<Vec<f64>> = dictionary
+         .iter()
+         .map(|a| dictionary.iter().map(|b| dot(a, b)).collect())
+@@ -152,7 +157,7 @@ fn probe_at_tuning(case_id: String, samples: &[f32], rate: u32, cents: i16) -> N
+                 0.0
+             },
+             notes: (FIRST..=LAST)
+-                .zip(weights)
++                .zip(weights.chunks_exact(3).map(|weights| weights.iter().sum()))
+                 .map(|(midi, strength)| Note { midi, strength })
+                 .collect(),
+         });
+@@ -212,6 +217,61 @@ mod tests {
+         assert_eq!(result.frames[0].tuning_cents, 25);
+     }
+     #[test]
++    fn fits_mixed_envelopes_without_erasing_a_real_upper_note() {
++        let rate = 48000;
++        let played = [(52, 0.0_f64), (55, 0.9_f64), (74, 0.7_f64)];
++        let samples: Vec<f32> = (0..WINDOW)
++            .map(|i| {
++                played
++                    .iter()
++                    .map(|(midi, shape)| {
++                        let frequency = 440.0 * 2_f64.powf((f64::from(*midi) - 69.0) / 12.0);
++                        (1..=10)
++                            .filter(|h| frequency * f64::from(*h) < 4000.0)
++                            .map(|h| {
++                                let amplitude = if *shape == 0.0 {
++                                    1.0 / f64::from(h)
++                                } else {
++                                    shape.powi(h - 1)
++                                };
++                                amplitude
++                                    * (std::f64::consts::TAU * frequency * f64::from(h) * i as f64
++                                        / f64::from(rate))
++                                    .sin()
++                            })
++                            .sum::<f64>()
++                    })
++                    .sum::<f64>() as f32
++            })
++            .collect();
++        let result = probe_at_tuning("mixed".into(), &samples, rate, 0);
++        let frame = &result.frames[0];
++        assert!(
++            frame.relative_error < 0.05,
++            "mixed envelope error: {}",
++            frame.relative_error
++        );
++        let total: f64 = frame.notes.iter().map(|note| note.strength).sum();
++        let supported: f64 = frame
++            .notes
++            .iter()
++            .filter(|note| played.iter().any(|(midi, _)| *midi == note.midi))
++            .map(|note| note.strength)
++            .sum();
++        assert!(supported / total > 0.9);
++        assert!(
++            frame
++                .notes
++                .iter()
++                .find(|note| note.midi == 74)
++                .unwrap()
++                .strength
++                / total
++                > 0.1,
++            "a real upper D must survive"
++        );
++    }
++    #[test]
+     fn silence_has_no_notes_or_error() {
+         let result = probe("silence".into(), &vec![0.0; WINDOW], 48000);
+         assert_eq!(result.frames.len(), 1);

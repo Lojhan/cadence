@@ -232,3 +232,11 @@ the spurious D5, rejecting tuning alone as a live-recognition fix. Evidence and
 model limitations are recorded in AUDIO_EVALUATION.md; production DSP is unchanged.
 Full verification for the tuning diagnostic passed: build, Biome, TypeScript,
 Rust format/Clippy, and all 30 Poku suites (including native/WASM and browser paths).
+
+Harmonic-envelope follow-up: pure geometric and mixed dictionaries were evaluated
+on the known Em/Em7 calibration failure. A synthetic mixed-envelope/real-upper-note
+regression failed before the mixture and passed afterward; both Rust and CLI
+Poku suites passed. The real false D5 persisted, so the candidate and extra test
+were reverted together. Per-frame evidence and the rejected patch are retained.
+The restored evaluator's focused report exactly matches the previous baseline;
+no shipping recognition behavior changed and the accuracy gate remains open.
