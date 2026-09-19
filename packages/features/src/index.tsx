@@ -41,6 +41,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { PracticeController } from "./controller.ts";
+import { MicrophoneSetup } from "./microphone-setup.tsx";
 import { SoundCheck } from "./sound-check.tsx";
 export type InitialData = {
   songs: Song[];
@@ -83,6 +84,8 @@ export function PracticeApp({
   const [devicesOpen, setDevicesOpen] = useState(false);
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [device, setDevice] = useState("");
+  const [setupOpen, setSetupOpen] = useState(false);
+  const [setupComplete, setSetupComplete] = useState(false);
   const [idle, setIdle] = useState(false);
   const [search, setSearch] = useState("");
   const [title, setTitle] = useState("");
@@ -189,6 +192,7 @@ export function PracticeApp({
   useEffect(() => {
     try {
       setDevice(localStorage.getItem("cadence-device") ?? "");
+      setSetupComplete(localStorage.getItem("cadence-setup") === "1");
     } catch {}
   }, []);
   useEffect(() => {
@@ -225,7 +229,7 @@ export function PracticeApp({
     const wake = () => {
       setIdle(false);
       clearTimeout(timer);
-      if (!panel && !devicesOpen)
+      if (!panel && !setupOpen && !devicesOpen)
         timer = setTimeout(() => {
           if (!document.activeElement?.matches(":focus-visible")) setIdle(true);
         }, 4000);
@@ -238,7 +242,7 @@ export function PracticeApp({
       for (const event of ["pointermove", "pointerdown", "keydown", "focusin"])
         window.removeEventListener(event, wake);
     };
-  }, [panel, devicesOpen]);
+  }, [panel, setupOpen, devicesOpen]);
   useEffect(() => {
     controller.activate();
     const onHide = () => {
@@ -265,6 +269,7 @@ export function PracticeApp({
     const key = (event: KeyboardEvent) => {
       if (
         panel ||
+        setupOpen ||
         devicesOpen ||
         event.target instanceof HTMLInputElement ||
         event.target instanceof HTMLTextAreaElement ||
@@ -274,14 +279,27 @@ export function PracticeApp({
         return;
       if (event.code === "Space") {
         event.preventDefault();
-        void controller.toggle(device, prefs.profile);
+        if (!setupComplete && !listening) {
+          controller.pause();
+          setSetupOpen(true);
+        } else void controller.toggle(device, prefs.profile);
       }
       if (event.key === "ArrowRight") controller.navigate(session.index + 1);
       if (event.key === "ArrowLeft") controller.navigate(session.index - 1);
     };
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
-  }, [controller, panel, devicesOpen, device, prefs.profile, session.index]);
+  }, [
+    controller,
+    panel,
+    setupOpen,
+    setupComplete,
+    listening,
+    devicesOpen,
+    device,
+    prefs.profile,
+    session.index,
+  ]);
   function openPanel(next: Panel) {
     controller.pause();
     setDevicesOpen(false);
@@ -440,12 +458,47 @@ export function PracticeApp({
           <ChevronRight />
         </button>
       ) : null}
+      {setupOpen ? (
+        <MicrophoneSetup
+          hand={prefs.hand}
+          device={device}
+          devices={devices}
+          profile={prefs.profile}
+          saving={preferenceMutation.isPending}
+          onHand={(hand) => setPreference("hand", hand)}
+          onDevice={(id) => {
+            setDevice(id);
+            try {
+              localStorage.setItem("cadence-device", id);
+            } catch {}
+          }}
+          onAccess={() => {
+            void controller
+              .devices()
+              .then(setDevices)
+              .catch(() => {});
+          }}
+          onClose={() => setSetupOpen(false)}
+          onComplete={() => {
+            setSetupComplete(true);
+            setSetupOpen(false);
+            try {
+              localStorage.setItem("cadence-setup", "1");
+            } catch {}
+          }}
+        />
+      ) : null}
       <PracticeDock
         listening={listening}
         busy={busy}
         devicesOpen={devicesOpen}
         onToggle={() => {
           setDevicesOpen(false);
+          if (!setupComplete && !listening) {
+            controller.pause();
+            setSetupOpen(true);
+            return;
+          }
           void controller
             .toggle(device, prefs.profile)
             .then(async () => setDevices(await controller.devices()))

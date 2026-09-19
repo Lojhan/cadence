@@ -127,6 +127,22 @@ try {
           } as AudioContextOptions);
         }
       };
+      navigator.mediaDevices.enumerateDevices = async () => {
+        events.push({ type: "enumerate", count: streams.length });
+        return streams.length
+          ? [
+              {
+                deviceId: "guitar-input",
+                groupId: "test",
+                kind: "audioinput",
+                label: "Test guitar input",
+                toJSON() {
+                  return { deviceId: "guitar-input" };
+                },
+              },
+            ]
+          : [];
+      };
       navigator.mediaDevices.getUserMedia = async () => {
         const context = new AudioContext({ sampleRate: 48000 });
         const destination = context.createMediaStreamDestination();
@@ -174,6 +190,70 @@ try {
     true,
     "practice fits the phone viewport",
   );
+  await page
+    .getByRole("button", { name: "Unmute microphone", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Your guitar setup", exact: true })
+    .waitFor({ timeout: 3000 });
+  if (process.env.CADENCE_NATIVE_MIC !== "1")
+    assert.equal(
+      await page.evaluate(
+        () =>
+          (window as unknown as { cadenceTestStreams: MediaStream[] })
+            .cadenceTestStreams.length,
+      ),
+      0,
+      "setup opens before requesting microphone permission",
+    );
+  await page
+    .getByRole("combobox", { name: "Playing hand", exact: true })
+    .selectOption("left");
+  await page
+    .getByRole("button", { name: "Check microphone", exact: true })
+    .click();
+  if (process.env.CADENCE_NATIVE_MIC !== "1") {
+    await page
+      .getByRole("combobox", { name: "Microphone input", exact: true })
+      .selectOption("guitar-input", { timeout: 3000 });
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Finish setup", exact: true })
+        .isDisabled(),
+      true,
+      "a different input needs its own sound check",
+    );
+    assert.equal(
+      await page.evaluate(() =>
+        (
+          window as unknown as { cadenceTestStreams: MediaStream[] }
+        ).cadenceTestStreams.every((stream) =>
+          stream.getTracks().every((track) => track.readyState === "ended"),
+        ),
+      ),
+      true,
+      "switching input releases the old sound check",
+    );
+    await page
+      .getByRole("button", { name: "Check microphone", exact: true })
+      .click();
+  }
+  await page.getByRole("button", { name: "Finish setup", exact: true }).click();
+  await page.getByRole("dialog").waitFor({ state: "hidden" });
+  if (process.env.CADENCE_NATIVE_MIC !== "1")
+    assert.equal(
+      await page.evaluate(() =>
+        (
+          window as unknown as { cadenceTestStreams: MediaStream[] }
+        ).cadenceTestStreams.every((stream) =>
+          stream.getTracks().every((track) => track.readyState === "ended"),
+        ),
+      ),
+      true,
+      "finishing setup releases capture",
+    );
+  await page.reload();
+  await page.getByRole("heading", { name: "C", exact: true }).waitFor();
   await page.getByRole("button", { name: "Open settings" }).click();
   await page.getByRole("combobox", { name: "Handedness" }).selectOption("left");
   await page.waitForFunction(() =>

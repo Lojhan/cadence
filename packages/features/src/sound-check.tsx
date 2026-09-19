@@ -5,12 +5,17 @@ import { useEffect, useRef, useState } from "react";
 export function SoundCheck({
   device,
   profile,
+  onReady,
+  onOpen,
 }: {
   device: string;
   profile: Profile;
+  onReady?: (ready: boolean) => void;
+  onOpen?: () => void;
 }) {
   const microphone = useRef<Microphone | null>(null);
   const active = useRef(true);
+  const heardSignal = useRef(false);
   const [listening, setListening] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -33,13 +38,22 @@ export function SoundCheck({
     }
     setBusy(true);
     setError("");
+    heardSignal.current = false;
+    onReady?.(false);
     const input = new Microphone((event) => {
       if (!active.current || microphone.current !== input) return;
-      if (event.type === "metrics") setLevel(event.level);
+      if (event.type === "metrics") {
+        setLevel(event.level);
+        if (event.level >= 0.008 && !heardSignal.current) {
+          heardSignal.current = true;
+          onReady?.(true);
+        }
+      }
       if (event.type === "error") {
         input.dispose();
         microphone.current = null;
         setLevel(0);
+        onReady?.(false);
         setError(event.message);
         setListening(false);
       }
@@ -48,6 +62,7 @@ export function SoundCheck({
     try {
       await input.open(device, profile);
       if (!active.current || microphone.current !== input) return;
+      onOpen?.();
       await input.unmute({ sessionId: "sound-check", epoch: 1, mask: 145 });
       if (active.current && microphone.current === input) setListening(true);
     } catch (error) {
