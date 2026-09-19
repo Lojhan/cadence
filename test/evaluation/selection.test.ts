@@ -66,6 +66,48 @@ try {
       0.9,
       "labels end before the played chord changes",
     );
+  for (const [label, release, extra, expected] of [
+    ["required note release", 0.65, [], 0.65],
+    [
+      "octave overlap preserves the same pitch class",
+      0.65,
+      [{ time: 0.5, duration: 0.5, value: 64 }],
+      1,
+    ],
+    [
+      "a later note cannot bridge an earlier gap",
+      0.65,
+      [{ time: 0.7, duration: 0.5, value: 64 }],
+      0.65,
+    ],
+    ["short full-tone intervals are excluded", 0.45, [], null],
+  ] as const) {
+    const released = [
+      { time: 0, duration: 1.5, value: 48 },
+      { time: 0, duration: release, value: 52 },
+      { time: 0, duration: 1.5, value: 55 },
+      ...extra,
+    ];
+    writeFileSync(
+      join(root, "annotations/example.jams"),
+      JSON.stringify({
+        annotations: [{ namespace: "note_midi", data: released }],
+      }),
+    );
+    const selected = spawnSync("python3", ["tooling/prepare-strums.py", root], {
+      encoding: "utf8",
+    });
+    assert.equal(selected.status, 0, selected.stderr);
+    const result = JSON.parse(
+      readFileSync(join(root, "calibration-strums.json"), "utf8"),
+    );
+    if (expected === null) assert.equal(result.cases.length, 0, label);
+    else {
+      assert.equal(result.cases.length, 2, label);
+      for (const row of result.cases)
+        assert.equal(row.durationSeconds, expected, label);
+    }
+  }
 } finally {
   rmSync(root, { recursive: true, force: true });
 }

@@ -37,9 +37,12 @@ targets. Seventh chords are not used as negative examples for their triad subset
 The separate strum subset uses note annotations only: every target pitch class
 must be attacked within 150 ms, no extra pitch class may be attacked in that
 window, and every target class must still sound at 400 ms. A foreign note already
-sounding invalidates the attempt; a later foreign-note onset ends its labeled
-window. Require at least 500 ms before that boundary. This prevents a genuine
-later chord change from being scored against an earlier label. Selection is independent
+sounding invalidates the attempt. The labeled window ends at a later foreign-note
+onset or when any required pitch class stops sounding after the attack, whichever
+comes first. Overlapping notes in the same pitch class, including different
+octaves, can extend coverage; a later reattack cannot bridge a gap. Require at
+least 500 ms before that boundary. This prevents a released chord tone or a
+later chord change from being scored against an earlier complete-chord label. Selection is independent
 of recognition output. Both broad and subset results must be retained, including
 excluded-case counts. A partial download is accepted only with `--allow-partial`
 and is explicitly labeled; it is an engineering spike, not a release evaluation.
@@ -72,7 +75,34 @@ Synthetic repeat/rearm and noise tests remain useful but cannot substitute for
 those recordings. A stable release requires the specified held-out accuracy and
 false-advance gates plus measured end-to-end latency on supported devices.
 
-## Current calibration result
+## Current calibration result: continuous note coverage
+
+The earlier selector required every target class to sound at 400 ms, but could
+continue scoring after a required note ended. For example, releasing a seventh
+could cause a later triad match to be counted against the earlier seventh-chord
+label. The current rule stops at the first loss of continuous pitch-class coverage.
+It uses annotations alone and applies the identical interval to all targets.
+
+This reduces the calibration subset from 233 to 116 positive strums and from
+1,313 to 656 related negative targets. There are no newly included cases; 117
+previous positives no longer have a qualifying window, and six retained cases
+start at a later qualifying strum. These are different scoring windows, so the
+new numbers must not be presented as an improvement in the unchanged engine.
+
+| Profile | Correct strums recognized | Wrong targets accepted | Matched-case p95 |
+| --- | --- | --- | --- |
+| Gentle | 102 / 116 (87.9%) | 18 / 656 (2.7%) | 372 ms |
+| Balanced | 97 / 116 (83.6%) | 10 / 656 (1.5%) | 511 ms |
+| Precise | 72 / 116 (62.1%) | 2 / 656 (0.3%) | 557 ms |
+
+[The current report](evaluation/guitarset-release-boundaries.json) records source
+checksums, every prior positive's retained/changed/excluded interval, confusion
+matrices and all failed cases. The original broad and historical subset reports
+remain available below. This narrower subset does not establish recognition of
+short strums, other instruments, or realistic practice false-advance rates.
+No profile meets all release targets, and held-out audio remains unevaluated.
+
+## Historical calibration result
 
 The complete published archives were verified and 180 accompaniment recordings
 prepared. Only calibration players 00–03 were evaluated. The corrected strum
@@ -105,7 +135,10 @@ retain attack/release gating, while a genuinely different target can match a
 continuous chord change without requiring a silent gap.
 
 
-## Expanded confusion checks
+## Historical expanded confusion checks
+
+The table below uses the previous window rule, before note-release boundaries
+were enforced. Running these commands now produces the corrected subset above.
 
 The original negative set was too narrow to assess the supported chord vocabulary.
 Generate nearby targets from the verified strum windows, independently of engine
@@ -154,9 +187,11 @@ pnpm --silent eval:wasm artifacts/guitarset/calibration-confusions.json balanced
 CADENCE_AUDIO_MANIFEST=artifacts/guitarset/calibration-confusions.json pnpm test:audio-parity
 ```
 
-Poku compared all 1,546 calibration cases across Gentle, Balanced and Precise:
-all 4,638 match decisions and their sample-based latencies agree exactly with
-the optimized native evaluator. The normal test suite runs the same comparison
+Poku originally compared all 1,546 calibration cases across Gentle, Balanced and
+Precise: all 4,638 match decisions and sample-based latencies agreed exactly with
+the optimized native evaluator. After correcting note-release boundaries, it
+repeated the comparison on all 772 current cases across three profiles: all
+2,316 decisions and latencies agree exactly. The normal test suite runs the same comparison
 on the checked-in recording fixtures; the complete dataset remains an optional
 local input because its audio is separately licensed.
 

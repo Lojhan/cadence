@@ -5,6 +5,18 @@ import json
 from pathlib import Path
 import sys
 
+def coverage_end(notes, pitch, start):
+    """End of the continuous union for one pitch class after the attack."""
+    end = start
+    for note in sorted(notes, key=lambda n: n["time"]):
+        if round(note["value"]) % 12 != pitch:
+            continue
+        if note["time"] > end:
+            break
+        end = max(end, note["time"] + note["duration"])
+    return end
+
+
 root = Path(sys.argv[1])
 for split in ["calibration", "held-out"]:
     manifest = json.loads((root / f"{split}.json").read_text())
@@ -33,7 +45,14 @@ for split in ["calibration", "held-out"]:
                 # not changed yet. Apply the same interval to negative targets.
                 if any(n["time"] < onset + 0.15 for n in foreign):
                     continue
-                end = min([original_end] + [n["time"] for n in foreign])
+                # Stop when any target class ceases sounding. An overlapping
+                # octave can sustain a class, but a later reattack cannot bridge
+                # a gap. Otherwise a released seventh becomes a false triad match.
+                end = min(
+                    [original_end]
+                    + [n["time"] for n in foreign]
+                    + [coverage_end(notes, pitch, onset + 0.15) for pitch in target]
+                )
                 if pitches == target and held == target and end - onset >= 0.5:
                     interval = (onset, end)
                     break
@@ -44,6 +63,6 @@ for split in ["calibration", "held-out"]:
             continue
         start, end = interval
         result.append({**case, "startSeconds": start, "durationSeconds": end - start})
-    report = {**manifest, "selection": "All target pitch classes attacked within 150 ms, no extra attacked pitch classes, all target classes annotated sounding at 400 ms; no held foreign notes; interval ends before any foreign onset, with at least 500 ms available; selected without engine output", "excludedIncompleteStrums": excluded, "cases": result}
+    report = {**manifest, "selection": "All target pitch classes attacked within 150 ms, no extra attacked pitch classes, all target classes annotated sounding at 400 ms; no held foreign notes; interval ends before any foreign onset or loss of continuous target pitch-class coverage after the attack, with at least 500 ms available; selected without engine output", "excludedIncompleteStrums": excluded, "cases": result}
     (root / f"{split}-strums.json").write_text(json.dumps(report, indent=2) + "\n")
     print(split, len(result), "cases", excluded, "excluded")
