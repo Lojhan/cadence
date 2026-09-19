@@ -15,3 +15,28 @@ assert.deepEqual(
   violations("db", "import { x } from '@cadence/application';"),
   [],
 );
+
+assert.ok(
+  violations("ui", "import x from 'unlisted/subpath';", ["react"]).some(
+    (error) => error.includes("Undeclared dependency"),
+  ),
+  "runtime imports must belong to the package's declared dependencies",
+);
+assert.deepEqual(
+  violations("ui", "import x from '@radix-ui/react-dialog';", [
+    "@radix-ui/react-dialog",
+  ]),
+  [],
+);
+assert.deepEqual(
+  violations("db", "import { readFile } from 'node:fs/promises';", []),
+  [],
+);
+assert.ok(
+  violations("core", "import { readFile } from 'fs/promises';", []).length,
+  "bare Node builtins cannot bypass browser boundaries",
+);
+assert.ok(
+  violations("core", "import React from 'react';", ["react"]).length,
+  "declaring React does not make it valid in the pure practice core",
+);

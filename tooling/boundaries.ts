@@ -1,4 +1,5 @@
 import { readdirSync, readFileSync } from "node:fs";
+import { builtinModules } from "node:module";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse } from "@babel/parser";
@@ -23,7 +24,22 @@ const pure = new Set([
   "audio-engine",
   "audio-browser",
 ]);
-export function violations(owner: string, source: string): string[] {
+const builtins = new Set(
+  builtinModules.map((name) => name.replace(/^node:/, "")),
+);
+const frameworkFree = new Set([
+  "contracts",
+  "music",
+  "core",
+  "application",
+  "audio-engine",
+  "audio-browser",
+]);
+export function violations(
+  owner: string,
+  source: string,
+  declared?: readonly string[],
+): string[] {
   const errors: string[] = [];
   const tree = parse(source, {
     sourceType: "module",
@@ -31,11 +47,32 @@ export function violations(owner: string, source: string): string[] {
     createImportExpressions: true,
   });
   function check(specifier: string) {
+    const builtin = builtins.has(specifier.replace(/^node:/, ""));
+    const external = !specifier.startsWith(".") && !specifier.startsWith("/");
+    const name = specifier.startsWith("@")
+      ? specifier.split("/").slice(0, 2).join("/")
+      : specifier.split("/")[0];
+    if (
+      declared &&
+      external &&
+      !builtin &&
+      name &&
+      name !== `@cadence/${owner}` &&
+      !declared.includes(name)
+    )
+      errors.push(`Undeclared dependency in ${owner}: ${specifier}`);
+    if (
+      frameworkFree.has(owner) &&
+      (name === "react" ||
+        name === "react-dom" ||
+        name?.startsWith("@tanstack/react-"))
+    )
+      errors.push(`UI dependency in ${owner}: ${specifier}`);
     if (/^(stripe|@clerk\/)/.test(specifier))
       errors.push(`Hosted dependency: ${specifier}`);
     if (
       pure.has(owner) &&
-      /^(node:|better-sqlite3|pg$|drizzle-orm)/.test(specifier)
+      (builtin || /^(node:|better-sqlite3|pg$|drizzle-orm)/.test(specifier))
     )
       errors.push(`Server dependency in ${owner}: ${specifier}`);
     if (/^\.\.\/\.\.\//.test(specifier))
@@ -89,15 +126,30 @@ export function violations(owner: string, source: string): string[] {
   visit(tree);
   return errors;
 }
-function scan(directory: string, owner: string): string[] {
+function scan(
+  directory: string,
+  owner: string,
+  runtime: readonly string[],
+  development: readonly string[],
+  source = false,
+): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     if (["node_modules", "dist", "generated"].includes(entry.name)) return [];
     const path = resolve(directory, entry.name);
-    if (entry.isDirectory()) return scan(path, owner);
+    if (entry.isDirectory())
+      return scan(
+        path,
+        owner,
+        runtime,
+        development,
+        source || entry.name === "src",
+      );
     return /\.[cm]?[jt]sx?$/.test(path)
-      ? violations(owner, readFileSync(path, "utf8")).map(
-          (error) => `${path}: ${error}`,
-        )
+      ? violations(
+          owner,
+          readFileSync(path, "utf8"),
+          source ? runtime : development,
+        ).map((error) => `${path}: ${error}`)
       : [];
   });
 }
@@ -107,7 +159,22 @@ if (
 ) {
   const errors = readdirSync("packages", { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
-    .flatMap((entry) => scan(resolve("packages", entry.name), entry.name));
+    .flatMap((entry) => {
+      const root = resolve("packages", entry.name);
+      const manifest = JSON.parse(
+        readFileSync(resolve(root, "package.json"), "utf8"),
+      );
+      const runtime = Object.keys({
+        ...manifest.dependencies,
+        ...manifest.peerDependencies,
+        ...manifest.optionalDependencies,
+      });
+      const development = [
+        ...runtime,
+        ...Object.keys(manifest.devDependencies ?? {}),
+      ];
+      return scan(root, entry.name, runtime, development);
+    });
   if (errors.length) {
     console.error(errors.join("\n"));
     process.exitCode = 1;

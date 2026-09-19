@@ -79,3 +79,6 @@ Continuous-label evaluation correction: Poku first demonstrated that a strum lab
 
 
 Coordinated release metadata: preparing alpha.2 exposed a missing requirement in the original package release. Poku first failed on absent RELEASE.json. The release builder now records the Git source revision and dirty-worktree status, all nine package versions/checksums, the actual WASM hash with engine/protocol versions, a content-addressed default catalog version, and both dialects' required migration names/hashes. SHA256SUMS also covers the manifest. Tests compare the metadata with the shipped files and migration journals. The initial alpha.2 workflow was cancelled before publication so the release can include this verified manifest. Full local checks pass with 25 Poku suites.
+
+
+Declared dependency enforcement: a Poku regression first showed that an undeclared external import passed the boundary checker. The scanner now validates imports, re-exports, and static module loads against each package's dependencies/peers/optional dependencies; development dependencies are available only outside its shipped src tree. It also recognizes bare Node builtins and rejects React imports in framework-independent packages. Existing package sources pass these stricter checks. This CI/tooling change does not alter the alpha.2 runtime being published from 38bc14e.
