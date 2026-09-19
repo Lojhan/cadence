@@ -103,3 +103,12 @@ pass. Actual Vite verification confirmed rendered practice, no browser errors,
 automatic page reload after a Rust-source edit, paused microphone after reload,
 and server/watcher termination on SIGTERM. This development command intentionally
 restarts the whole dev server; in-memory unsaved work is not retained.
+
+
+Alpha.3 publication: workflow 35464131857 passed verification, real PostgreSQL
+contracts and native AMD64/ARM64 installed-container suites, then published
+v0.1.0-alpha.3 from clean source ee4e917. All nine downloaded package hashes and
+RELEASE.json match SHA256SUMS. The published image was pulled and passed the
+installed-container Poku suite locally. README, operations and Compose now use
+alpha.3. Recognition remains experimental; publication does not establish the
+outstanding held-out/device accuracy gates.

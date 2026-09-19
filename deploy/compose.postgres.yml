@@ -1,6 +1,6 @@
 services:
   cadence:
-    image: ghcr.io/lojhan/cadence:0.1.0-alpha.2
+    image: ghcr.io/lojhan/cadence:0.1.0-alpha.3
     ports:
       - "127.0.0.1:3000:3000"
     environment:
