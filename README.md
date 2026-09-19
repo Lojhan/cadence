@@ -9,11 +9,11 @@ are still being validated. This is not a production release.
 Run the free personal workspace with one command, then open localhost:3000:
 
 ```sh
-docker run --detach --name cadence --restart unless-stopped --publish 127.0.0.1:3000:3000 --volume cadence-data:/data ghcr.io/lojhan/cadence:0.1.0-alpha.3
+docker run --detach --name cadence --restart unless-stopped --publish 127.0.0.1:3000:3000 --volume cadence-data:/data ghcr.io/lojhan/cadence:0.1.0-alpha.4
 ```
 
 Native AMD64 and ARM64 images are tested before publication. No external accounts
-are required. [Release and package assets](https://github.com/Lojhan/cadence/releases/tag/v0.1.0-alpha.3).
+are required. [Release and package assets](https://github.com/Lojhan/cadence/releases/tag/v0.1.0-alpha.4).
 
 The public application uses TanStack Start, pnpm, Rust/WASM, and Drizzle.
 The private managed edition adds Clerk and Stripe; self-hosting requires neither.

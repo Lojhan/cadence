@@ -134,3 +134,11 @@ reopens the engine on explicit retry. Generation checks ignore late errors from
 replaced workers/processors. The tests exercise both failures and ensure stale
 callbacks cannot mute a healthy replacement. This complements the context
 suspension regression; it does not replace real-device validation.
+
+
+Alpha.4 publication: release workflow 35467103996 passed full checks, PostgreSQL
+parity and native AMD64/ARM64 container verification, publishing clean source
+f40494a. All downloaded release checksums match the verified CI artifacts. The
+actual downloaded packages pass the isolated Poku consumer test, and the published
+GHCR image passes the local installed-container suite. Documented image tags now
+point to alpha.4. Recognition and physical-device gates remain open.
