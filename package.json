@@ -14,12 +14,17 @@
     "check": "pnpm build:wasm && pnpm lint && pnpm boundaries && pnpm typecheck && pnpm lint:rust && pnpm test",
     "boundaries": "tsx tooling/boundaries.ts",
     "lint:rust": "cargo fmt --all -- --check && cargo clippy --workspace --all-targets --locked -- -D warnings",
-    "build:wasm": "tsx tooling/build-wasm.ts"
+    "build:wasm": "tsx tooling/build-wasm.ts",
+    "db:migrate": "tsx tooling/migrate.ts",
+    "db:generate:sqlite": "pnpm --filter @cadence/db exec drizzle-kit generate --config drizzle.sqlite.ts",
+    "db:generate:postgres": "pnpm --filter @cadence/db exec drizzle-kit generate --config drizzle.postgres.ts",
+    "test:db": "poku test/db --sequential"
   },
   "devDependencies": {
     "@babel/parser": "7.29.9",
     "@biomejs/biome": "2.5.14",
     "@types/node": "24.10.0",
+    "node-gyp": "12.2.0",
     "poku": "4.5.0",
     "tsx": "4.23.13",
     "typescript": "7.0.2"

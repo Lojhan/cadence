@@ -1,0 +1,27 @@
+{
+  "name": "@cadence/db",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    "./sqlite": "./src/sqlite/index.ts",
+    "./postgres": "./src/postgres/index.ts",
+    "./migrate": "./src/migrate.ts"
+  },
+  "files": [
+    "src",
+    "migrations"
+  ],
+  "dependencies": {
+    "@cadence/contracts": "workspace:*",
+    "@cadence/application": "workspace:*",
+    "drizzle-orm": "0.45.2",
+    "better-sqlite3": "13.0.3",
+    "pg": "8.23.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "7.6.13",
+    "@types/pg": "8.20.0",
+    "drizzle-kit": "0.31.10"
+  }
+}

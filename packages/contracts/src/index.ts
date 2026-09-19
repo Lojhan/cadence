@@ -46,3 +46,51 @@ export class CadenceError extends Error {
     this.name = "CadenceError";
   }
 }
+
+export interface StoredPreferences {
+  values: Preferences;
+  revision: number;
+}
+export const positionSchema = z
+  .object({
+    songId: z.string().min(1),
+    songRevision: z.number().int().positive(),
+    index: z.number().int().nonnegative(),
+    completed: z.boolean(),
+    revision: z.number().int().nonnegative(),
+  })
+  .strict();
+export type Position = z.infer<typeof positionSchema>;
+export const saveSongSchema = songInputSchema
+  .extend({
+    id: z.string().min(1).optional(),
+    revision: z.number().int().positive().optional(),
+  })
+  .strict();
+export const savePreferencesSchema = z
+  .object({
+    revision: z.number().int().nonnegative(),
+    values: preferencesSchema,
+  })
+  .strict();
+export const archiveSchema = z
+  .object({
+    version: z.literal(1),
+    preferences: preferencesSchema,
+    songs: z.array(songInputSchema).max(1000),
+  })
+  .strict();
+export type Archive = z.infer<typeof archiveSchema>;
+export interface CadenceGateway {
+  library(): Promise<Song[]>;
+  preferences(): Promise<StoredPreferences>;
+  savePreferences(input: StoredPreferences): Promise<StoredPreferences>;
+  saveSong(
+    input: SongInput & { id?: string; revision?: number },
+  ): Promise<Song>;
+  deleteSong(id: string, revision: number): Promise<void>;
+  position(songId: string): Promise<Position | null>;
+  savePosition(input: Position): Promise<Position>;
+  exportData(): Promise<Archive>;
+  importData(input: unknown): Promise<void>;
+}
