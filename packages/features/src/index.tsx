@@ -100,6 +100,8 @@ export function PracticeApp({
   const [editing, setEditing] = useState<Song | null>(null);
   const [preview, setPreview] = useState<string[]>([]);
   const [formError, setFormError] = useState("");
+  const [recoveringProgress, setRecoveringProgress] = useState(false);
+  const [progressRecoveryError, setProgressRecoveryError] = useState("");
   const appElement = useRef<HTMLElement>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const positions = useRef(
@@ -279,6 +281,7 @@ export function PracticeApp({
     document.addEventListener("visibilitychange", onHide);
     return () => {
       document.removeEventListener("visibilitychange", onHide);
+      selecting.current++;
       controller.dispose();
     };
   }, [controller]);
@@ -333,6 +336,46 @@ export function PracticeApp({
     setDevicesOpen(false);
     setFormError("");
     setPanel(next);
+  }
+  async function useSavedPosition() {
+    if (recoveringProgress || progressSave.saving) return;
+    const songId = controller.getSnapshot().session.songId;
+    const pending = progressWrites.pendingFor(songId);
+    if (!pending) return;
+    const request = ++selecting.current;
+    controller.pause();
+    setRecoveringProgress(true);
+    setProgressRecoveryError("");
+    try {
+      const songs = await gateway.library();
+      const song =
+        songs.find((song) => song.id === songId) ??
+        songs.find((song) => song.id === "catalog:four") ??
+        songs[0];
+      if (!song) throw new Error("No saved music is available.");
+      const position = await gateway.position(song.id);
+      if (request !== selecting.current) return;
+      if (position && position.songRevision !== song.revision)
+        throw new Error("The music changed while loading. Try again.");
+      if (!progressWrites.discard(songId, pending))
+        throw new Error("Your position changed while loading. Try again.");
+      positions.current.set(song.id, position?.revision ?? 0);
+      queryClient.setQueryData(["library"], songs);
+      controller.replace(song, position?.index ?? 0);
+      if (song.id !== songId)
+        controller.setError("This song was removed. Default music is ready.");
+      setFormError("");
+      setPanel(null);
+    } catch (error) {
+      if (request === selecting.current)
+        setProgressRecoveryError(
+          error instanceof Error
+            ? error.message
+            : "Could not load saved progress. Try again.",
+        );
+    } finally {
+      setRecoveringProgress(false);
+    }
   }
   async function selectSong(song: Song) {
     const request = ++selecting.current;
@@ -434,7 +477,7 @@ export function PracticeApp({
   return (
     <main
       ref={appElement}
-      className={`app ${idle ? "is-idle" : ""} ${prefs.diagramSize === "large" ? "large-diagram" : ""}`}
+      className={`app ${idle ? "is-idle" : ""} ${prefs.diagramSize === "large" ? "large-diagram" : ""} ${(progressSave.error || preferenceError || error) && !panel ? "has-notice" : ""}`}
     >
       <header className="toolbar idle-ui">
         <span className="wordmark">cadence</span>
@@ -578,15 +621,28 @@ export function PracticeApp({
           </Select>
         </div>
       ) : null}
-      {progressSave.error ? (
+      {progressSave.error && !panel ? (
         <div className="toast" role="alert">
-          <span>Progress hasn’t saved. Keep this page open and retry.</span>
+          <span>
+            {progressRecoveryError ||
+              "Progress hasn’t saved. Keep this page open."}
+          </span>
           <IconButton
             label="Retry saving progress"
-            disabled={progressSave.saving}
-            onClick={() => void progressWrites.retry()}
+            disabled={progressSave.saving || recoveringProgress}
+            onClick={() => {
+              setProgressRecoveryError("");
+              void progressWrites.retry();
+            }}
           >
             <RotateCcw />
+          </IconButton>
+          <IconButton
+            label="Use saved position"
+            disabled={progressSave.saving || recoveringProgress}
+            onClick={() => void useSavedPosition()}
+          >
+            <Download />
           </IconButton>
         </div>
       ) : preferenceError && !panel ? (
@@ -1047,20 +1103,35 @@ export function PracticeApp({
               <p>Using saved settings replaces your unsaved changes.</p>
             </div>
           ) : null}
+          {progressSave.error ? (
+            <div className="error" role="alert">
+              <p>{progressRecoveryError || "Progress hasn’t saved."}</p>
+              <Button
+                disabled={progressSave.saving || recoveringProgress}
+                onClick={async () => {
+                  setProgressRecoveryError("");
+                  if (await progressWrites.retry()) setFormError("");
+                }}
+              >
+                <RotateCcw />
+                Retry saving progress
+              </Button>
+              <Button
+                disabled={progressSave.saving || recoveringProgress}
+                onClick={() => void useSavedPosition()}
+              >
+                <Download />
+                Use saved position
+              </Button>
+              <p>
+                Using the saved position replaces unsaved progress and pauses
+                the microphone.
+              </p>
+            </div>
+          ) : null}
           {formError ? (
             <div className="error" role="alert">
               {formError}
-              {progressSave.error ? (
-                <Button
-                  disabled={progressSave.saving}
-                  onClick={async () => {
-                    if (await progressWrites.retry()) setFormError("");
-                  }}
-                >
-                  <RotateCcw />
-                  Retry saving progress
-                </Button>
-              ) : null}
             </div>
           ) : null}
         </div>

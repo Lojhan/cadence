@@ -50,3 +50,44 @@ assert.deepEqual(
   ["a:1", "a:3", "b:4"],
   "writes serialize and retain every song's latest position",
 );
+
+const conflict = new ProgressWrites<{ songId: string; index: number }>(
+  async () => {
+    throw new Error("Conflict");
+  },
+);
+const original = { songId: "a", index: 1 };
+conflict.enqueue(original);
+await conflict.settled();
+assert.equal(conflict.pendingFor("a"), original);
+const newer = { songId: "a", index: 2 };
+conflict.enqueue(newer);
+assert.equal(
+  conflict.discard("a", original),
+  false,
+  "a stale recovery cannot discard newer navigation",
+);
+assert.equal(conflict.pendingFor("a"), newer);
+assert.equal(conflict.discard("a", newer), true);
+assert.equal(
+  conflict.getSnapshot().error,
+  "",
+  "explicit recovery clears the failed save",
+);
+assert.equal(await conflict.settled(), true);
+
+let finishWrite: (() => void) | undefined;
+const active = new ProgressWrites<{ songId: string; index: number }>(
+  async () =>
+    new Promise<void>((resolve) => {
+      finishWrite = resolve;
+    }),
+);
+active.enqueue(original);
+assert.equal(
+  active.discard("a", original),
+  false,
+  "cannot discard a write already in flight",
+);
+finishWrite?.();
+await active.settled();

@@ -20,6 +20,15 @@ export class ProgressWrites<T extends { songId: string }> {
     this.pending.set(value.songId, value);
     if (!this.state.error) void this.retry();
   }
+  pendingFor(songId: string) {
+    return this.pending.get(songId);
+  }
+  discard(songId: string, expected: T) {
+    if (this.running || this.pending.get(songId) !== expected) return false;
+    this.pending.delete(songId);
+    this.publish(this.pending.size ? this.state.error : "", false);
+    return true;
+  }
   settled() {
     return this.running ?? Promise.resolve(this.pending.size === 0);
   }

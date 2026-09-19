@@ -472,6 +472,74 @@ try {
     "dark",
     "a conflicting save never overwrites stored preferences",
   );
+  await otherTab.getByRole("button", { name: "Close", exact: true }).click();
+  await page.getByRole("button", { name: "Close", exact: true }).click();
+  const otherProgress = otherTab.waitForResponse(
+    (response) => response.request().method() === "POST" && response.ok(),
+  );
+  await otherTab
+    .getByRole("button", { name: "Previous chord", exact: true })
+    .click();
+  await otherProgress;
+  await page.getByRole("button", { name: "Next chord", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Retry saving progress" })
+    .waitFor({ timeout: 3000 });
+  async function assertRecoveryLayout() {
+    const notice = await page?.locator(".toast").boundingBox();
+    assert.ok(notice);
+    if (!notice) throw new Error("Save notice missing");
+    for (const selector of [".chord", ".diagram", ".chord-timeline"]) {
+      const box = await page?.locator(selector).boundingBox();
+      assert.ok(box);
+      if (!box) throw new Error(`${selector} missing`);
+      assert.ok(
+        notice.y + notice.height <= box.y ||
+          box.y + box.height <= notice.y ||
+          notice.x + notice.width <= box.x ||
+          box.x + box.width <= notice.x,
+        `save recovery leaves ${selector} unobscured`,
+      );
+    }
+  }
+  await assertRecoveryLayout();
+  if (process.env.CADENCE_RECOVERY_SCREENSHOT) {
+    await page.screenshot({ path: process.env.CADENCE_RECOVERY_SCREENSHOT });
+    const viewport = page.viewportSize();
+    await page.setViewportSize({ width: 320, height: 568 });
+    await assertRecoveryLayout();
+    await page.screenshot({
+      path: process.env.CADENCE_RECOVERY_SCREENSHOT.replace(
+        /\.png$/,
+        "-small.png",
+      ),
+    });
+    if (viewport) await page.setViewportSize(viewport);
+  }
+  await page
+    .getByRole("button", { name: "Use saved position" })
+    .click({ timeout: 3000 });
+  await page.getByRole("heading", { name: "Am", exact: true }).waitFor();
+  assert.equal(
+    await page
+      .getByRole("button", { name: "Unmute microphone", exact: true })
+      .count(),
+    1,
+    "progress recovery loads the other tab's position and stays paused",
+  );
+  const recoveredProgress = page.waitForResponse(
+    (response) => response.request().method() === "POST" && response.ok(),
+  );
+  await page.getByRole("button", { name: "Next chord", exact: true }).click();
+  await recoveredProgress;
+  await page.reload();
+  await page.getByRole("heading", { name: "C", exact: true }).waitFor();
+  assert.equal(
+    await page.getByRole("button", { name: "Retry saving progress" }).count(),
+    0,
+    "subsequent saves use the recovered revision",
+  );
+  await page.getByRole("button", { name: "Open settings" }).click();
   await otherTab.close();
   await page.getByRole("button", { name: "Close", exact: true }).click();
   await page.mouse.move(10, 10);

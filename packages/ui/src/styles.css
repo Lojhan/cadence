@@ -613,13 +613,20 @@ p {
   margin-bottom: 12px;
   font-size: 13px;
 }
+.has-notice .stage {
+  padding-top: 150px;
+}
 .toast {
   position: absolute;
-  bottom: 110px;
+  top: 82px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: max-content;
   left: 50%;
   transform: translateX(-50%);
-  max-width: 90%;
-  padding: 10px 16px;
+  max-width: calc(100% - 32px);
+  padding: 8px 12px;
   background: var(--white);
   border: 1px solid var(--line);
   border-radius: 16px;
@@ -647,6 +654,12 @@ p {
     gap: 18px;
     padding: 72px 20px 8px;
   }
+  .has-notice .stage {
+    padding-top: 136px;
+  }
+  .toast {
+    top: 72px;
+  }
   .chord {
     font-size: clamp(76px, 23vw, 108px);
     min-width: 0;
@@ -655,6 +668,9 @@ p {
     width: auto;
     height: clamp(150px, 34dvh, 290px);
     max-width: calc(100vw - 110px);
+  }
+  .has-notice .diagram {
+    min-height: 0;
   }
   .step-arrow {
     width: 44px;
