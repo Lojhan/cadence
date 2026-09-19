@@ -28,7 +28,8 @@
     "build:packages": "tsx tooling/package-release.ts",
     "eval:audio": "cargo run --quiet --locked --release -p cadence-eval --",
     "eval:wasm": "tsx tooling/evaluate-wasm.ts",
-    "test:audio-parity": "poku test/evaluation/wasm-corpus.test.ts"
+    "test:audio-parity": "poku test/evaluation/wasm-corpus.test.ts",
+    "db:generate": "tsx tooling/generate.ts"
   },
   "devDependencies": {
     "@babel/parser": "7.29.9",

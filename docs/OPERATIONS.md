@@ -87,3 +87,18 @@ The Poku suite verifies a fresh provider-free installation, non-root execution,
 database persistence after restart, backup creation, and Host validation. For
 Podman, build with `--format docker` to retain the image healthcheck and run with
 `CONTAINER_ENGINE=podman pnpm test:container`.
+
+## Generating schema migrations
+
+For development, select the dialect explicitly:
+
+```sh
+pnpm db:generate sqlite
+pnpm db:generate postgres
+```
+
+These commands generate SQL and Drizzle metadata from the corresponding schema;
+they do not connect to or modify a database. Review and commit generated files
+for both dialects when changing shared persistence behavior. Existing
+`db:generate:sqlite` and `db:generate:postgres` commands remain available.
+Use `pnpm db:migrate` with the intended `DATABASE_URL` to apply migrations.
