@@ -19,7 +19,9 @@ See [audio evaluation](https://github.com/Lojhan/cadence/blob/main/docs/AUDIO_EV
 for scope, historical measurements, and limitations.
 
 The release includes nine ESM packages with TypeScript declarations, matching
-WASM and migration assets, and SHA-256 checksums. Companion dependencies are pinned
+WASM and migration assets, and SHA-256 checksums. `RELEASE.json` records the source
+commit, package hashes/versions, WASM hash and protocol, content-addressed catalog
+version, and required migration hashes for both databases. Companion dependencies are pinned
 to this release. Container images are tested on native AMD64 and ARM64 runners
 before their shared manifest is published.
 

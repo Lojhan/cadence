@@ -9,6 +9,11 @@ import {
   writeFileSync,
 } from "node:fs";
 import { resolve } from "node:path";
+import {
+  engineVersion,
+  protocolVersion,
+} from "../packages/audio-engine/src/index.ts";
+import { defaultSongs } from "../packages/music/src/index.ts";
 
 const version = process.env.CADENCE_RELEASE_VERSION ?? "0.1.0-alpha.2";
 if (!/^\d+\.\d+\.\d+(?:-[a-z0-9.]+)?$/.test(version))
@@ -25,6 +30,12 @@ function run(command: string, args: string[], cwd = process.cwd()) {
 }
 run("pnpm", ["exec", "tsc", "-p", "tsconfig.packages.json"]);
 const checksums: string[] = [];
+const packages: Record<
+  string,
+  { version: string; file: string; sha256: string }
+> = {};
+const sha256 = (file: string) =>
+  createHash("sha256").update(readFileSync(file)).digest("hex");
 for (const directory of readdirSync("packages")) {
   const source = resolve("packages", directory);
   const destination = resolve(output, directory);
@@ -92,11 +103,59 @@ for (const directory of readdirSync("packages")) {
   }
   run("pnpm", ["pack", "--pack-destination", tarballs], destination);
   const filename = `cadence-${directory}-${version}.tgz`;
-  checksums.push(
-    `${createHash("sha256")
-      .update(readFileSync(`${tarballs}/${filename}`))
-      .digest("hex")}  ${filename}`,
-  );
+  const hash = sha256(`${tarballs}/${filename}`);
+  checksums.push(`${hash}  ${filename}`);
+  packages[manifest.name] = { version, file: filename, sha256: hash };
 }
+const database = Object.fromEntries(
+  ["sqlite", "postgres"].map((dialect) => {
+    const root = resolve("packages/db/migrations", dialect);
+    const journal = JSON.parse(
+      readFileSync(`${root}/meta/_journal.json`, "utf8"),
+    ) as { entries: { tag: string }[] };
+    const migrations = journal.entries.map(({ tag }) => ({
+      name: tag,
+      sha256: sha256(`${root}/${tag}.sql`),
+    }));
+    const latest = migrations.at(-1);
+    if (!latest) throw new Error(`No ${dialect} migrations found`);
+    return [
+      dialect,
+      {
+        requiredMigration: latest.name,
+        requiredMigrationSha256: latest.sha256,
+        migrations,
+      },
+    ];
+  }),
+);
+const release = {
+  schemaVersion: 1,
+  version,
+  source: {
+    revision: run("git", ["rev-parse", "HEAD"]).trim(),
+    dirty: run("git", ["status", "--porcelain"]).trim().length > 0,
+  },
+  packages,
+  audio: {
+    engineVersion,
+    protocolVersion,
+    package: "@cadence/audio-engine",
+    wasmPath: "generated/cadence_wasm_bg.wasm",
+    wasmSha256: sha256(`${output}/audio-engine/generated/cadence_wasm_bg.wasm`),
+  },
+  catalog: {
+    version: `sha256:${createHash("sha256").update(JSON.stringify(defaultSongs)).digest("hex")}`,
+    songs: defaultSongs.map(({ id, revision }) => ({ id, revision })),
+  },
+  database,
+};
+writeFileSync(
+  `${tarballs}/RELEASE.json`,
+  `${JSON.stringify(release, null, 2)}\n`,
+);
+checksums.push(`${sha256(`${tarballs}/RELEASE.json`)}  RELEASE.json`);
 writeFileSync(`${tarballs}/SHA256SUMS`, `${checksums.join("\n")}\n`);
-console.log(`Packed ${checksums.length} MIT packages for ${version}`);
+console.log(
+  `Packed ${Object.keys(packages).length} MIT packages for ${version}`,
+);
