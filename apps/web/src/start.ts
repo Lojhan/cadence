@@ -4,6 +4,8 @@ import {
   createStart,
 } from "@tanstack/react-start";
 
+import { bodyWithinLimit } from "./server/body-limit.server.ts";
+
 const personalOrigin = createMiddleware().server(async ({ request, next }) => {
   const expected = new URL(
     process.env.PUBLIC_ORIGIN ?? "http://localhost:3000",
@@ -11,7 +13,7 @@ const personalOrigin = createMiddleware().server(async ({ request, next }) => {
   const actual = new URL(request.url);
   if (actual.host !== expected.host)
     return new Response("Unrecognized host", { status: 403 });
-  if (Number(request.headers.get("content-length") ?? 0) > 11_000_000)
+  if (!(await bodyWithinLimit(request, 11_000_000)))
     return new Response("Request too large", { status: 413 });
   const result = await next();
   result.response.headers.set(

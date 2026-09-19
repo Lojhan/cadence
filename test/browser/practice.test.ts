@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { request as httpRequest } from "node:http";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { chromium, type Page } from "playwright";
@@ -68,6 +69,29 @@ try {
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
   assert.ok(ready, logs);
+  const oversizedStatus = await new Promise<number | undefined>(
+    (resolve, reject) => {
+      const request = httpRequest(
+        "http://localhost:3100/health",
+        { method: "POST" },
+        (response) => {
+          response.resume();
+          resolve(response.statusCode);
+        },
+      );
+      request.on("error", reject);
+      // Multiple writes produce a chunked request with no Content-Length header.
+      for (let index = 0; index < 12; index++)
+        request.write(Buffer.alloc(1_000_000, 97));
+      request.end();
+    },
+  );
+  assert.equal(
+    oversizedStatus,
+    413,
+    "the built server bounds chunked request bodies",
+  );
+
   browser = await chromium.launch({
     args: [
       "--use-fake-ui-for-media-stream",
