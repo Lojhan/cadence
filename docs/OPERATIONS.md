@@ -6,7 +6,8 @@ to localhost or protect a remote installation with your own access gateway.
 
 ## Build and run
 
-Until a release image is published, build the image from this checkout:
+The published alpha image is `ghcr.io/lojhan/cadence:0.1.0-alpha.1`. To build an
+equivalent local image from this checkout:
 
 ```sh
 docker build -f deploy/Dockerfile -t cadence:local .
@@ -25,9 +26,7 @@ header. `/health` checks the process; `/ready` also checks database access.
 
 `DATABASE_URL=file:/data/cadence.db` is the default. A PostgreSQL URL selects the
 PostgreSQL adapter. Managed PostgreSQL must use the TLS settings required by its
-provider. `deploy/compose.postgres.yml` shows a two-container deployment; set its
-image to your local build until the referenced release is available, and provide
-a URL-safe `POSTGRES_PASSWORD` through your local environment.
+provider. `deploy/compose.postgres.yml` shows a two-container deployment; provide a URL-safe `POSTGRES_PASSWORD` through your local environment.
 
 ## Upgrade
 
