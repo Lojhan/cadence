@@ -591,6 +591,6 @@ Verification: all 31 Poku suites passed, including browser capture/progression,
 quiet-input boost, repeated strums, invalid/noisy audio and WASM memory stability.
 The complete 772-case manifest agrees exactly on decisions and sample latencies
 between native Rust and WASM at all three sensitivities. Native processing in the
-focused Balanced run took about 0.8 seconds for over 459 seconds of analyzed
+focused Balanced run took about 0.9 seconds for over 455 seconds of analyzed
 audio; this measurement is not a physical-device benchmark. Shared hover colors
 were checked on actual light/dark app controls, preserving unboxed arrows.
