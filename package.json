@@ -26,22 +26,25 @@
     "container:build": "docker build -f deploy/Dockerfile -t cadence:test .",
     "test:container": "poku integration/container --sequential",
     "build:packages": "tsx tooling/package-release.ts",
-    "eval:audio": "cargo run --quiet --locked --release -p cadence-eval --"
+    "eval:audio": "cargo run --quiet --locked --release -p cadence-eval --",
+    "eval:wasm": "tsx tooling/evaluate-wasm.ts",
+    "test:audio-parity": "poku test/evaluation/wasm-corpus.test.ts"
   },
   "devDependencies": {
     "@babel/parser": "7.29.9",
     "@biomejs/biome": "2.5.14",
+    "@cadence/db": "workspace:*",
     "@types/node": "24.10.0",
-    "node-gyp": "12.2.0",
-    "poku": "4.5.0",
-    "tsx": "4.23.13",
-    "typescript": "7.0.2",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
+    "esbuild": "0.28.2",
+    "node-gyp": "12.2.0",
+    "playwright": "1.63.0",
+    "poku": "4.5.0",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "playwright": "1.63.0",
-    "esbuild": "0.28.2",
-    "@cadence/db": "workspace:*"
+    "tsx": "4.23.13",
+    "typescript": "7.0.2",
+    "wavefile": "11.0.0"
   }
 }

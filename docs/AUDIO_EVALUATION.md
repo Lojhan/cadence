@@ -140,3 +140,26 @@ dataset; held-out players and real-device validation are still outstanding.
 Two calibration experiments were rejected: lowering the peak cutoff lost an
 existing correct match, and averaging chroma across frames increased false matches.
 Neither experiment changed the committed runtime engine.
+
+
+## Native and WASM corpus parity
+
+The offline WASM runner decodes the same WAV intervals and feeds 2,048-sample
+blocks into the generated Rust engine. It contains no JavaScript recognition
+implementation. PCM8/16/24/32 and float32 decoding, including mono averaging,
+are covered by Poku.
+
+```sh
+pnpm --silent eval:wasm artifacts/guitarset/calibration-confusions.json balanced > artifacts/guitarset/calibration-confusions-wasm-report.json
+CADENCE_AUDIO_MANIFEST=artifacts/guitarset/calibration-confusions.json pnpm test:audio-parity
+```
+
+Poku compared all 1,546 calibration cases across Gentle, Balanced and Precise:
+all 4,638 match decisions and their sample-based latencies agree exactly with
+the optimized native evaluator. The normal test suite runs the same comparison
+on the checked-in recording fixtures; the complete dataset remains an optional
+local input because its audio is separately licensed.
+
+This establishes runtime parity, not improved recognition accuracy. Node's
+offline WASM processing measurements exclude microphone capture, browser
+scheduling and device latency. Held-out recordings remain unevaluated.
