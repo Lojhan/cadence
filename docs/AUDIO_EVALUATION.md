@@ -447,3 +447,42 @@ and the [candidate with its synthetic test](evaluation/guitarset-envelope-mixtur
 are retained. Restoring the evaluator reproduced the previous report exactly,
 including recognition results, tuning choices and every note strength. Production
 DSP and WASM sources were unchanged throughout this experiment.
+
+## Calibration-only isolated-note preparation
+
+```sh
+python3 tooling/prepare_note_windows.py artifacts/guitarset
+```
+
+The preparation tool verifies both published archive MD5 checksums before
+extracting data. It opens only solo annotations and audio for players 00–03;
+players 04–05 remain held out. It writes `calibration-note-windows.json` plus
+selected WAVs under ignored `audio-solo-calibration/`. Each source file and
+annotation has a SHA-256 hash in the manifest. Data retains GuitarSet's CC BY 4.0
+license and is not included in app packages or containers.
+
+Selection uses annotations alone. For MIDI 40–88, it samples up to three
+8192-sample windows (attack, middle, late), with 100 ms margins inside the note
+and recording. Any other note overlapping the guarded interval excludes that
+window, including another string at the same pitch or a note outside the modeled
+range. Duplicate candidate windows are removed. Short notes are excluded.
+
+The [inventory](evaluation/guitarset-note-window-inventory.json) contains 3,016
+windows from 1,132 distinct annotated notes across 114 recordings. These are not
+3,016 independent examples. Coverage is sparse for low notes and absent above
+MIDI 77; E2 has only one selected window. Annotation isolation is not proof of
+acoustic isolation: residual ringing, annotation errors, and noise still require
+screening before fitting templates or making accuracy claims.
+
+Poku first failed on the missing selector, then checks overlap, same-pitch
+contamination, out-of-range interferers, note/recording boundaries, sample-rate
+handling, held-out filename exclusion, and rejection of corrupt archives before
+extraction. A truncated-recording guard regression also failed before its fix.
+The verified local archive preparation completed successfully.
+
+An exploratory G3 measurement (method and NumPy version in the inventory) found
+the third harmonic stronger than the fundamental in 22/37 late windows, compared
+with 1/38 attack windows. The late median third/fundamental ratio is about 1.23,
+versus 0.39 at attack. This motivates testing measured, time-dependent templates;
+it does not establish that they will improve classification. No trained model
+or runtime change is included in this preparation step.

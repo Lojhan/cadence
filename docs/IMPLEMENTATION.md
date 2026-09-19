@@ -240,3 +240,13 @@ Poku suites passed. The real false D5 persisted, so the candidate and extra test
 were reverted together. Per-frame evidence and the rejected patch are retained.
 The restored evaluator's focused report exactly matches the previous baseline;
 no shipping recognition behavior changed and the accuracy gate remains open.
+
+Measured-template data preparation: a test-first selector verifies the GuitarSet
+archives and extracts only calibration-player solo recordings with annotation-
+isolated attack/middle/late windows. Poku caught a missing full guard at truncated
+file boundaries; the fixed selector passes overlap, boundary, split and checksum
+checks. The actual corpus yields 3,016 windows from 1,132 distinct notes in 114 files;
+coverage and source/manifest hashes are recorded. This is preparation for a new
+recognition candidate, not a trained model or an accuracy improvement.
+Full verification passed: build, Biome, boundaries, TypeScript, Rust format/Clippy,
+and all 31 Poku suites. The raw corpus and generated training manifest remain local.

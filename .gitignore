@@ -19,3 +19,5 @@ packages/audio-engine/generated/
 
 apps/*/.output/
 apps/*/.tanstack/
+
+__pycache__/

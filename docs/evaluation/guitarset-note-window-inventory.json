@@ -1,0 +1,239 @@
+{
+  "source": "https://zenodo.org/records/3371780",
+  "license": "CC-BY-4.0",
+  "split": "calibration",
+  "heldOutRead": false,
+  "audioArchiveMd5": "275966d6610ac34999b58426beb119c3",
+  "annotationArchiveMd5": "b39b78e63d3446f2e54ddb7a54df9b10",
+  "manifestSha256": "0fdbe8a35adfb15ff77d33dce22a374f477c196043e10825d040d95cec37106d",
+  "selectorSha256": "2a09a32458e783f4c58b6becbd7222ba4bdc4beb2bf10f3f28f04902da2d3442",
+  "selection": "8192-sample attack/middle/late windows within a single annotated MIDI note, with 100 ms margins and no other annotated note overlapping the guarded window; only players 00-03 solo recordings",
+  "files": 114,
+  "windows": 3016,
+  "distinctAnnotatedNotes": 1132,
+  "phaseCounts": {
+    "attack": 996,
+    "middle": 1044,
+    "late": 976
+  },
+  "noteCoverage": {
+    "40": {
+      "windows": 1,
+      "distinctAnnotatedNotes": 1
+    },
+    "41": {
+      "windows": 8,
+      "distinctAnnotatedNotes": 3
+    },
+    "42": {
+      "windows": 9,
+      "distinctAnnotatedNotes": 3
+    },
+    "43": {
+      "windows": 5,
+      "distinctAnnotatedNotes": 2
+    },
+    "44": {
+      "windows": 38,
+      "distinctAnnotatedNotes": 13
+    },
+    "45": {
+      "windows": 25,
+      "distinctAnnotatedNotes": 9
+    },
+    "46": {
+      "windows": 42,
+      "distinctAnnotatedNotes": 18
+    },
+    "47": {
+      "windows": 23,
+      "distinctAnnotatedNotes": 8
+    },
+    "48": {
+      "windows": 25,
+      "distinctAnnotatedNotes": 10
+    },
+    "49": {
+      "windows": 28,
+      "distinctAnnotatedNotes": 11
+    },
+    "50": {
+      "windows": 43,
+      "distinctAnnotatedNotes": 16
+    },
+    "51": {
+      "windows": 88,
+      "distinctAnnotatedNotes": 33
+    },
+    "52": {
+      "windows": 54,
+      "distinctAnnotatedNotes": 21
+    },
+    "53": {
+      "windows": 152,
+      "distinctAnnotatedNotes": 54
+    },
+    "54": {
+      "windows": 66,
+      "distinctAnnotatedNotes": 25
+    },
+    "55": {
+      "windows": 116,
+      "distinctAnnotatedNotes": 46
+    },
+    "56": {
+      "windows": 185,
+      "distinctAnnotatedNotes": 67
+    },
+    "57": {
+      "windows": 115,
+      "distinctAnnotatedNotes": 42
+    },
+    "58": {
+      "windows": 211,
+      "distinctAnnotatedNotes": 80
+    },
+    "59": {
+      "windows": 125,
+      "distinctAnnotatedNotes": 48
+    },
+    "60": {
+      "windows": 156,
+      "distinctAnnotatedNotes": 58
+    },
+    "61": {
+      "windows": 177,
+      "distinctAnnotatedNotes": 66
+    },
+    "62": {
+      "windows": 146,
+      "distinctAnnotatedNotes": 59
+    },
+    "63": {
+      "windows": 136,
+      "distinctAnnotatedNotes": 51
+    },
+    "64": {
+      "windows": 166,
+      "distinctAnnotatedNotes": 62
+    },
+    "65": {
+      "windows": 146,
+      "distinctAnnotatedNotes": 60
+    },
+    "66": {
+      "windows": 112,
+      "distinctAnnotatedNotes": 42
+    },
+    "67": {
+      "windows": 136,
+      "distinctAnnotatedNotes": 48
+    },
+    "68": {
+      "windows": 70,
+      "distinctAnnotatedNotes": 28
+    },
+    "69": {
+      "windows": 62,
+      "distinctAnnotatedNotes": 23
+    },
+    "70": {
+      "windows": 107,
+      "distinctAnnotatedNotes": 38
+    },
+    "71": {
+      "windows": 53,
+      "distinctAnnotatedNotes": 21
+    },
+    "72": {
+      "windows": 89,
+      "distinctAnnotatedNotes": 31
+    },
+    "73": {
+      "windows": 30,
+      "distinctAnnotatedNotes": 11
+    },
+    "74": {
+      "windows": 24,
+      "distinctAnnotatedNotes": 8
+    },
+    "75": {
+      "windows": 17,
+      "distinctAnnotatedNotes": 6
+    },
+    "76": {
+      "windows": 21,
+      "distinctAnnotatedNotes": 7
+    },
+    "77": {
+      "windows": 9,
+      "distinctAnnotatedNotes": 3
+    },
+    "78": {
+      "windows": 0,
+      "distinctAnnotatedNotes": 0
+    },
+    "79": {
+      "windows": 0,
+      "distinctAnnotatedNotes": 0
+    },
+    "80": {
+      "windows": 0,
+      "distinctAnnotatedNotes": 0
+    },
+    "81": {
+      "windows": 0,
+      "distinctAnnotatedNotes": 0
+    },
+    "82": {
+      "windows": 0,
+      "distinctAnnotatedNotes": 0
+    },
+    "83": {
+      "windows": 0,
+      "distinctAnnotatedNotes": 0
+    },
+    "84": {
+      "windows": 0,
+      "distinctAnnotatedNotes": 0
+    },
+    "85": {
+      "windows": 0,
+      "distinctAnnotatedNotes": 0
+    },
+    "86": {
+      "windows": 0,
+      "distinctAnnotatedNotes": 0
+    },
+    "87": {
+      "windows": 0,
+      "distinctAnnotatedNotes": 0
+    },
+    "88": {
+      "windows": 0,
+      "distinctAnnotatedNotes": 0
+    }
+  },
+  "caveat": "Annotation-isolated does not guarantee acoustically isolated: ringing, annotation errors and room noise still require screening. Repeated windows are not independent examples. Selection does not establish model or recognition accuracy.",
+  "exploratoryG3": {
+    "method": "NumPy 2.5.3; mono int16 PCM normalized by 32768; 8192-point rFFT after np.hanning(8192); magnitude maximum within +/-2 bins around harmonics 1 and 3 of the annotated fractional MIDI frequency; ratio third/fundamental, excluding fundamental magnitude <=1e-8. No acoustic purity screening. Descriptive calibration measurement only.",
+    "attack": {
+      "windows": 38,
+      "medianThirdOverFundamental": 0.38940073654214424,
+      "p90ThirdOverFundamental": 0.608231428817433,
+      "thirdStrongerCount": 1
+    },
+    "middle": {
+      "windows": 41,
+      "medianThirdOverFundamental": 0.736489552273102,
+      "p90ThirdOverFundamental": 4.231112113756618,
+      "thirdStrongerCount": 18
+    },
+    "late": {
+      "windows": 37,
+      "medianThirdOverFundamental": 1.2293387537596283,
+      "p90ThirdOverFundamental": 8.773739184819217,
+      "thirdStrongerCount": 22
+    }
+  }
+}
