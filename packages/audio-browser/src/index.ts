@@ -76,6 +76,7 @@ export class Microphone {
       });
       this.worker = worker;
       const channel = new MessageChannel();
+      let failEngine: ((message: string) => void) | undefined;
       const ready = new Promise<void>((resolve, reject) => {
         const timeout = setTimeout(
           () => reject(new Error("Audio engine initialization timed out")),
@@ -85,21 +86,22 @@ export class Microphone {
           clearTimeout(timeout);
           resolve();
         };
-        worker.onerror = () => {
+        failEngine = (message) => {
+          if (request !== this.generation || this.disposed) return;
           clearTimeout(timeout);
-          reject(new Error("Audio engine failed to load"));
+          reject(new Error(message));
           this.mute();
+          this.emit({ type: "error", message });
         };
+        worker.onerror = () =>
+          failEngine?.("Audio engine failed. Unmute to try again.");
         worker.onmessage = ({ data }) => {
           if (request !== this.generation || this.disposed) return;
           if (data.type === "ready") {
             clearTimeout(timeout);
             resolve();
           } else if (data.type === "error") {
-            clearTimeout(timeout);
-            reject(new Error(data.message));
-            this.mute();
-            this.emit(data);
+            failEngine?.(data.message);
           } else if (
             this.listening &&
             data.generation === this.streamGeneration
@@ -131,6 +133,8 @@ export class Microphone {
           if (request !== this.generation || this.disposed) return;
           const capture = new AudioWorkletNode(context, "cadence-capture");
           this.capture = capture;
+          capture.onprocessorerror = () =>
+            failEngine?.("Audio capture failed. Unmute to try again.");
           capture.port.postMessage({ port: channel.port2 }, [channel.port2]);
           this.source = context.createMediaStreamSource(stream);
           this.source.connect(capture);

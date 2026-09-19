@@ -125,3 +125,12 @@ verifies disabled capture and a preserved chord through recovery. This is
 browser lifecycle evidence, not physical-device or recognition-accuracy evidence.
 The state handling follows the documented
 [AudioContext states](https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/state).
+
+Worker/worklet failure recovery: separate Poku regressions first exposed that a
+worker crash after initialization only emitted muted, and a worklet processor
+crash left capture enabled. Both failures now mute, invalidate queued audio, and
+report a recoverable error so the controller clears its cached configuration and
+reopens the engine on explicit retry. Generation checks ignore late errors from
+replaced workers/processors. The tests exercise both failures and ensure stale
+callbacks cannot mute a healthy replacement. This complements the context
+suspension regression; it does not replace real-device validation.

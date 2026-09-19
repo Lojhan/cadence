@@ -8,6 +8,7 @@ const events: AudioEvent[] = [];
 const track = { enabled: false, onended: null, stop() {} };
 let context: FakeContext | undefined;
 let worker: FakeWorker | undefined;
+let capture: FakeCapture | undefined;
 class FakeContext {
   state = "suspended";
   sampleRate = 48000;
@@ -32,6 +33,7 @@ class FakeContext {
   }
 }
 class FakeWorker {
+  onerror: (() => void) | undefined;
   onmessage: ((event: { data: unknown }) => void) | undefined;
   messages: { type: string; generation?: number }[] = [];
   constructor() {
@@ -45,6 +47,10 @@ class FakeWorker {
   terminate() {}
 }
 class FakeCapture {
+  onprocessorerror: (() => void) | undefined;
+  constructor() {
+    capture = this;
+  }
   port = { postMessage() {} };
   connect() {}
   disconnect() {}
@@ -119,5 +125,41 @@ for (const interruption of ["suspended", "interrupted", "closed"]) {
     beforeDispose,
     "intentional disposal does not report a new interruption",
   );
+  events.length = 0;
+}
+
+for (const failure of ["worker", "processor"]) {
+  const input = new Microphone((event) => events.push(event));
+  await input.open("", "balanced");
+  if (!worker || !capture) throw new Error("Audio fixture did not initialize");
+  const failedWorker = worker;
+  const failedCapture = capture;
+  const crash = () =>
+    failure === "worker"
+      ? failedWorker.onerror?.()
+      : failedCapture.onprocessorerror?.();
+  await input.unmute({ sessionId: "s", epoch: 1, mask: 145 });
+  crash();
+  assert.equal(track.enabled, false, `${failure} crash disables capture`);
+  assert.equal(
+    events.at(-1)?.type,
+    "error",
+    `${failure} crash reports a recoverable error after initialization`,
+  );
+  await input.open("", "balanced");
+  await input.unmute({ sessionId: "s", epoch: 2, mask: 145 });
+  const before = events.length;
+  crash();
+  assert.equal(
+    events.length,
+    before,
+    `late ${failure} errors from a replaced engine are ignored`,
+  );
+  assert.equal(
+    track.enabled,
+    true,
+    `late ${failure} errors cannot mute the replacement`,
+  );
+  input.dispose();
   events.length = 0;
 }
