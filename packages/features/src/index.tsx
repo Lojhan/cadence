@@ -12,6 +12,7 @@ import {
   Button,
   ChordTimeline,
   Dialog,
+  DirectionalGroup,
   Fretboard,
   IconButton,
   PracticeDock,
@@ -91,6 +92,8 @@ export function PracticeApp({
     enabled: preferenceDraft === null,
   });
   const prefs = (preferenceDraft ?? preferences.data).values;
+  const [stepDirection, setStepDirection] = useState(1);
+  const [tabDirection, setTabDirection] = useState(1);
   const [panel, setPanel] = useState<Panel | null>(null);
   const [devicesOpen, setDevicesOpen] = useState(false);
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
@@ -257,7 +260,10 @@ export function PracticeApp({
   useEffect(() => {
     if (session.status !== "transitioning") return;
     const timer = setTimeout(
-      () => controller.finish(session.epoch),
+      () => {
+        setStepDirection(1);
+        controller.finish(session.epoch);
+      },
       matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 350,
     );
     return () => clearTimeout(timer);
@@ -323,8 +329,14 @@ export function PracticeApp({
           setSetupOpen(true);
         } else void controller.toggle(device, prefs.profile, boostDb);
       }
-      if (event.key === "ArrowRight") controller.navigate(session.index + 1);
-      if (event.key === "ArrowLeft") controller.navigate(session.index - 1);
+      if (event.key === "ArrowRight") {
+        setStepDirection(1);
+        controller.navigate(session.index + 1);
+      }
+      if (event.key === "ArrowLeft") {
+        setStepDirection(-1);
+        controller.navigate(session.index - 1);
+      }
     };
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
@@ -521,27 +533,37 @@ export function PracticeApp({
           </IconButton>
         </div>
       </header>
-      <section
-        className={`stage ${session.status === "transitioning" ? "matched" : ""}`}
-        aria-label="Practice stage"
+      <DirectionalGroup
+        transitionKey={`${session.sessionId}:${session.index}`}
+        direction={stepDirection}
+        className="practice-sequence"
+        frameClassName="sequence-frame"
       >
-        <h1 className="chord">{chord.symbol}</h1>
-        {shape ? (
-          <Fretboard
-            shape={shape}
-            symbol={chord.symbol}
-            hand={prefs.hand}
-            numbers={prefs.numbers}
-          />
-        ) : null}
-      </section>
-      <ChordTimeline chords={session.chords} index={session.index} />
+        <section
+          className={`stage ${session.status === "transitioning" ? "matched" : ""}`}
+          aria-label="Practice stage"
+        >
+          <h1 className="chord">{chord.symbol}</h1>
+          {shape ? (
+            <Fretboard
+              shape={shape}
+              symbol={chord.symbol}
+              hand={prefs.hand}
+              numbers={prefs.numbers}
+            />
+          ) : null}
+        </section>
+        <ChordTimeline chords={session.chords} index={session.index} />
+      </DirectionalGroup>
       {session.index > 0 ? (
         <button
           type="button"
           className="step-arrow previous idle-ui"
           aria-label="Previous chord"
-          onClick={() => controller.navigate(session.index - 1)}
+          onClick={() => {
+            setStepDirection(-1);
+            controller.navigate(session.index - 1);
+          }}
         >
           <ChevronLeft />
         </button>
@@ -551,7 +573,10 @@ export function PracticeApp({
           type="button"
           className="step-arrow next idle-ui"
           aria-label="Next chord"
-          onClick={() => controller.navigate(session.index + 1)}
+          onClick={() => {
+            setStepDirection(1);
+            controller.navigate(session.index + 1);
+          }}
         >
           <ChevronRight />
         </button>
@@ -764,6 +789,12 @@ export function PracticeApp({
               type="button"
               aria-current={panel === key ? "page" : undefined}
               onClick={() => {
+                const tabs = ["library", "import", "settings", "account"];
+                setTabDirection(
+                  tabs.indexOf(key) >= tabs.indexOf(panel ?? "library")
+                    ? 1
+                    : -1,
+                );
                 setPanel(key);
                 setFormError("");
               }}
@@ -773,10 +804,14 @@ export function PracticeApp({
             </button>
           ))}
         </nav>
-        <div className="panel-body">
+        <DirectionalGroup
+          transitionKey={panel ?? "closed"}
+          direction={tabDirection}
+          className="panel-body panel-motion"
+          frameClassName="panel-frame"
+        >
           {panel === "library" ? (
             <>
-              <h2>Find your next song.</h2>
               <label className="field">
                 <span>Search music</span>
                 <input
@@ -861,7 +896,6 @@ export function PracticeApp({
           ) : null}
           {panel === "import" ? (
             <>
-              <h2>{editing ? "Make it your own." : "Bring your own music."}</h2>
               <label className="field">
                 <span>Song title</span>
                 <input
@@ -962,7 +996,6 @@ export function PracticeApp({
           ) : null}
           {panel === "settings" ? (
             <>
-              <h2>Make yourself comfortable.</h2>
               <PreferenceRow
                 title="Handedness"
                 detail="Mirror the fretboard"
@@ -1058,54 +1091,41 @@ export function PracticeApp({
                 boostDb={boostDb}
                 onBoost={changeBoost}
               />
-              <p className="note">
-                Open circles mean open strings. Crossed strings stay silent.
-                Play the chord when you are ready; Cadence listens on this
-                device.
-              </p>
             </>
           ) : null}
-          {panel === "account" ? (
-            <>
-              {account ?? (
+          {panel === "account"
+            ? (account ?? (
                 <>
-                  <h2>Your music. Your space.</h2>
+                  <div className="actions">
+                    <Button
+                      onClick={() =>
+                        void gateway
+                          .exportData()
+                          .then(download)
+                          .catch((error: Error) => setFormError(error.message))
+                      }
+                    >
+                      <Download />
+                      Export my data
+                    </Button>
+                  </div>
+                  <label className="field">
+                    <span>Restore a Cadence export</span>
+                    <input
+                      type="file"
+                      accept=".json,application/json"
+                      onChange={(event) =>
+                        void importFile(event.target.files?.[0], true)
+                      }
+                    />
+                  </label>
                   <p>
-                    This installation is free and needs no account. Export your
-                    library and preferences to move them to another Cadence
-                    installation.
+                    Restore adds copies of the imported songs and replaces your
+                    preferences.
                   </p>
                 </>
-              )}
-              <div className="actions">
-                <Button
-                  onClick={() =>
-                    void gateway
-                      .exportData()
-                      .then(download)
-                      .catch((error: Error) => setFormError(error.message))
-                  }
-                >
-                  <Download />
-                  Export my data
-                </Button>
-              </div>
-              <label className="field">
-                <span>Restore a Cadence export</span>
-                <input
-                  type="file"
-                  accept=".json,application/json"
-                  onChange={(event) =>
-                    void importFile(event.target.files?.[0], true)
-                  }
-                />
-              </label>
-              <p>
-                Restore adds copies of the imported songs and replaces your
-                preferences.
-              </p>
-            </>
-          ) : null}
+              ))
+            : null}
           {preferenceError ? (
             <div className="error" role="alert">
               <p>Settings haven’t saved. Your changes still apply here.</p>
@@ -1160,7 +1180,7 @@ export function PracticeApp({
               {formError}
             </div>
           ) : null}
-        </div>
+        </DirectionalGroup>
       </Dialog>
     </main>
   );

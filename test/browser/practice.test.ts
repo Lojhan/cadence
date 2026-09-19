@@ -215,6 +215,53 @@ try {
     true,
     "practice fits the phone viewport",
   );
+  assert.equal(
+    await page.locator('.sequence-frame[data-current="true"]').count(),
+    1,
+    "chord, fretboard and timeline share a transition group",
+  );
+  await page.getByRole("button", { name: "Next chord", exact: true }).click();
+  await page.waitForFunction(() => {
+    const frame = document.querySelector(
+      '.sequence-frame[data-current="true"]',
+    );
+    return frame && new DOMMatrix(getComputedStyle(frame).transform).m41 > 0;
+  });
+  assert.equal(
+    await page.getByRole("region", { name: "Practice stage" }).count(),
+    1,
+    "exiting chords are not announced twice",
+  );
+  await page.waitForFunction(
+    () => document.querySelectorAll(".sequence-frame").length === 1,
+  );
+  await page
+    .getByRole("button", { name: "Previous chord", exact: true })
+    .click();
+  await page.waitForFunction(() => {
+    const frame = document.querySelector(
+      '.sequence-frame[data-current="true"]',
+    );
+    return frame && new DOMMatrix(getComputedStyle(frame).transform).m41 < 0;
+  });
+  await page.waitForFunction(
+    () => document.querySelectorAll(".sequence-frame").length === 1,
+  );
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.getByRole("button", { name: "Next chord", exact: true }).click();
+  assert.equal(
+    await page
+      .locator('.sequence-frame[data-current="true"]')
+      .evaluate(
+        (frame) => new DOMMatrix(getComputedStyle(frame).transform).m41,
+      ),
+    0,
+    "reduced motion does not slide practice",
+  );
+  await page
+    .getByRole("button", { name: "Previous chord", exact: true })
+    .click();
+  await page.emulateMedia({ reducedMotion: "no-preference" });
   await page
     .getByRole("button", { name: "Unmute microphone", exact: true })
     .click();
@@ -480,7 +527,7 @@ try {
   );
   assert.equal(
     await page
-      .locator(".chord-timeline")
+      .locator('.sequence-frame[data-current="true"] .chord-timeline')
       .getByText("C", { exact: true })
       .count(),
     0,
@@ -631,7 +678,9 @@ try {
     assert.ok(notice);
     if (!notice) throw new Error("Save notice missing");
     for (const selector of [".chord", ".diagram", ".chord-timeline"]) {
-      const box = await page?.locator(selector).boundingBox();
+      const box = await page
+        ?.locator(`.sequence-frame[data-current="true"] ${selector}`)
+        .boundingBox();
       assert.ok(box);
       if (!box) throw new Error(`${selector} missing`);
       assert.ok(
@@ -696,7 +745,7 @@ try {
   );
   assert.ok(
     await page
-      .locator(".chord-timeline")
+      .locator('.sequence-frame[data-current="true"] .chord-timeline')
       .evaluate((element) => Number(getComputedStyle(element).opacity) >= 0.7),
     "timeline dims without disappearing",
   );

@@ -855,3 +855,20 @@ p {
     max-width: calc(100vw - 90px);
   }
 }
+
+.practice-sequence,
+.sequence-frame {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.panel-motion {
+  display: grid;
+}
+.panel-frame {
+  grid-area: 1 / 1;
+  min-width: 0;
+}
+.panel-frame[data-current="false"] {
+  pointer-events: none;
+}

@@ -12,9 +12,10 @@
   ],
   "dependencies": {
     "@cadence/contracts": "workspace:*",
-    "react": "catalog:",
-    "react-dom": "catalog:",
+    "@radix-ui/react-dialog": "catalog:",
     "lucide-react": "catalog:",
-    "@radix-ui/react-dialog": "catalog:"
+    "motion": "13.4.0",
+    "react": "catalog:",
+    "react-dom": "catalog:"
   }
 }

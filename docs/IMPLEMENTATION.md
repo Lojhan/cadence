@@ -202,3 +202,12 @@ The isolated package consumer and published-container Poku suites pass locally.
 This alpha includes dialog focus restoration and device-local microphone boost.
 The owner's Safari capture failure remains pending physical retesting; neither
 this release nor simulated quiet-input checks establish real-instrument accuracy.
+
+Directional practice motion: a Poku browser regression first failed on the missing
+shared transition group. Chord, fretboard and timeline now crossfade and move
+16 px together over 220 ms, reversing direction for Previous. Exiting frames are
+inert and hidden from assistive technology; reduced motion removes movement and
+duration. Modal tabs use the same directional treatment. Decorative panel headings
+were removed. A supplied account slot now owns the entire account panel, allowing
+the hosted distribution to manage accounts inside the existing modal. Browser
+navigation, layout, audio, save recovery and all 29 suites pass with the full check.

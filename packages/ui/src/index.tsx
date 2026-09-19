@@ -284,3 +284,5 @@ export function PracticeDock({
     </nav>
   );
 }
+
+export { DirectionalGroup } from "./motion.tsx";
