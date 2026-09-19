@@ -327,3 +327,33 @@ evaluate non-negative least-squares note activation specifically to reduce
 fundamental/partial confusion in difficult chords. Their dataset and metrics are
 not Cadence's release evidence; any implementation needs our own bounded-memory,
 latency, calibration and regression checks before adoption.
+
+## Experimental offline note decomposition
+
+```sh
+pnpm --silent eval:audio artifacts/guitarset/calibration-confusions.json balanced --notes-case 03_SS3-98-C_comp:3:target-Em7 > artifacts/guitarset/em-notes.json
+```
+
+This independent diagnostic fits nonnegative note strengths to magnitude spectra.
+Its fixed prior uses MIDI 40–88 at A440, up to ten harmonics with 1/h amplitude,
+a 4 kHz/Nyquist cutoff, an 8192-sample Hann window and a 2048-sample hop. Columns
+are normalized before coordinate descent (at most 200 sweeps). It is an initial
+experimental model, not a reproduction of the referenced paper or its software.
+
+The optional `noteProbe` reports all complete windows in the selected interval,
+including after the recognizer's first match. Frames include relative sample/time,
+MIDI note strengths and relative L2 reconstruction error. Strengths are uncalibrated
+spectral units, not probabilities. Error is zero for silence. Short intervals have
+no frames. Unknown case IDs fail; recognition decisions and latency are unchanged.
+The evaluator allocates freely and is not a real-time implementation.
+
+[The focused Em evidence](evaluation/guitarset-em-note-probe.json) retains D5
+(MIDI 74) at approximately 69 spectral units at 418 ms, compared with approximately
+285 for E3. Relative reconstruction error is approximately 0.43. This fixed harmonic
+prior therefore does **not** resolve the focused false positive. It is retained as
+an offline diagnostic only, with no change to browser/WASM recognition. No held-out
+recordings were examined and no corpus accuracy improvement is claimed.
+
+Poku covers the CLI using known C/E/G audio, nonnegative finite output, unchanged
+recognition results and invalid-case rejection. The Poku Rust harness covers an
+analytical overlapping-column solution, negative-evidence clamping and silence.

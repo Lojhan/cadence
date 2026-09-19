@@ -1,3 +1,4 @@
+mod notes;
 use cadence_recognition::{Engine, Profile};
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeMap, error::Error, fs, path::Path};
@@ -80,6 +81,8 @@ struct Report {
     cases: Vec<ResultRow>,
     #[serde(skip_serializing_if = "Option::is_none")]
     trace: Option<Trace>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    note_probe: Option<notes::NoteProbe>,
 }
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -126,15 +129,20 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut arguments = std::env::args().skip(1);
     let file = arguments
         .next()
-        .ok_or("Usage: cadence-eval MANIFEST.json [gentle|balanced|precise [--trace-case ID]]")?;
+        .ok_or("Usage: cadence-eval MANIFEST.json [gentle|balanced|precise [--trace-case ID | --notes-case ID]]")?;
     let (profile, profile_name) = match arguments.next().as_deref().unwrap_or("balanced") {
         "gentle" => (Profile::Gentle, "gentle"),
         "balanced" => (Profile::Balanced, "balanced"),
         "precise" => (Profile::Precise, "precise"),
         _ => return Err("Unknown recognition profile".into()),
     };
+    let mut notes_case = None;
     let trace_case = match arguments.next().as_deref() {
         None => None,
+        Some("--notes-case") => {
+            notes_case = Some(arguments.next().ok_or("Missing notes case ID")?);
+            None
+        }
         Some("--trace-case") => Some(arguments.next().ok_or("Missing trace case ID")?),
         _ => return Err("Unexpected evaluation argument".into()),
     };
@@ -143,6 +151,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     let manifest_path = Path::new(&file);
     let manifest: Manifest = serde_json::from_slice(&fs::read(manifest_path)?)?;
+    if let Some(id) = notes_case.as_ref() {
+        if !manifest.cases.iter().any(|case| &case.id == id) {
+            return Err("Unknown notes case".into());
+        }
+    }
     if let Some(id) = &trace_case {
         if !manifest.cases.iter().any(|case| &case.id == id) {
             return Err("Unknown trace case".into());
@@ -150,6 +163,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     let directory = manifest_path.parent().ok_or("Manifest has no parent")?;
     let mut report = Report {
+        note_probe: None,
         engine_version: env!("CARGO_PKG_VERSION"),
         profile: profile_name,
         summary: Summary::default(),
@@ -183,6 +197,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         let mut engine = Engine::new(rate as f32, profile)?;
         engine.arm(case.target_mask)?;
+        if notes_case.as_ref() == Some(&case.id) {
+            report.note_probe = Some(notes::probe(case.id.clone(), &samples[start..end], rate));
+        }
         let mut latency_ms = None;
         let mut consumed = 0;
         for chunk in samples[start..end].chunks(2048) {

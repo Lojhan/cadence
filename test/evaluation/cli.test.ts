@@ -179,6 +179,70 @@ try {
     0,
     "unknown trace cases cannot silently emit empty evidence",
   );
+  const probe = spawnSync(
+    "cargo",
+    [
+      "run",
+      "--quiet",
+      "--locked",
+      "-p",
+      "cadence-eval",
+      "--",
+      join(directory, "manifest.json"),
+      "balanced",
+      "--notes-case",
+      "correct",
+    ],
+    { encoding: "utf8" },
+  );
+  assert.equal(probe.status, 0, probe.stderr);
+  const decomposition = JSON.parse(probe.stdout);
+  assert.deepEqual(
+    decomposition.cases,
+    report.cases,
+    "offline note probe does not change recognition decisions",
+  );
+  assert.equal(decomposition.noteProbe.caseId, "correct");
+  assert.ok(decomposition.noteProbe.frames.length > 0);
+  for (const frame of decomposition.noteProbe.frames as {
+    notes: { midi: number; strength: number }[];
+    relativeError: number;
+  }[]) {
+    assert.ok(Number.isFinite(frame.relativeError));
+    assert.ok(
+      frame.notes.every(
+        (note) => Number.isFinite(note.strength) && note.strength >= 0,
+      ),
+    );
+    const strongest = [...frame.notes]
+      .sort((a, b) => b.strength - a.strength)
+      .slice(0, 3);
+    assert.ok(
+      strongest.every((note) => [0, 4, 7].includes(note.midi % 12)),
+      "note decomposition retains the performed C/E/G tones",
+    );
+  }
+  const missingNotes = spawnSync(
+    "cargo",
+    [
+      "run",
+      "--quiet",
+      "--locked",
+      "-p",
+      "cadence-eval",
+      "--",
+      join(directory, "manifest.json"),
+      "balanced",
+      "--notes-case",
+      "missing",
+    ],
+    { encoding: "utf8" },
+  );
+  assert.notEqual(
+    missingNotes.status,
+    0,
+    "unknown note cases cannot silently emit empty evidence",
+  );
   const invalidProfile = spawnSync(
     "cargo",
     [
