@@ -6,6 +6,7 @@ import type {
   Song,
   StoredPreferences,
 } from "@cadence/contracts";
+import type { Session } from "@cadence/core";
 import { parseChart, parseChord } from "@cadence/music";
 import {
   Button,
@@ -42,6 +43,7 @@ import {
 } from "react";
 import { PracticeController } from "./controller.ts";
 import { MicrophoneSetup } from "./microphone-setup.tsx";
+import { ProgressWrites } from "./progress-writes.ts";
 import { SoundCheck } from "./sound-check.tsx";
 export type InitialData = {
   songs: Song[];
@@ -103,7 +105,24 @@ export function PracticeApp({
         : [],
     ),
   );
-  const writeQueue = useRef(Promise.resolve());
+  const [progressWrites] = useState(
+    () =>
+      new ProgressWrites<Session>(async (session) => {
+        const position = await gateway.savePosition({
+          songId: session.songId,
+          songRevision: session.revision,
+          index: session.index,
+          completed: session.status === "completed",
+          revision: positions.current.get(session.songId) ?? 0,
+        });
+        positions.current.set(position.songId, position.revision);
+      }),
+  );
+  const progressSave = useSyncExternalStore(
+    progressWrites.subscribe,
+    progressWrites.getSnapshot,
+    progressWrites.getSnapshot,
+  );
   const selecting = useRef(0);
   const firstSong =
     initial.songs.find(
@@ -117,26 +136,7 @@ export function PracticeApp({
     const instance = new PracticeController(
       firstSong,
       initial.preferences.values.loop,
-      (session) => {
-        writeQueue.current = writeQueue.current
-          .then(async () => {
-            const position = await gateway.savePosition({
-              songId: session.songId,
-              songRevision: session.revision,
-              index: session.index,
-              completed: session.status === "completed",
-              revision: positions.current.get(session.songId) ?? 0,
-            });
-            positions.current.set(position.songId, position.revision);
-          })
-          .catch((error: unknown) =>
-            instance.setError(
-              error instanceof Error
-                ? error.message
-                : "Could not save your position",
-            ),
-          );
-      },
+      (session) => progressWrites.enqueue(session),
     );
     if (initial.position) instance.replace(firstSong, initial.position.index);
     return instance;
@@ -310,7 +310,10 @@ export function PracticeApp({
     const request = ++selecting.current;
     controller.pause();
     try {
-      await writeQueue.current;
+      if (!(await progressWrites.settled())) {
+        setFormError("Retry saving your progress before changing songs.");
+        return;
+      }
       const position = await gateway.position(song.id);
       if (request !== selecting.current) return;
       positions.current.set(song.id, position?.revision ?? 0);
@@ -539,7 +542,18 @@ export function PracticeApp({
           </Select>
         </div>
       ) : null}
-      {error ? (
+      {progressSave.error ? (
+        <div className="toast" role="alert">
+          <span>Progress hasn’t saved. Keep this page open and retry.</span>
+          <IconButton
+            label="Retry saving progress"
+            disabled={progressSave.saving}
+            onClick={() => void progressWrites.retry()}
+          >
+            <RotateCcw />
+          </IconButton>
+        </div>
+      ) : error ? (
         <div className="toast" role="alert">
           {error}
           <IconButton
@@ -964,6 +978,17 @@ export function PracticeApp({
           {formError ? (
             <div className="error" role="alert">
               {formError}
+              {progressSave.error ? (
+                <Button
+                  disabled={progressSave.saving}
+                  onClick={async () => {
+                    if (await progressWrites.retry()) setFormError("");
+                  }}
+                >
+                  <RotateCcw />
+                  Retry saving progress
+                </Button>
+              ) : null}
             </div>
           ) : null}
         </div>

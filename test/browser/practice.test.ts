@@ -111,9 +111,11 @@ try {
   await page.addInitScript((nativeCapture: boolean) => {
     const events: unknown[] = [];
     const streams: MediaStream[] = [];
+    const contexts: AudioContext[] = [];
     Object.assign(window, {
       cadenceTestEvents: events,
       cadenceTestStreams: streams,
+      cadenceTestContexts: contexts,
     });
     // This fixture replaces only the physical microphone boundary. The application
     // still uses its actual MediaStream source, AudioWorklet, worker and WASM.
@@ -145,6 +147,7 @@ try {
       };
       navigator.mediaDevices.getUserMedia = async () => {
         const context = new AudioContext({ sampleRate: 48000 });
+        contexts.push(context);
         const destination = context.createMediaStreamDestination();
         const buffer = context.createBuffer(1, 48000 * 8, 48000);
         const samples = buffer.getChannelData(0);
@@ -165,6 +168,15 @@ try {
         source.loop = true;
         source.connect(destination);
         source.start();
+        for (const track of destination.stream.getTracks()) {
+          const stop = track.stop.bind(track);
+          track.stop = () => {
+            if (track.readyState === "ended") return;
+            stop();
+            source.stop();
+            void context.close();
+          };
+        }
         await context.resume();
         events.push({ type: "synthetic-stream-ready" });
         streams.push(destination.stream);
@@ -176,7 +188,8 @@ try {
       constructor(url: string | URL, options?: WorkerOptions) {
         super(url, options);
         this.addEventListener("message", (event) => {
-          if (events.length < 40) events.push(event.data);
+          if (event.data.type !== "metrics" || events.length < 20)
+            events.push(event.data);
         });
       }
     };
@@ -289,6 +302,12 @@ try {
   await page
     .getByRole("combobox", { name: "Chord matching", exact: true })
     .selectOption("balanced");
+  await page.waitForFunction(
+    () =>
+      !document.querySelector<HTMLSelectElement>(
+        'select[aria-label="Chord matching"]',
+      )?.disabled,
+  );
   await page.getByRole("button", { name: "Close", exact: true }).click();
   await page.getByRole("button", { name: "Next chord", exact: true }).click();
   await page.getByRole("heading", { name: "G", exact: true }).waitFor();
@@ -334,6 +353,40 @@ try {
   await page.getByRole("heading", { name: "Em", exact: true }).waitFor();
   await page.reload();
   await page.getByRole("heading", { name: "Em", exact: true }).waitFor();
+  await page.context().setOffline(true);
+  await page.getByRole("button", { name: "Next chord", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Retry saving progress" })
+    .waitFor({ timeout: 3000 });
+  await page.getByRole("button", { name: "Next chord", exact: true }).click();
+  await page.getByRole("heading", { name: "C", exact: true }).waitFor();
+  await page.getByRole("button", { name: "Open music library" }).click();
+  await page
+    .getByRole("button", { name: /Browser exercise Your music/ })
+    .click();
+  await page
+    .getByRole("dialog")
+    .getByRole("alert")
+    .filter({ hasText: "Retry saving your progress before changing songs." })
+    .waitFor();
+  await page.context().setOffline(false);
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Retry saving progress" })
+    .click();
+  await page.getByRole("button", { name: "Close", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Retry saving progress" })
+    .waitFor({ state: "hidden" });
+  await page.reload();
+  await page.getByRole("heading", { name: "C", exact: true }).waitFor();
+  assert.equal(
+    await page
+      .getByRole("button", { name: "Unmute microphone", exact: true })
+      .count(),
+    1,
+    "retry saves the latest offline position and reload stays paused",
+  );
   await page.getByRole("button", { name: "Open music library" }).click();
   assert.equal(
     await page
@@ -378,11 +431,17 @@ try {
   console.error(await page?.locator("body").innerText());
   console.error(await page?.getByLabel("Practice controls").innerHTML());
   console.error(
-    await page?.evaluate(
-      () =>
-        (window as unknown as { cadenceTestEvents: unknown[] })
-          .cadenceTestEvents,
-    ),
+    await page?.evaluate(() => ({
+      events: (window as unknown as { cadenceTestEvents: unknown[] })
+        .cadenceTestEvents,
+      contexts: (
+        window as unknown as { cadenceTestContexts: AudioContext[] }
+      ).cadenceTestContexts.map((context) => ({
+        time: context.currentTime,
+        state: context.state,
+        rate: context.sampleRate,
+      })),
+    })),
   );
   console.error(logs);
   throw error;
