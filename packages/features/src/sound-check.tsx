@@ -2,14 +2,19 @@ import { Microphone, type Profile } from "@cadence/audio-browser";
 import { Button } from "@cadence/ui";
 import { Mic, MicOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { InputBoost } from "./microphone-options.tsx";
 export function SoundCheck({
   device,
   profile,
+  boostDb,
+  onBoost,
   onReady,
   onOpen,
 }: {
   device: string;
   profile: Profile;
+  boostDb: number;
+  onBoost: (value: number) => void;
   onReady?: (ready: boolean) => void;
   onOpen?: () => void;
 }) {
@@ -60,7 +65,7 @@ export function SoundCheck({
     });
     microphone.current = input;
     try {
-      await input.open(device, profile);
+      await input.open(device, profile, boostDb);
       if (!active.current || microphone.current !== input) return;
       onOpen?.();
       await input.unmute({ sessionId: "sound-check", epoch: 1, mask: 145 });
@@ -78,6 +83,7 @@ export function SoundCheck({
   }
   return (
     <div className="sound-check">
+      <InputBoost value={boostDb} onChange={onBoost} />
       <p>Standard guitar tuning · A4 440 Hz</p>
       <Button disabled={busy} onClick={() => void toggle()}>
         {listening ? <MicOff /> : <Mic />}
@@ -92,9 +98,11 @@ export function SoundCheck({
             aria-label="Microphone signal"
           />
           <p>
-            {level < 0.008
-              ? "Play a chord to check your input."
-              : "Your microphone is receiving sound."}
+            {level > 0.25
+              ? "Input is loud. Lower the boost if it distorts."
+              : level < 0.008
+                ? "Play a chord to check your input."
+                : "Your microphone is receiving sound."}
           </p>
         </>
       ) : null}

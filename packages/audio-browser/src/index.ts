@@ -7,6 +7,7 @@ export class Microphone {
   private context: AudioContext | undefined;
   private worker: Worker | undefined;
   private capture: AudioWorkletNode | undefined;
+  private gain: GainNode | undefined;
   private source: MediaStreamAudioSourceNode | undefined;
   private generation = 0;
   private streamGeneration = 0;
@@ -20,7 +21,9 @@ export class Microphone {
       (device) => device.kind === "audioinput",
     );
   }
-  async open(deviceId: string, profile: Profile) {
+  async open(deviceId: string, profile: Profile, boostDb = 0) {
+    if (!Number.isFinite(boostDb) || boostDb < 0 || boostDb > 30)
+      throw new Error("Input boost must be between 0 and 30 dB");
     if (this.disposed) throw new Error("Microphone has been disposed");
     this.release();
     const request = ++this.generation;
@@ -137,7 +140,12 @@ export class Microphone {
             failEngine?.("Audio capture failed. Unmute to try again.");
           capture.port.postMessage({ port: channel.port2 }, [channel.port2]);
           this.source = context.createMediaStreamSource(stream);
-          this.source.connect(capture);
+          if (boostDb > 0) {
+            this.gain = context.createGain();
+            this.gain.gain.value = 10 ** (boostDb / 20);
+            this.source.connect(this.gain);
+            this.gain.connect(capture);
+          } else this.source.connect(capture);
           capture.connect(context.destination);
         })(),
       ]);
@@ -191,12 +199,14 @@ export class Microphone {
       track.stop();
     }
     this.source?.disconnect();
+    this.gain?.disconnect();
     this.capture?.disconnect();
     this.worker?.terminate();
     if (this.context) this.context.onstatechange = null;
     void this.context?.close();
     this.stream = undefined;
     this.source = undefined;
+    this.gain = undefined;
     this.capture = undefined;
     this.worker = undefined;
     this.context = undefined;

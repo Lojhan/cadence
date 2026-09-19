@@ -119,6 +119,7 @@ try {
       cadenceTestContexts: contexts,
       cadenceTestAudioContexts: audioContexts,
       cadenceTestDenyMicrophone: false,
+      cadenceTestInputScale: 1,
     });
     // This fixture replaces only the physical microphone boundary. The application
     // still uses its actual MediaStream source, AudioWorklet, worker and WASM.
@@ -167,6 +168,8 @@ try {
             (sum, note) =>
               sum +
               0.08 *
+                (window as unknown as { cadenceTestInputScale: number })
+                  .cadenceTestInputScale *
                 Math.sin(
                   (2 * Math.PI * 440 * 2 ** ((note - 69) / 12) * i) / 48000,
                 ),
@@ -860,6 +863,87 @@ try {
       document.activeElement?.getAttribute("aria-label") ===
       "Open music library",
   );
+  if (!process.env.CADENCE_NATIVE_MIC) {
+    await page.evaluate(() => {
+      (
+        window as unknown as { cadenceTestInputScale: number }
+      ).cadenceTestInputScale = 0.01;
+    });
+    await page.getByRole("button", { name: "Open music library" }).click();
+    await page.getByRole("button", { name: "Import", exact: true }).click();
+    await page
+      .getByLabel("Song title", { exact: true })
+      .fill("Quiet input exercise");
+    await page.getByLabel("Chord chart", { exact: true }).fill("C G Am");
+    await page.getByRole("button", { name: "Review chart" }).click();
+    await page.getByRole("button", { name: "Save music" }).click();
+    await page.getByRole("heading", { name: "C", exact: true }).waitFor();
+    await page.getByRole("button", { name: "Open settings" }).click();
+    await page
+      .getByRole("button", { name: "Check microphone", exact: true })
+      .click();
+    await page.waitForFunction(() => {
+      const meter = document.querySelector<HTMLMeterElement>(
+        'meter[aria-label="Microphone signal"]',
+      );
+      return meter && meter.value > 0 && meter.value < 0.003;
+    });
+    assert.equal(
+      await page
+        .getByText("Your microphone is receiving sound.", { exact: true })
+        .count(),
+      0,
+      "quiet fixture is below the unboosted input gate",
+    );
+    await page
+      .getByRole("combobox", { name: "Input boost" })
+      .selectOption("24", { timeout: 2000 });
+    await page
+      .getByRole("button", { name: "Check microphone", exact: true })
+      .click();
+    await page
+      .getByText("Your microphone is receiving sound.", { exact: true })
+      .waitFor();
+    if (process.env.CADENCE_BOOST_SCREENSHOT)
+      await page.screenshot({ path: process.env.CADENCE_BOOST_SCREENSHOT });
+    await page.getByRole("button", { name: "Close", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Unmute microphone", exact: true })
+      .click();
+    await page
+      .getByRole("heading", { name: "G", exact: true })
+      .waitFor({ timeout: 12000 });
+    await page
+      .getByRole("button", { name: "Mute microphone", exact: true })
+      .click();
+    await page.reload();
+    await page.getByRole("button", { name: "Open settings" }).click();
+    assert.equal(
+      await page.getByRole("combobox", { name: "Input boost" }).inputValue(),
+      "24",
+      "input boost persists on this browser",
+    );
+    await page.getByRole("button", { name: "Close", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Microphone options", exact: true })
+      .click();
+    await page
+      .getByRole("combobox", { name: "Microphone input" })
+      .selectOption("");
+    assert.equal(
+      await page.getByRole("combobox", { name: "Input boost" }).inputValue(),
+      "0",
+      "a different input starts without boost",
+    );
+    await page
+      .getByRole("combobox", { name: "Microphone input" })
+      .selectOption("guitar-input");
+    assert.equal(
+      await page.getByRole("combobox", { name: "Input boost" }).inputValue(),
+      "24",
+      "returning to an input restores its own boost",
+    );
+  }
   assert.deepEqual(errors, [], logs);
   await page.screenshot({ path: join(directory, "phone.png") });
 } catch (error) {

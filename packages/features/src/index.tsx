@@ -42,7 +42,11 @@ import {
   useSyncExternalStore,
 } from "react";
 import { PracticeController } from "./controller.ts";
-import { MicrophoneOptions } from "./microphone-options.tsx";
+import {
+  InputBoost,
+  MicrophoneOptions,
+  readInputBoost,
+} from "./microphone-options.tsx";
 import { MicrophoneSetup } from "./microphone-setup.tsx";
 import { ProgressWrites } from "./progress-writes.ts";
 import { SoundCheck } from "./sound-check.tsx";
@@ -91,6 +95,7 @@ export function PracticeApp({
   const [devicesOpen, setDevicesOpen] = useState(false);
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [device, setDevice] = useState("");
+  const [boostDb, setBoostDb] = useState(0);
   const [setupOpen, setSetupOpen] = useState(false);
   const [setupComplete, setSetupComplete] = useState(false);
   const [idle, setIdle] = useState(false);
@@ -222,7 +227,9 @@ export function PracticeApp({
   );
   useEffect(() => {
     try {
-      setDevice(localStorage.getItem("cadence-device") ?? "");
+      const savedDevice = localStorage.getItem("cadence-device") ?? "";
+      setDevice(savedDevice);
+      setBoostDb(readInputBoost(savedDevice));
       setSetupComplete(localStorage.getItem("cadence-setup") === "1");
     } catch {}
   }, []);
@@ -314,7 +321,7 @@ export function PracticeApp({
         if (!setupComplete && !listening) {
           controller.pause();
           setSetupOpen(true);
-        } else void controller.toggle(device, prefs.profile);
+        } else void controller.toggle(device, prefs.profile, boostDb);
       }
       if (event.key === "ArrowRight") controller.navigate(session.index + 1);
       if (event.key === "ArrowLeft") controller.navigate(session.index - 1);
@@ -326,6 +333,7 @@ export function PracticeApp({
     panel,
     setupOpen,
     setupComplete,
+    boostDb,
     listening,
     devicesOpen,
     device,
@@ -426,6 +434,13 @@ export function PracticeApp({
       values: { ...prefs, [name]: value },
       revision: (preferenceDraft ?? preferences.data).revision,
     });
+  }
+  function changeBoost(value: number) {
+    controller.pause();
+    setBoostDb(value);
+    try {
+      localStorage.setItem(`cadence-input-boost:${device}`, String(value));
+    } catch {}
   }
   async function toggleDevices() {
     controller.pause();
@@ -547,10 +562,13 @@ export function PracticeApp({
           device={device}
           devices={devices}
           profile={prefs.profile}
+          boostDb={boostDb}
+          onBoost={changeBoost}
           saving={preferenceBusy}
           onHand={(hand) => setPreference("hand", hand)}
           onDevice={(id) => {
             setDevice(id);
+            setBoostDb(readInputBoost(id));
             try {
               localStorage.setItem("cadence-device", id);
             } catch {}
@@ -583,7 +601,7 @@ export function PracticeApp({
             return;
           }
           void controller
-            .toggle(device, prefs.profile)
+            .toggle(device, prefs.profile, boostDb)
             .then(async () => setDevices(await controller.devices()))
             .catch((error: unknown) =>
               controller.setError(
@@ -607,14 +625,24 @@ export function PracticeApp({
             onChange={(event) => {
               controller.pause();
               setDevice(event.target.value);
+              setBoostDb(readInputBoost(event.target.value));
               try {
                 localStorage.setItem("cadence-device", event.target.value);
               } catch {}
-              void controller.prepare(event.target.value, prefs.profile);
+              void controller
+                .prepare(
+                  event.target.value,
+                  prefs.profile,
+                  readInputBoost(event.target.value),
+                )
+                .then(() => controller.devices())
+                .then(setDevices)
+                .catch(() => {});
             }}
           >
             <MicrophoneOptions device={device} devices={devices} />
           </Select>
+          <InputBoost value={boostDb} onChange={changeBoost} />
         </div>
       ) : null}
       {progressSave.error && !panel ? (
@@ -1024,9 +1052,11 @@ export function PracticeApp({
                 />
               ) : null}
               <SoundCheck
-                key={`${device}:${prefs.profile}`}
+                key={`${device}:${prefs.profile}:${boostDb}`}
                 device={device}
                 profile={prefs.profile}
+                boostDb={boostDb}
+                onBoost={changeBoost}
               />
               <p className="note">
                 Open circles mean open strings. Crossed strings stay silent.

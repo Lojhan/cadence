@@ -184,3 +184,13 @@ openers are verified. Long C#maj7 labels and visible fretboard geometry fit
 without scrolling, content overlap or undersized toolbar touch targets. Screenshots
 were inspected; these checks do not replace physical Safari validation. All 28
 Poku suites and the full check pass.
+
+Quiet microphone recovery: after the owner's iPhone/iPad Safari report, a Poku
+regression first failed on the missing input-boost control. Browser-local,
+per-input boost now applies equally to sound check and practice, with no changes
+to recognition strictness. The real browser pipeline test uses a 100× quieter
+fixture, verifies the low unboosted level, enables +24 dB and confirms C→G.
+Input-switching coverage exposed a stale post-permission device list, now refreshed
+before offering the newly available inputs. Separate Poku coverage verifies graph
+routing, gain conversion, cleanup and invalid settings. Physical Safari retesting
+is still required; simulated quiet audio does not establish its root cause.

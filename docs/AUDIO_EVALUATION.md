@@ -357,3 +357,28 @@ recordings were examined and no corpus accuracy improvement is claimed.
 Poku covers the CLI using known C/E/G audio, nonnegative finite output, unchanged
 recognition results and invalid-case rejection. The Poku Rust harness covers an
 analytical overlapping-column solution, negative-evidence clamping and silence.
+
+## Owner device report: weak Safari capture
+
+The owner tested iPhone Safari, iPad Safari and desktop Chrome. On Safari the
+microphone meter barely moves for guitar; shouting reaches roughly 3% by visual
+estimate, making chord detection unusable. Device/OS versions and calibrated
+amplitudes were not supplied. This is a reported Safari failure, not a passing
+physical-device gate or a measured desktop accuracy result.
+
+Microphone setup now offers an explicit 0–30 dB input boost in 6 dB steps, default
+off. It is stored per selected input in browser-local storage, excluded from
+synced preferences/exports, and used identically for sound check and practice.
+Changing boost pauses practice and invalidates the old audio configuration;
+changing it during sound check stops the old capture and requires a new check.
+The browser GainNode precedes capture; recognition thresholds/profiles and the
+Rust clipped-input rejection are unchanged. Boost amplifies noise too, so it is
+not an accuracy improvement or a replacement for microphone placement.
+
+A Poku browser regression attenuates the known C/G signal by 100×, verifies that
+its unboosted meter is below the input gate, then checks that +24 dB restores the
+sound check and advances C to G through capture/worklet/worker/WASM. It also checks
+persistence and isolation between selected inputs. Unit coverage checks gain
+conversion, graph routing, cleanup and rejection of invalid values before capture.
+Physical iPhone/iPad retesting remains required; no Safari-specific root cause is
+claimed from this simulated signal.

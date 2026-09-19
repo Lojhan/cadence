@@ -159,7 +159,7 @@ Start with a stable Rust toolchain and a single-threaded `wasm32-unknown-unknown
 ## 5. Audio execution and ABI
 
 ```text
-getUserMedia -> MediaStreamAudioSourceNode -> capture AudioWorklet
+getUserMedia -> MediaStreamAudioSourceNode -> optional input GainNode -> capture AudioWorklet
                                                  |
                                 bounded transferable PCM buffers
                                                  |
@@ -173,6 +173,8 @@ getUserMedia -> MediaStreamAudioSourceNode -> capture AudioWorklet
 ```
 
 The AudioWorklet only mixes/copies input into pooled buffers; expensive recognition runs in the worker. This avoids putting an unproven analysis workload on the audio rendering deadline. The browser adapter can later host the same engine directly in a worklet if profiling justifies it; that optimization must not change the public contract.
+
+Device-local input boost is an explicit browser capture setting (0–30 dB, default off), applied before capture and shared by sound check and practice. Persist it per input only in local browser storage, never in synced preferences. A change pauses practice and requires fresh evidence. This does not change Rust recognition thresholds or bypass clipped-input rejection.
 
 Initialize the worker/WASM and establish a direct `MessageChannel` with the worklet before accepting samples. Transfer the ports through their supported message interfaces; do not route every PCM block through React or the main-thread state store. Keep a silent output path where required to sustain processing, with no microphone monitoring through speakers.
 

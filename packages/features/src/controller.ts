@@ -14,7 +14,7 @@ import {
 import { parseChord } from "@cadence/music";
 
 interface Audio {
-  open(device: string, profile: Profile): Promise<void>;
+  open(device: string, profile: Profile, boostDb?: number): Promise<void>;
   unmute(target: Target): Promise<void>;
   arm(target: Target): void;
   mute(): void;
@@ -115,7 +115,7 @@ export class PracticeController {
     this.snapshot = { ...this.snapshot, error };
     this.publish();
   }
-  async toggle(device: string, profile: Profile) {
+  async toggle(device: string, profile: Profile, boostDb = 0) {
     if (this.snapshot.busy || this.disposed) return;
     if (["listening", "transitioning"].includes(this.snapshot.session.status)) {
       this.pause();
@@ -126,9 +126,9 @@ export class PracticeController {
     this.publish();
     try {
       this.audio ??= this.makeAudio(this.onAudio);
-      const configuration = JSON.stringify([device, profile]);
+      const configuration = JSON.stringify([device, profile, boostDb]);
       if (configuration !== this.configuration) {
-        await this.audio.open(device, profile);
+        await this.audio.open(device, profile, boostDb);
         this.configuration = configuration;
       }
       if (operation !== this.operation || this.disposed) return;
@@ -145,14 +145,14 @@ export class PracticeController {
       this.publish();
     }
   }
-  async prepare(device: string, profile: Profile) {
+  async prepare(device: string, profile: Profile, boostDb = 0) {
     this.pause();
     this.audio ??= this.makeAudio(this.onAudio);
     this.snapshot = { ...this.snapshot, busy: true };
     this.publish();
     try {
-      await this.audio.open(device, profile);
-      this.configuration = JSON.stringify([device, profile]);
+      await this.audio.open(device, profile, boostDb);
+      this.configuration = JSON.stringify([device, profile, boostDb]);
     } catch (error) {
       this.configuration = "";
       this.setError(

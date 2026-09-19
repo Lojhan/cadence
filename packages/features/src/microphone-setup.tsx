@@ -10,6 +10,8 @@ export function MicrophoneSetup({
   device,
   devices,
   profile,
+  boostDb,
+  onBoost,
   saving,
   onHand,
   onDevice,
@@ -21,6 +23,8 @@ export function MicrophoneSetup({
   device: string;
   devices: MediaDeviceInfo[];
   profile: Profile;
+  boostDb: number;
+  onBoost: (value: number) => void;
   saving: boolean;
   onHand: (hand: "left" | "right") => void;
   onDevice: (device: string) => void;
@@ -29,7 +33,7 @@ export function MicrophoneSetup({
   onAccess: () => void;
 }) {
   const [readyInput, setReadyInput] = useState<string | null>(null);
-  const input = `${device}:${profile}`;
+  const input = `${device}:${profile}:${boostDb}`;
   return (
     <Dialog
       open
@@ -71,6 +75,8 @@ export function MicrophoneSetup({
           key={input}
           device={device}
           profile={profile}
+          boostDb={boostDb}
+          onBoost={onBoost}
           onOpen={onAccess}
           onReady={(ready) => setReadyInput(ready ? input : null)}
         />
