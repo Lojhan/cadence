@@ -5,13 +5,16 @@ import {
 } from "@tanstack/react-start";
 
 import { bodyWithinLimit } from "./server/body-limit.server.ts";
+import { isAllowedPersonalOrigin } from "./server/personal-origin.ts";
 
 const personalOrigin = createMiddleware().server(async ({ request, next }) => {
-  const expected = new URL(
-    process.env.PUBLIC_ORIGIN ?? "http://localhost:3000",
-  );
-  const actual = new URL(request.url);
-  if (actual.host !== expected.host)
+  if (
+    !isAllowedPersonalOrigin(
+      request.url,
+      process.env.PUBLIC_ORIGIN,
+      import.meta.env.DEV,
+    )
+  )
     return new Response("Unrecognized host", { status: 403 });
   if (!(await bodyWithinLimit(request, 11_000_000)))
     return new Response("Request too large", { status: 413 });

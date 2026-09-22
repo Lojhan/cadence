@@ -1,5 +1,7 @@
 //! Streaming, sample-rate-aware pitch-class features with preallocated FFT storage.
 mod multipitch;
+mod tuner;
+pub use tuner::{Tuner, TunerReading};
 #[derive(Clone, Copy, Debug, Default)]
 pub enum Detector {
     Spectral,

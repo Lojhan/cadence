@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { strict as assert } from "poku";
 import {
   adaptVoicingForTuning,
@@ -14,6 +15,11 @@ import {
 } from "../../packages/music/src/index.ts";
 
 // 1. Presets validation
+// Keep every shipped preset value stable while consolidating the source data.
+assert.equal(
+  createHash("sha256").update(JSON.stringify(TUNING_PRESETS)).digest("hex"),
+  "306bc45654246e0841f8b8bc8fff0e462d515eeea535ae420908dcbd2abfb171",
+);
 assert.ok(TUNING_PRESETS.length >= 9, "At least 9 presets defined");
 for (const preset of TUNING_PRESETS) {
   assert.equal(preset.strings.length, 6, `${preset.id} has 6 strings`);

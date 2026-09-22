@@ -1,3 +1,5 @@
+export { type TunerAudioEvent, TunerMicrophone } from "./tuner.ts";
+
 import type { AudioEvent, Target } from "./protocol.ts";
 
 export type { AudioEvent, Target } from "./protocol.ts";

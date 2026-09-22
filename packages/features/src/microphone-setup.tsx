@@ -1,5 +1,5 @@
 import type { Profile } from "@cadence/audio-browser";
-import { Button, Dialog, Select } from "@cadence/ui";
+import { Button, Dialog, DialogBody, Field, Select } from "@cadence/ui";
 import { Check } from "lucide-react";
 import { useState } from "react";
 import { MicrophoneOptions } from "./microphone-options.tsx";
@@ -42,13 +42,12 @@ export function MicrophoneSetup({
       }}
       title="Your guitar setup"
     >
-      <div className="panel-body">
+      <DialogBody>
         <p>
           Choose your playing hand and microphone, then play a chord to check
           the sound.
         </p>
-        <label className="field" htmlFor="setup-hand">
-          <span>Playing hand</span>
+        <Field label="Playing hand" htmlFor="setup-hand">
           <Select
             id="setup-hand"
             label="Playing hand"
@@ -59,9 +58,8 @@ export function MicrophoneSetup({
             <option value="right">Right-handed</option>
             <option value="left">Left-handed</option>
           </Select>
-        </label>
-        <label className="field" htmlFor="setup-input">
-          <span>Microphone input</span>
+        </Field>
+        <Field label="Microphone input" htmlFor="setup-input">
           <Select
             id="setup-input"
             label="Microphone input"
@@ -70,7 +68,7 @@ export function MicrophoneSetup({
           >
             <MicrophoneOptions device={device} devices={devices} />
           </Select>
-        </label>
+        </Field>
         <SoundCheck
           key={input}
           device={device}
@@ -94,7 +92,7 @@ export function MicrophoneSetup({
           You can change these choices in Setup. Closing this dialog leaves
           manual practice available.
         </p>
-      </div>
+      </DialogBody>
     </Dialog>
   );
 }

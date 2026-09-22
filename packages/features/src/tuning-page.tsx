@@ -1,120 +1,115 @@
 import type { CadenceGateway, StoredPreferences } from "@cadence/contracts";
-import { TUNING_PRESETS } from "@cadence/music";
-import { Button, TunerFretboard, TunerGauge, TuningSelect } from "@cadence/ui";
-import { ArrowLeft, Mic, MicOff } from "lucide-react";
-import { useState } from "react";
+import { getTuningPreset, TUNING_PRESETS } from "@cadence/music";
+import { TunerExperience } from "@cadence/ui";
+import { useEffect, useMemo, useState } from "react";
 import { useTuner } from "./tuner.ts";
+import { createTuningPreferenceWriter } from "./tuning-preferences.ts";
 
 export function TuningPage({
   gateway,
   initialPreferences,
+  initialTuningId,
   onBack,
 }: {
   gateway: CadenceGateway;
   initialPreferences: StoredPreferences;
+  initialTuningId?: string | undefined;
   onBack?: () => void;
 }) {
-  const [preferences, setPreferences] = useState(initialPreferences);
+  const [preferences, setPreferences] = useState(initialPreferences.values);
   const [selectedTuning, setSelectedTuning] = useState(
-    initialPreferences.values.tuning || "standard",
+    () =>
+      getTuningPreset(initialTuningId ?? initialPreferences.values.tuning).id,
   );
-  const [saveStatus, setSaveStatus] = useState<string>("");
+  const [saveStatus, setSaveStatus] = useState("");
+  const [mode, setMode] = useState<"strings" | "chromatic">("strings");
+  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">(
+    initialPreferences.values.theme === "dark" ? "dark" : "light",
+  );
+  const writer = useMemo(
+    () =>
+      createTuningPreferenceWriter(gateway, initialPreferences, (state) => {
+        setPreferences(state.values);
+        if (state.status === "error") setSelectedTuning(state.values.tuning);
+        setSaveStatus(
+          state.status === "saving"
+            ? "Saving…"
+            : state.status === "saved"
+              ? "Saved"
+              : "Could not save preference",
+        );
+      }),
+    [gateway, initialPreferences],
+  );
+  useEffect(() => () => writer.dispose(), [writer]);
+  useEffect(() => {
+    setSelectedTuning(
+      getTuningPreset(initialTuningId ?? initialPreferences.values.tuning).id,
+    );
+  }, [initialTuningId, initialPreferences.values.tuning]);
+  useEffect(() => {
+    if (saveStatus !== "Saved") return;
+    const timer = setTimeout(() => setSaveStatus(""), 2000);
+    return () => clearTimeout(timer);
+  }, [saveStatus]);
+  useEffect(() => {
+    const media = matchMedia("(prefers-color-scheme: dark)");
+    const apply = () => {
+      const resolved =
+        preferences.theme === "system"
+          ? media.matches
+            ? "dark"
+            : "light"
+          : preferences.theme;
+      document.documentElement.dataset.theme = resolved;
+      setResolvedTheme(resolved);
+      try {
+        localStorage.setItem("cadence-theme", preferences.theme);
+      } catch {}
+    };
+    apply();
+    media.addEventListener("change", apply);
+    return () => media.removeEventListener("change", apply);
+  }, [preferences.theme]);
 
-  const tuner = useTuner({
-    tuningId: selectedTuning,
-  });
-
-  // Whenever selected tuning changes, automatically save to gateway preferences!
-  const handleTuningChange = async (newTuningId: string) => {
-    setSelectedTuning(newTuningId);
-    setSaveStatus("Saving...");
-    try {
-      const next = await gateway.savePreferences({
-        revision: preferences.revision,
-        values: {
-          ...preferences.values,
-          tuning: newTuningId,
-        },
-      });
-      setPreferences(next);
-      setSaveStatus("Saved");
-      setTimeout(() => setSaveStatus(""), 2000);
-    } catch (err) {
-      console.error("Failed to auto-save tuning preference", err);
-      setSaveStatus("Failed to save");
-    }
+  const tuner = useTuner({ tuningId: selectedTuning });
+  const toggleTheme = () => {
+    const theme = resolvedTheme === "dark" ? "light" : "dark";
+    void writer.update({ theme });
   };
 
   return (
-    <main className="tuner-page">
-      <header className="tuner-header">
-        <div className="tuner-header-top">
-          {onBack ? (
-            <Button className="tuner-back-btn" onClick={onBack}>
-              <ArrowLeft />
-              <span>Back to Practice</span>
-            </Button>
-          ) : (
-            <a href="/" className="pill tuner-back-btn">
-              <ArrowLeft />
-              <span>Back to Practice</span>
-            </a>
-          )}
-          {saveStatus && (
-            <span className="tuner-save-status" role="status">
-              {saveStatus}
-            </span>
-          )}
-        </div>
-        <div className="tuner-title-row">
-          <h1>Guitar Tuner</h1>
-          <div className="tuner-top-controls">
-            <TuningSelect
-              presets={TUNING_PRESETS}
-              value={selectedTuning}
-              onChange={(id) => void handleTuningChange(id)}
-            />
-            <Button
-              className={`tuner-listen-toggle ${tuner.listening ? "primary" : ""}`}
-              onClick={() => {
-                if (tuner.listening) {
-                  tuner.stopTuning();
-                } else {
-                  void tuner.startTuning();
-                }
-              }}
-            >
-              {tuner.listening ? <MicOff /> : <Mic />}
-              <span>{tuner.listening ? "Stop Mic" : "Start Tuning"}</span>
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      {tuner.error && (
-        <div className="toast" role="alert">
-          <span>{tuner.error}</span>
-        </div>
-      )}
-
-      {/* Middle stage: expanded string gauge & guidance */}
-      <TunerGauge
-        string={tuner.targetString}
-        detectedHz={tuner.detectedHz}
-        cents={tuner.cents}
-        direction={tuner.direction}
-        emergencyBreakRisk={tuner.emergencyBreakRisk}
-        onPlayReference={tuner.playReferenceTone}
-        playingReference={tuner.playingReference}
-      />
-
-      {/* Bottom stage: interactive fretboard with 6 strings */}
-      <TunerFretboard
-        strings={tuner.preset.strings}
-        selectedStringIndex={tuner.selectedStringIndex}
-        onSelectString={(idx) => tuner.setSelectedStringIndex(idx)}
-        hand={preferences.values.hand}
-      />
-    </main>
+    <TunerExperience
+      presets={TUNING_PRESETS}
+      value={selectedTuning}
+      onPresetChange={(tuning) => {
+        setSelectedTuning(tuning);
+        void writer.update({ tuning });
+      }}
+      strings={tuner.preset.strings}
+      selectedStringIndex={tuner.selectedStringIndex}
+      onSelectString={tuner.setSelectedStringIndex}
+      mode={mode}
+      onModeChange={setMode}
+      detectedHz={tuner.detectedHz}
+      detectedNote={tuner.detectedNote}
+      chromaticCents={tuner.chromaticCents}
+      cents={mode === "chromatic" ? tuner.chromaticCents : tuner.cents}
+      direction={tuner.direction}
+      emergencyBreakRisk={tuner.emergencyBreakRisk}
+      listening={tuner.listening}
+      busy={false}
+      onToggleListening={() => {
+        if (tuner.listening) tuner.stopTuning();
+        else void tuner.startTuning();
+      }}
+      onBack={onBack ?? (() => window.location.assign("/"))}
+      theme={resolvedTheme}
+      onToggleTheme={toggleTheme}
+      onPlayReference={tuner.playReferenceTone}
+      playingReference={tuner.playingReference}
+      saveStatus={saveStatus}
+      error={tuner.error}
+    />
   );
 }

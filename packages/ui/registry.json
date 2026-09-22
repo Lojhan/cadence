@@ -1,0 +1,66 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "cadence",
+  "homepage": "https://github.com/Lojhan/cadence",
+  "items": [
+    {
+      "name": "cadence-base",
+      "type": "registry:base",
+      "extends": "none",
+      "description": "The Cadence light and dark practice interface theme.",
+      "config": {
+        "style": "new-york",
+        "iconLibrary": "lucide",
+        "rsc": false,
+        "tsx": true,
+        "tailwind": {
+          "baseColor": "olive",
+          "css": "src/styles.css"
+        }
+      },
+      "dependencies": [
+        "class-variance-authority",
+        "clsx",
+        "tailwind-merge",
+        "radix-ui",
+        "lucide-react"
+      ],
+      "cssVars": {
+        "theme": {
+          "radius": "0.625rem",
+          "font-sans": "Arial, Helvetica, sans-serif"
+        },
+        "light": {
+          "background": "#f3f1e9",
+          "foreground": "#273e35",
+          "primary": "#30664b",
+          "primary-foreground": "#fbfaf5",
+          "secondary": "#e5eadd",
+          "secondary-foreground": "#273e35",
+          "muted": "#e5eadd",
+          "muted-foreground": "#747c72",
+          "accent": "#dce6d2",
+          "accent-foreground": "#273e35",
+          "border": "#d9ddd1",
+          "input": "#d9ddd1",
+          "ring": "#30664b"
+        },
+        "dark": {
+          "background": "#171e1b",
+          "foreground": "#e2e9d8",
+          "primary": "#b0cfa1",
+          "primary-foreground": "#1c271e",
+          "secondary": "#303e32",
+          "secondary-foreground": "#e2e9d8",
+          "muted": "#303e32",
+          "muted-foreground": "#a5af9d",
+          "accent": "#3b503e",
+          "accent-foreground": "#e2e9d8",
+          "border": "#3b473c",
+          "input": "#3b473c",
+          "ring": "#b0cfa1"
+        }
+      }
+    }
+  ]
+}

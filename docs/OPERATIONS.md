@@ -23,6 +23,10 @@ Set `PUBLIC_ORIGIN` to the exact browser origin if it changes, including scheme
 and port. Remote microphone access requires HTTPS; localhost is a browser
 exception. Terminate TLS at your reverse proxy and preserve the original Host
 header. `/health` checks the process; `/ready` also checks database access.
+During local development, the default origin accepts `localhost`, `127.0.0.1`,
+and `[::1]` on port 3000. A configured loopback `PUBLIC_ORIGIN` also accepts
+those equivalent loopback names on the same port, including in the container.
+An external `PUBLIC_ORIGIN` still requires an exact host match.
 
 `DATABASE_URL=file:/data/cadence.db` is the default. A PostgreSQL URL selects the
 PostgreSQL adapter. Managed PostgreSQL must use the TLS settings required by its

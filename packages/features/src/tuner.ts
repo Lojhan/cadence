@@ -1,3 +1,4 @@
+import { TunerMicrophone } from "@cadence/audio-browser";
 import {
   centsDifference,
   findClosestString,
@@ -6,102 +7,6 @@ import {
   tuningDirection,
 } from "@cadence/music";
 import { useCallback, useEffect, useRef, useState } from "react";
-
-/**
- * Time-domain autocorrelation pitch detection with parabolic interpolation.
- * Detects fundamental frequency within minFreq..maxFreq (default 60..500 Hz, covering 6-string guitar).
- */
-export function detectPitchAutocorrelation(
-  buffer: Float32Array,
-  sampleRate: number,
-  minFreq = 60,
-  maxFreq = 500,
-): { frequency: number; confidence: number } | null {
-  // Check RMS energy to reject silence/noise
-  let sumSquares = 0;
-  for (let i = 0; i < buffer.length; i++) {
-    const val = buffer[i] ?? 0;
-    sumSquares += val * val;
-  }
-  const rms = Math.sqrt(sumSquares / buffer.length);
-  if (rms < 0.006) return null;
-
-  const minPeriod = Math.max(1, Math.floor(sampleRate / maxFreq));
-  const maxPeriod = Math.min(
-    buffer.length - 2,
-    Math.floor(sampleRate / minFreq),
-  );
-
-  const nsdf = new Float32Array(maxPeriod + 2);
-
-  for (let period = minPeriod - 1; period <= maxPeriod + 1; period++) {
-    let sumProd = 0;
-    let sumSq1 = 0;
-    let sumSq2 = 0;
-    const len = buffer.length - period;
-    for (let i = 0; i < len; i++) {
-      const x1 = buffer[i] ?? 0;
-      const x2 = buffer[i + period] ?? 0;
-      sumProd += x1 * x2;
-      sumSq1 += x1 * x1;
-      sumSq2 += x2 * x2;
-    }
-    const denom = sumSq1 + sumSq2;
-    nsdf[period] = denom > 1e-6 ? (2 * sumProd) / denom : 0;
-  }
-
-  // Find global maximum across all periods
-  let globalMax = -Infinity;
-  for (let period = minPeriod; period <= maxPeriod; period++) {
-    const val = nsdf[period] ?? 0;
-    if (val > globalMax) {
-      globalMax = val;
-    }
-  }
-
-  if (globalMax < 0.35) return null;
-
-  // Find local maxima and pick the FIRST peak that reaches 0.85 * globalMax
-  const cutoff = 0.85 * globalMax;
-  let bestPeriod = -1;
-
-  for (let period = minPeriod; period <= maxPeriod; period++) {
-    const prev = nsdf[period - 1] ?? 0;
-    const curr = nsdf[period] ?? 0;
-    const next = nsdf[period + 1] ?? 0;
-
-    if (curr > prev && curr >= next && curr >= cutoff) {
-      bestPeriod = period;
-      break;
-    }
-  }
-
-  if (bestPeriod <= 0) return null;
-
-  // Parabolic interpolation for sub-sample peak resolution
-  let periodSub = bestPeriod;
-  if (bestPeriod > minPeriod && bestPeriod < maxPeriod) {
-    const prev = nsdf[bestPeriod - 1] ?? 0;
-    const curr = nsdf[bestPeriod] ?? 0;
-    const next = nsdf[bestPeriod + 1] ?? 0;
-
-    const denominator = 2 * (2 * curr - prev - next);
-    if (Math.abs(denominator) > 1e-6) {
-      const delta = (next - prev) / denominator;
-      if (Math.abs(delta) < 1) {
-        periodSub += delta;
-      }
-    }
-  }
-
-  const frequency = sampleRate / periodSub;
-  if (frequency < minFreq || frequency > maxFreq) return null;
-
-  return {
-    frequency,
-    confidence: globalMax,
-  };
-}
 
 export interface UseTunerOptions {
   tuningId: string;
@@ -118,6 +23,8 @@ export function useTuner({
   const [listening, setListening] = useState(false);
   const [detectedHz, setDetectedHz] = useState<number | null>(null);
   const [cents, setCents] = useState<number | null>(null);
+  const [chromaticCents, setChromaticCents] = useState<number | null>(null);
+  const [detectedNote, setDetectedNote] = useState<string | null>(null);
   const [direction, setDirection] = useState<
     "up" | "down" | "in_tune" | "idle"
   >("idle");
@@ -126,9 +33,11 @@ export function useTuner({
   const [error, setError] = useState<string | null>(null);
 
   const audioContextRef = useRef<AudioContext | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const animFrameRef = useRef<number | null>(null);
+  const microphoneRef = useRef<TunerMicrophone | null>(null);
+  const selectedIndexRef = useRef(selectedStringIndex);
+  selectedIndexRef.current = selectedStringIndex;
+  const presetRef = useRef(preset);
+  presetRef.current = preset;
   const referenceOscRef = useRef<OscillatorNode | null>(null);
   const isListeningRef = useRef(false);
 
@@ -197,109 +106,104 @@ export function useTuner({
     [stopReferenceTone],
   );
 
-  // Stop tuning / mic capture
   const stopTuning = useCallback(() => {
     isListeningRef.current = false;
-    if (animFrameRef.current !== null) {
-      cancelAnimationFrame(animFrameRef.current);
-      animFrameRef.current = null;
-    }
-    if (streamRef.current) {
-      for (const track of streamRef.current.getTracks()) track.stop();
-      streamRef.current = null;
-    }
+    microphoneRef.current?.dispose();
+    microphoneRef.current = null;
     stopReferenceTone();
     setListening(false);
     setDetectedHz(null);
     setCents(null);
+    setChromaticCents(null);
+    setDetectedNote(null);
     setDirection("idle");
     setEmergencyBreakRisk(false);
   }, [stopReferenceTone]);
 
-  // Start tuning / mic capture
   const startTuning = useCallback(async () => {
     stopTuning();
     setError(null);
-
-    try {
-      if (
-        typeof navigator === "undefined" ||
-        !navigator.mediaDevices?.getUserMedia
-      ) {
-        throw new Error(
-          "Microphone capture is not supported in this environment",
-        );
+    const microphone = new TunerMicrophone((event) => {
+      if (microphoneRef.current !== microphone || !isListeningRef.current)
+        return;
+      if (event.type === "error") {
+        setError(event.message);
+        stopTuning();
+        return;
       }
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: false,
-          noiseSuppression: false,
-          autoGainControl: false,
-        },
-      });
-
-      streamRef.current = stream;
-
-      const AudioCtx =
-        window.AudioContext ||
-        (window as unknown as { webkitAudioContext: typeof AudioContext })
-          .webkitAudioContext;
-      const ctx = audioContextRef.current || new AudioCtx();
-      audioContextRef.current = ctx;
-      if (ctx.state === "suspended") await ctx.resume();
-
-      const source = ctx.createMediaStreamSource(stream);
-      const analyser = ctx.createAnalyser();
-      analyser.fftSize = 2048;
-      source.connect(analyser);
-      analyserRef.current = analyser;
-
+      if (event.frequency === null) {
+        setDetectedHz(null);
+        setCents(null);
+        setChromaticCents(null);
+        setDetectedNote(null);
+        setDirection("idle");
+        setEmergencyBreakRisk(false);
+        return;
+      }
+      const detected = event.frequency;
+      setDetectedHz(detected);
+      const midi = Math.round(69 + 12 * Math.log2(detected / 440));
+      const notes = [
+        "C",
+        "C#",
+        "D",
+        "D#",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "G#",
+        "A",
+        "A#",
+        "B",
+      ];
+      setDetectedNote(
+        `${notes[((midi % 12) + 12) % 12]}${Math.floor(midi / 12) - 1}`,
+      );
+      setChromaticCents(
+        centsDifference(detected, 440 * 2 ** ((midi - 69) / 12)),
+      );
+      const currentPreset = presetRef.current;
+      let activeIndex = selectedIndexRef.current;
+      if (autoDetectString) {
+        activeIndex = findClosestString(detected, currentPreset).stringIndex;
+        selectedIndexRef.current = activeIndex;
+        setSelectedStringIndex(activeIndex);
+      }
+      const currentTarget =
+        currentPreset.strings[activeIndex] ?? currentPreset.strings[0];
+      const diffCents = centsDifference(detected, currentTarget.targetHz);
+      setCents(diffCents);
+      setDirection(tuningDirection(diffCents, 3));
+      // Only a confirmed pitch near the selected string can raise a tension warning.
+      // Different strings and octave harmonics must not flash a warning.
+      setEmergencyBreakRisk(
+        diffCents > 0 &&
+          diffCents < 300 &&
+          isEmergencyBreakRisk(diffCents, activeIndex),
+      );
+    });
+    microphoneRef.current = microphone;
+    try {
+      await microphone.start();
+      if (microphoneRef.current !== microphone) return;
       isListeningRef.current = true;
       setListening(true);
-
-      const buffer = new Float32Array(analyser.fftSize);
-
-      const processAudio = () => {
-        if (!isListeningRef.current) return;
-
-        analyser.getFloatTimeDomainData(buffer);
-        const pitch = detectPitchAutocorrelation(buffer, ctx.sampleRate);
-
-        if (pitch && pitch.frequency > 50 && pitch.frequency < 480) {
-          const detected = pitch.frequency;
-          setDetectedHz(detected);
-
-          let activeIndex = selectedStringIndex;
-          if (autoDetectString) {
-            const closest = findClosestString(detected, preset);
-            activeIndex = closest.stringIndex;
-            setSelectedStringIndex(activeIndex);
-          }
-
-          const currentTarget =
-            preset.strings[activeIndex] ?? preset.strings[0];
-          const diffCents = centsDifference(detected, currentTarget.targetHz);
-          setCents(diffCents);
-
-          const dir = tuningDirection(diffCents, 3);
-          setDirection(dir);
-
-          const isDanger = isEmergencyBreakRisk(diffCents, activeIndex);
-          setEmergencyBreakRisk(isDanger);
-        }
-
-        animFrameRef.current = requestAnimationFrame(processAudio);
-      };
-
-      animFrameRef.current = requestAnimationFrame(processAudio);
     } catch (err) {
+      if (microphoneRef.current !== microphone) return;
       setError(
         err instanceof Error ? err.message : "Failed to access microphone",
       );
       stopTuning();
     }
-  }, [preset, selectedStringIndex, autoDetectString, stopTuning]);
+  }, [autoDetectString, stopTuning]);
+
+  useEffect(() => {
+    // A target change invalidates the prior string-relative reading immediately.
+    setCents(null);
+    setDirection("idle");
+    setEmergencyBreakRisk(false);
+  }, [tuningId, selectedStringIndex]);
 
   useEffect(() => {
     return () => {
@@ -319,6 +223,8 @@ export function useTuner({
     listening,
     detectedHz,
     cents,
+    chromaticCents,
+    detectedNote,
     direction,
     emergencyBreakRisk,
     playingReference,

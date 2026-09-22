@@ -1,3 +1,4 @@
+use cadence_dsp::Tuner;
 use cadence_recognition::{Engine, Profile, Report};
 use wasm_bindgen::prelude::*;
 #[wasm_bindgen]
@@ -48,5 +49,45 @@ impl RecognitionEngine {
     }
     pub fn progress(&self) -> f32 {
         self.report.progress
+    }
+}
+
+#[wasm_bindgen]
+pub struct TunerEngine {
+    engine: Tuner,
+    input: Box<[f32; 2048]>,
+}
+
+#[wasm_bindgen]
+impl TunerEngine {
+    #[wasm_bindgen(constructor)]
+    pub fn new(sample_rate: f32) -> Result<Self, JsError> {
+        Ok(Self {
+            engine: Tuner::new(sample_rate).map_err(JsError::new)?,
+            input: Box::new([0.0; 2048]),
+        })
+    }
+    pub fn input_pointer(&self) -> *const f32 {
+        self.input.as_ptr()
+    }
+    pub fn reset(&mut self) {
+        self.engine.reset();
+        self.input.fill(0.0);
+    }
+    pub fn process(&mut self, length: usize) -> Result<bool, JsError> {
+        if length > self.input.len() {
+            return Err(JsError::new("Input exceeds buffer capacity"));
+        }
+        Ok(self.engine.process(&self.input[..length]))
+    }
+    pub fn frequency(&self) -> f32 {
+        self.engine
+            .reading()
+            .map_or(0.0, |reading| reading.frequency)
+    }
+    pub fn confidence(&self) -> f32 {
+        self.engine
+            .reading()
+            .map_or(0.0, |reading| reading.confidence)
     }
 }

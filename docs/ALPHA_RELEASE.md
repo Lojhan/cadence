@@ -1,20 +1,19 @@
-Cadence 0.1.0-alpha.8 is an MIT-licensed preview for self-hosting and integration.
-It includes the reviewed practice UI, local Rust/WASM recognition,
+Cadence 0.1.0-alpha.9 is an MIT-licensed preview for self-hosting and integration.
+It includes the responsive tuner, local Rust/WASM recognition,
 SQLite/PostgreSQL persistence, and container backup tools.
 
-Changes since alpha.7:
+Changes since alpha.8:
 
-- Added dedicated Guitar Tuner page (`/tuning`) with 9 standard & alternate presets (Standard, Drop D, Half Step Down, Full Step Down, Drop C, DADGAD, Open D, Open G, Open E).
-- Real-time pitch estimation with cents error, directional tuning cues, and emergency high-string break-risk warnings.
-- Interactive wire fretboard visualization with string gauge scaling and reference tone synthesis.
-- Automatic persistence of the player's active tuning to local preferences and database.
-- Songs support recommended tuning via ChordPro `{tuning:...}` directives with dynamic chord fingering adaptation for alternate tunings.
-- Practice dock features a vertical sliders settings icon that illuminates yellow when the guitar tuning differs from the song's recommended tuning.
+- Replaced the initial tuner layout with full-viewport string-by-string and chromatic views. Strings stand vertically on phones and run horizontally on tablets and desktop; one chevron opens the nine tuning presets.
+- Moved tuner pitch estimation and sample-time stabilization to Rust/WASM through the AudioWorklet and Web Worker path. The interface waits for a confirmed pitch before showing a tension warning.
+- Added a Cadence shadcn preset, semantic Tailwind v4 theme, reusable controls and overlays, and modular public UI styles. Published UI CSS is precompiled for downstream consumers.
+- Serialized tuning/theme preference saves and separated a suggested `?preset=` preview from the stored setting. Choosing the previewed tuning now persists it correctly.
+- Local development and the default loopback container accept `localhost`, `127.0.0.1`, and `[::1]` on port 3000. External deployments still require the configured host.
 
-Alpha.5 also introduced per-input microphone boost and restored keyboard focus to
-modal openers. Input boost defaults off and can help quiet capture, but it also
-amplifies noise. The reported iPhone/iPad Safari capture issue still needs a
-physical-device retest; the synthetic quiet-input checks do not prove it is fixed.
+Per-input microphone boost in the practice flow still defaults off and can help
+quiet capture, but it also amplifies noise. The tuner has no automatic input
+boost. Its synthetic tests do not prove real-guitar accuracy or fix the reported
+iPhone/iPad Safari microphone level; physical-device retests remain necessary.
 
 Recognition remains **experimental**. No profile meets every release target.
 On the corrected calibration subset, Balanced recognizes 102/116 qualifying strums
@@ -35,7 +34,7 @@ version, and required migration hashes for both databases. Companion dependencie
 to this release. Container images are tested on native AMD64 and ARM64 runners
 before their shared manifest is published.
 
-No database schema migrations were added since alpha.5. Back up before upgrading.
+No database schema migrations were added since alpha.8. Back up before upgrading.
 Alpha.1 cannot import full version 2 archives; individual-song exports remain
 version 1. See [portability](https://github.com/Lojhan/cadence/blob/main/docs/PORTABILITY.md)
 and [operations](https://github.com/Lojhan/cadence/blob/main/docs/OPERATIONS.md).

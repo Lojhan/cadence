@@ -1,52 +1,43 @@
+import { readFileSync } from "node:fs";
 import { strict as assert } from "poku";
-import { detectPitchAutocorrelation } from "../../packages/features/src/tuner.ts";
+import {
+  initSync,
+  TunerEngine,
+} from "../../packages/audio-engine/src/index.ts";
 import {
   centsDifference,
   TUNING_PRESETS,
 } from "../../packages/music/src/index.ts";
 
+const { memory } = initSync({
+  module: readFileSync(
+    new URL(
+      "../../packages/audio-engine/generated/cadence_wasm_bg.wasm",
+      import.meta.url,
+    ),
+  ),
+});
 const standard = TUNING_PRESETS[0];
 assert.ok(standard, "Standard preset exists");
-if (!standard) throw new Error("Missing preset");
-const sampleRate = 44100;
-const bufferSize = 2048;
+if (!standard) throw new Error("Missing standard preset");
+const sampleRate = 44_100;
 
 for (const string of standard.strings) {
-  const targetHz = string.targetHz;
-  const buffer = new Float32Array(bufferSize);
-
-  // Generate pure sine wave at targetHz
-  for (let i = 0; i < bufferSize; i++) {
-    buffer[i] = 0.5 * Math.sin((2 * Math.PI * targetHz * i) / sampleRate);
+  const engine = new TunerEngine(sampleRate);
+  const samples = new Float32Array(memory.buffer, engine.input_pointer(), 2048);
+  assert.equal(engine.frequency(), 0, "No pitch before listening");
+  for (let block = 0; block < 8; block++) {
+    for (let i = 0; i < samples.length; i++) {
+      const t = (block * samples.length + i) / sampleRate;
+      samples[i] = 0.12 * Math.sin(2 * Math.PI * string.targetHz * t);
+    }
+    engine.process(samples.length);
   }
-
-  const detected = detectPitchAutocorrelation(buffer, sampleRate);
-  assert.ok(detected !== null, `Detected pitch for ${string.note}`);
-  if (!detected) continue;
-  assert.ok(detected.confidence > 0.8, `High confidence for ${string.note}`);
-
-  const cents = Math.abs(centsDifference(detected.frequency, targetHz));
-  assert.ok(
-    cents < 3,
-    `Pitch for ${string.note} (${targetHz} Hz) detected with < 3 cents error (got ${detected.frequency.toFixed(2)} Hz, error = ${cents.toFixed(2)}c)`,
-  );
+  assert.ok(engine.confidence() > 0.7, `Stable pitch for ${string.note}`);
+  const cents = Math.abs(centsDifference(engine.frequency(), string.targetHz));
+  assert.ok(cents < 3, `${string.note}: ${cents.toFixed(2)} cents from target`);
+  samples.fill(0);
+  for (let block = 0; block < 5; block++) engine.process(samples.length);
+  assert.equal(engine.frequency(), 0, "Silence clears stale note");
+  engine.free();
 }
-
-// Silence should return null
-const silence = new Float32Array(bufferSize);
-assert.equal(
-  detectPitchAutocorrelation(silence, sampleRate),
-  null,
-  "Silence returns null",
-);
-
-// Noise below RMS threshold should return null
-const noise = new Float32Array(bufferSize);
-for (let i = 0; i < bufferSize; i++) {
-  noise[i] = (Math.random() - 0.5) * 0.005; // tiny amplitude
-}
-assert.equal(
-  detectPitchAutocorrelation(noise, sampleRate),
-  null,
-  "Quiet noise returns null",
-);

@@ -361,6 +361,7 @@ try {
   await page.getByRole("heading", { name: "C", exact: true }).waitFor();
   if (process.env.CADENCE_NATIVE_MIC !== "1") {
     await page.getByRole("button", { name: "Microphone options" }).click();
+    assert.equal(await page.locator('[data-slot="popover"]').count(), 1);
     const picker = page.getByRole("combobox", {
       name: "Microphone input",
       exact: true,

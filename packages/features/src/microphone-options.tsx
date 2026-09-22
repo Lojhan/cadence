@@ -1,4 +1,4 @@
-import { Select } from "@cadence/ui";
+import { Field, Select } from "@cadence/ui";
 import { useId } from "react";
 export function MicrophoneOptions({
   device,
@@ -35,8 +35,11 @@ export function InputBoost({
 }) {
   const id = useId();
   return (
-    <label className="field" htmlFor={id}>
-      <span>Input boost</span>
+    <Field
+      label="Input boost"
+      htmlFor={id}
+      hint="For a quiet microphone. Raise gradually, then check your sound. Saved only for this input on this browser."
+    >
       <Select
         id={id}
         label="Input boost"
@@ -49,11 +52,7 @@ export function InputBoost({
           </option>
         ))}
       </Select>
-      <span className="note">
-        For a quiet microphone. Raise gradually, then check your sound. Saved
-        only for this input on this browser.
-      </span>
-    </label>
+    </Field>
   );
 }
 export function isApplePlatformOrSafari(): boolean {

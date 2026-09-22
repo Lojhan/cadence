@@ -594,3 +594,22 @@ between native Rust and WASM at all three sensitivities. Native processing in th
 focused Balanced run took about 0.9 seconds for over 455 seconds of analyzed
 audio; this measurement is not a physical-device benchmark. Shared hover colors
 were checked on actual light/dark app controls, preserving unboxed arrows.
+
+## Tuner pitch tracker (unreleased refactor)
+
+The tuner now uses the same Rust/WASM `Tuner` engine for its synthetic tests and
+AudioWorklet → Web Worker microphone path. It estimates a monophonic fundamental
+from a 4096-sample time-domain normalized difference function, every 2048
+contiguous samples. Three agreeing estimates (within 30 cents) are required before
+showing a pitch, and silence clears a prior reading after about 120 ms of processed
+audio. The UI's tension warning is gated on that confirmed reading and on proximity
+to the selected string. React frames do not determine recognition time.
+
+This change is meant to prevent transient warnings and remove main-thread pitch
+analysis. The six standard-string sine waves, a synthetic harmonic-rich low-E
+pluck, one-block wrong-note transient, and silence are covered in Rust and WASM
+tests. These fixtures do **not** establish real-guitar tuning accuracy, warning
+safety, CPU headroom, or iPhone/iPad Safari microphone performance. A recorded
+single-string corpus and physical device checks are still required before making
+those claims. The previous JavaScript autocorrelation detector had no comparable
+real-guitar corpus baseline, so no accuracy improvement is asserted.

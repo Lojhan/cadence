@@ -43,6 +43,7 @@ dependencies = [
 name = "cadence-wasm"
 version = "0.1.0"
 dependencies = [
+ "cadence-dsp",
  "cadence-recognition",
  "wasm-bindgen",
 ]

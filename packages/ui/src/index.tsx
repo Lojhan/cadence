@@ -1,114 +1,43 @@
-import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {
   AlertTriangle,
-  Check,
   ChevronDown,
   ChevronUp,
   Mic,
   MicOff,
   Music2,
   Sliders,
-  Volume2,
-  VolumeX,
   X,
 } from "lucide-react";
-import {
-  type ButtonHTMLAttributes,
-  Fragment,
-  type ReactNode,
-  type SelectHTMLAttributes,
-  useRef,
-} from "react";
-export function IconButton({
-  label,
-  children,
-  className = "",
-  ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & { label: string }) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      className={`icon-button ${className}`}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-}
-export function Button({
-  children,
-  className = "",
-  ...props
-}: ButtonHTMLAttributes<HTMLButtonElement>) {
-  return (
-    <button type="button" className={`pill ${className}`} {...props}>
-      {children}
-    </button>
-  );
-}
-export function Select({
-  label,
-  children,
-  ...props
-}: SelectHTMLAttributes<HTMLSelectElement> & { label: string }) {
-  return (
-    <span className="select-control">
-      <select aria-label={label} {...props}>
-        {children}
-      </select>
-      <ChevronDown aria-hidden="true" />
-    </span>
-  );
-}
-export function Dialog({
-  open,
-  onOpenChange,
-  title,
-  children,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  title: string;
-  children: ReactNode;
-}) {
-  const opener = useRef<HTMLElement | null>(null);
-  return (
-    <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
-      <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="modal-overlay" />
-        <DialogPrimitive.Content
-          className="modal-panel"
-          aria-describedby={undefined}
-          onOpenAutoFocus={() => {
-            opener.current =
-              document.activeElement instanceof HTMLElement
-                ? document.activeElement
-                : null;
-          }}
-          onCloseAutoFocus={(event) => {
-            // Openers live in the app toolbar rather than a Radix Trigger.
-            if (opener.current?.isConnected) {
-              event.preventDefault();
-              opener.current.focus({ preventScroll: true });
-            }
-          }}
-        >
-          <header className="panel-head">
-            <DialogPrimitive.Title>{title}</DialogPrimitive.Title>
-            <DialogPrimitive.Close asChild>
-              <IconButton label="Close">
-                <X />
-              </IconButton>
-            </DialogPrimitive.Close>
-          </header>
-          {children}
-        </DialogPrimitive.Content>
-      </DialogPrimitive.Portal>
-    </DialogPrimitive.Root>
-  );
-}
+import { Fragment, type ReactNode } from "react";
+import { Popover } from "./overlays.tsx";
+import { Button, IconButton } from "./primitives.tsx";
+
+export type {
+  FieldProps,
+  SegmentedControlProps,
+  SegmentOption,
+  SelectProps,
+  SurfaceProps,
+} from "./form-primitives.tsx";
+export {
+  Field,
+  Input,
+  SegmentedControl,
+  Select,
+  Surface,
+  Textarea,
+} from "./form-primitives.tsx";
+export { cn } from "./lib/cn.ts";
+export type { DialogProps, PopoverProps } from "./overlays.tsx";
+export {
+  Dialog,
+  DialogBody,
+  DialogHeader,
+  Popover,
+  Sheet,
+} from "./overlays.tsx";
+export type { ButtonProps, IconButtonProps } from "./primitives.tsx";
+export { Button, buttonVariants, IconButton } from "./primitives.tsx";
 export type DiagramShape = {
   frets: readonly number[];
   fingers: readonly number[];
@@ -253,6 +182,7 @@ export function PracticeDock({
   onDevices,
   onLibrary,
   onTuner,
+  deviceContent,
   tuningMismatch = false,
   tuningTitle = "Guitar tuner",
 }: {
@@ -263,6 +193,7 @@ export function PracticeDock({
   onDevices: () => void;
   onLibrary: () => void;
   onTuner?: () => void;
+  deviceContent?: ReactNode;
   tuningMismatch?: boolean;
   tuningTitle?: string;
 }) {
@@ -286,14 +217,21 @@ export function PracticeDock({
           </span>
           {listening ? <Mic /> : <MicOff />}
         </IconButton>
-        <IconButton
-          label="Microphone options"
-          aria-expanded={devicesOpen}
-          className="mic-options-toggle"
-          onClick={onDevices}
+        <Popover
+          open={devicesOpen}
+          onOpenChange={() => onDevices()}
+          trigger={
+            <IconButton
+              label="Microphone options"
+              aria-expanded={devicesOpen}
+              className="mic-options-toggle"
+            >
+              {devicesOpen ? <ChevronDown /> : <ChevronUp />}
+            </IconButton>
+          }
         >
-          {devicesOpen ? <ChevronDown /> : <ChevronUp />}
-        </IconButton>
+          {deviceContent}
+        </Popover>
       </div>
       <span className="dock-divider" />
       <IconButton label="Open music library" onClick={onLibrary}>
@@ -314,6 +252,16 @@ export function PracticeDock({
 }
 
 export { DirectionalGroup } from "./motion.tsx";
+export {
+  TunerChromaticGauge,
+  TunerExperience,
+  type TunerExperienceProps,
+  type TunerMode,
+  TunerModeSwitch,
+  TunerNote,
+  TunerPresetMenu,
+  TunerStringBoard,
+} from "./tuner-experience.tsx";
 
 export interface TunerStringInfo {
   stringNumber: number; // 1 to 6
@@ -332,211 +280,6 @@ export interface TunerPresetInfo {
   name: string;
   shortDescription: string;
   strings: readonly TunerStringInfo[];
-}
-
-export function TuningSelect({
-  presets,
-  value,
-  onChange,
-  disabled,
-}: {
-  presets: readonly TunerPresetInfo[];
-  value: string;
-  onChange: (presetId: string) => void;
-  disabled?: boolean;
-}) {
-  return (
-    <Select
-      label="Tuning preset"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      disabled={disabled}
-      className="tuning-select"
-    >
-      {presets.map((preset) => (
-        <option key={preset.id} value={preset.id}>
-          {preset.name} ({preset.strings.map((s) => s.noteName).join(" ")})
-        </option>
-      ))}
-    </Select>
-  );
-}
-
-export function TunerGauge({
-  string,
-  detectedHz,
-  cents,
-  direction,
-  emergencyBreakRisk,
-  onPlayReference,
-  playingReference,
-}: {
-  string: TunerStringInfo;
-  detectedHz: number | null;
-  cents: number | null;
-  direction: "up" | "down" | "in_tune" | "idle";
-  emergencyBreakRisk: boolean;
-  onPlayReference?: () => void;
-  playingReference?: boolean;
-}) {
-  const clampedCents = cents !== null ? Math.max(-50, Math.min(50, cents)) : 0;
-  const needlePercent = ((clampedCents + 50) / 100) * 100;
-
-  return (
-    <div className="tuner-gauge-card">
-      {emergencyBreakRisk && (
-        <div className="tuner-emergency-alert" role="alert">
-          <AlertTriangle aria-hidden="true" />
-          <span>
-            <strong>⚠️ Pitch is too high!</strong> Loosen string immediately to
-            prevent snapping.
-          </span>
-        </div>
-      )}
-
-      <div className="tuner-gauge-header">
-        <div className="tuner-string-meta">
-          <span className="tuner-string-number">
-            String {string.stringNumber}
-          </span>
-          <span className="tuner-string-gauge">
-            Gauge {string.gauge} {string.isWound ? "(wound)" : "(plain)"}
-          </span>
-        </div>
-
-        {onPlayReference && (
-          <Button
-            className="tuner-reference-btn"
-            onClick={onPlayReference}
-            title={`Play reference pitch ${string.note}`}
-            aria-label={`Play reference pitch ${string.note}`}
-          >
-            {playingReference ? <VolumeX /> : <Volume2 />}
-            <span>Reference {string.note}</span>
-          </Button>
-        )}
-      </div>
-
-      <div className="tuner-note-display">
-        <div className="tuner-note-primary">
-          <span className="tuner-note-letter">{string.noteName}</span>
-          <span className="tuner-note-octave">{string.octave}</span>
-        </div>
-        <div className="tuner-freq-targets">
-          <span className="tuner-target-hz">
-            Target: {string.targetHz.toFixed(2)} Hz
-          </span>
-          <span className="tuner-detected-hz">
-            Detected:{" "}
-            {detectedHz !== null && detectedHz > 0
-              ? `${detectedHz.toFixed(1)} Hz`
-              : "—"}
-          </span>
-        </div>
-      </div>
-
-      <div className="tuner-meter-container">
-        <div className="tuner-meter-labels">
-          <span>-50¢</span>
-          <span>-25¢</span>
-          <span className="tuner-meter-center">0¢</span>
-          <span>+25¢</span>
-          <span>+50¢</span>
-        </div>
-        <div className="tuner-meter-track">
-          <div className="tuner-meter-sweetspot" />
-          <div className="tuner-meter-centerline" />
-          {cents !== null && (
-            <div
-              className={`tuner-meter-needle ${direction === "in_tune" ? "in-tune" : ""}`}
-              style={{ left: `${needlePercent}%` }}
-            />
-          )}
-        </div>
-        <div className="tuner-cents-text">
-          {cents !== null
-            ? `${cents > 0 ? "+" : ""}${Math.round(cents)} cents`
-            : "Play string"}
-        </div>
-      </div>
-
-      <div className="tuner-direction-badge-wrap">
-        {direction === "in_tune" ? (
-          <div className="tuner-badge in-tune">
-            <Check />
-            <span>In Tune</span>
-          </div>
-        ) : direction === "up" ? (
-          <div className="tuner-badge tune-up">
-            <span>▲ Tune Up</span>
-          </div>
-        ) : direction === "down" ? (
-          <div className="tuner-badge tune-down">
-            <span>▼ Tune Down</span>
-          </div>
-        ) : (
-          <div className="tuner-badge idle">
-            <span>
-              Pluck string {string.stringNumber} ({string.note})
-            </span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-export function TunerFretboard({
-  strings,
-  selectedStringIndex,
-  onSelectString,
-  hand = "right",
-}: {
-  strings: readonly TunerStringInfo[];
-  selectedStringIndex: number;
-  onSelectString: (index: number) => void;
-  hand?: "left" | "right";
-}) {
-  const displayedStrings =
-    hand === "left" ? [...strings].reverse() : [...strings];
-
-  return (
-    <section className="tuner-fretboard-wrap" aria-label="Guitar strings">
-      <div className="tuner-headstock-nut" />
-      <div className="tuner-strings-list">
-        {displayedStrings.map((s) => {
-          const isSelected = s.stringIndex === selectedStringIndex;
-          const thickness = Math.max(
-            1.5,
-            Math.min(5, (s.stringNumber / 6) * 4.5),
-          );
-          return (
-            <button
-              key={s.stringIndex}
-              type="button"
-              aria-pressed={isSelected}
-              className={`tuner-string-row ${isSelected ? "selected" : ""}`}
-              onClick={() => onSelectString(s.stringIndex)}
-            >
-              <div className="tuner-string-indicator">
-                <span className="tuner-string-note">{s.note}</span>
-                <span className="tuner-string-num">
-                  String {s.stringNumber}
-                </span>
-              </div>
-              <div className="tuner-string-wire-track">
-                <div
-                  className={`tuner-string-wire ${s.isWound ? "wound" : "plain"} ${isSelected ? "vibrating" : ""}`}
-                  style={{ height: `${thickness}px` }}
-                />
-              </div>
-              <div className="tuner-string-hz">{s.targetHz.toFixed(1)} Hz</div>
-            </button>
-          );
-        })}
-      </div>
-    </section>
-  );
 }
 
 export function TuningWarningBanner({

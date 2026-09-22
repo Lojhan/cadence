@@ -56,6 +56,14 @@ for (const directory of readdirSync("packages")) {
         import: path.replace(/\.tsx?$/, ".js"),
       };
   }
+  if (manifest.imports) {
+    for (const [name, target] of Object.entries(manifest.imports) as [
+      string,
+      string,
+    ][]) {
+      manifest.imports[name] = target.replace(/\.tsx?$/, ".js");
+    }
+  }
   for (const [name, constraint] of Object.entries(
     manifest.dependencies ?? {},
   )) {
@@ -89,7 +97,15 @@ for (const directory of readdirSync("packages")) {
       recursive: true,
     });
   if (directory === "ui")
-    cpSync(`${source}/src/styles.css`, `${destination}/src/styles.css`);
+    run("pnpm", [
+      "exec",
+      "tailwindcss",
+      "-i",
+      `${source}/src/styles.css`,
+      "-o",
+      `${destination}/src/styles.css`,
+      "--minify",
+    ]);
   if (directory === "audio-browser") {
     cpSync(`${source}/src/capture.js`, `${destination}/src/capture.js`);
     const entry = `${destination}/src/index.js`;
@@ -98,6 +114,14 @@ for (const directory of readdirSync("packages")) {
       readFileSync(entry, "utf8").replace(
         'new URL("./worker.ts", import.meta.url)',
         'new URL("./worker.js", import.meta.url)',
+      ),
+    );
+    const tunerEntry = `${destination}/src/tuner.js`;
+    writeFileSync(
+      tunerEntry,
+      readFileSync(tunerEntry, "utf8").replace(
+        'new URL("./tuner-worker.ts", import.meta.url)',
+        'new URL("./tuner-worker.js", import.meta.url)',
       ),
     );
   }

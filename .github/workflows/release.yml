@@ -3,9 +3,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Prerelease version (for example 0.1.0-alpha.8)
+        description: Prerelease version (for example 0.1.0-alpha.9)
         required: true
-        default: 0.1.0-alpha.8
+        default: 0.1.0-alpha.9
 permissions:
   contents: read
 concurrency:

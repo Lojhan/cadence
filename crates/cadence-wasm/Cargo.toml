@@ -6,5 +6,6 @@ license.workspace = true
 [lib]
 crate-type = ["cdylib", "rlib"]
 [dependencies]
+cadence-dsp = { path = "../cadence-dsp" }
 cadence-recognition = { path = "../cadence-recognition" }
 wasm-bindgen.workspace = true

@@ -9,6 +9,7 @@
     "includes": [
       "**",
       "!!design/prototype.html",
+      "!!packages/ui/src/tailwind.css",
       "!!pnpm-lock.yaml",
       "!!packages/audio-engine/generated",
       "!!apps/*/src/routeTree.gen.ts"

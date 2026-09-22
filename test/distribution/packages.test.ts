@@ -46,6 +46,15 @@ for (const name of names) {
     );
   }
 }
+const uiManifest = JSON.parse(
+  readFileSync("artifacts/packages/ui/package.json", "utf8"),
+) as { imports: Record<string, string> };
+for (const target of Object.values(uiManifest.imports)) {
+  assert.ok(
+    target.endsWith(".js"),
+    "UI package imports target emitted JavaScript",
+  );
+}
 const audio = readFileSync(
   "artifacts/packages/audio-browser/src/index.js",
   "utf8",
@@ -53,6 +62,18 @@ const audio = readFileSync(
 assert.ok(
   audio.includes('new URL("./worker.js", import.meta.url)'),
   "worker URL points to shipped JavaScript",
+);
+const tunerAudio = readFileSync(
+  "artifacts/packages/audio-browser/src/tuner.js",
+  "utf8",
+);
+assert.ok(
+  tunerAudio.includes('new URL("./tuner-worker.js", import.meta.url)'),
+  "tuner worker URL points to shipped JavaScript",
+);
+assert.ok(
+  existsSync("artifacts/packages/audio-browser/src/tuner-worker.js"),
+  "tuner worker is shipped",
 );
 assert.ok(
   existsSync("artifacts/packages/audio-engine/generated/cadence_wasm_bg.wasm"),

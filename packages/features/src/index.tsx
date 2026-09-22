@@ -17,11 +17,16 @@ import {
   Button,
   ChordTimeline,
   Dialog,
+  DialogBody,
   DirectionalGroup,
+  Field,
   Fretboard,
   IconButton,
+  Input,
   PracticeDock,
+  SegmentedControl,
   Select,
+  Textarea,
 } from "@cadence/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -658,6 +663,37 @@ export function PracticeApp({
             );
         }}
         onDevices={() => void toggleDevices()}
+        deviceContent={
+          <>
+            <label htmlFor="input-device">Microphone input</label>
+            <Select
+              id="input-device"
+              disabled={busy}
+              label="Microphone input"
+              value={device}
+              onChange={(event) => {
+                controller.pause();
+                setDevice(event.target.value);
+                setBoostDb(readInputBoost(event.target.value));
+                try {
+                  localStorage.setItem("cadence-device", event.target.value);
+                } catch {}
+                void controller
+                  .prepare(
+                    event.target.value,
+                    prefs.profile,
+                    readInputBoost(event.target.value),
+                  )
+                  .then(() => controller.devices())
+                  .then(setDevices)
+                  .catch(() => {});
+              }}
+            >
+              <MicrophoneOptions device={device} devices={devices} />
+            </Select>
+            <InputBoost value={boostDb} onChange={changeBoost} />
+          </>
+        }
         onLibrary={() => openPanel("library")}
         onTuner={() => {
           window.location.href = tuningMismatch
@@ -671,37 +707,6 @@ export function PracticeApp({
             : "Guitar tuner"
         }
       />
-      {devicesOpen ? (
-        <div className="device-panel">
-          <label htmlFor="input-device">Microphone input</label>
-          <Select
-            id="input-device"
-            disabled={busy}
-            label="Microphone input"
-            value={device}
-            onChange={(event) => {
-              controller.pause();
-              setDevice(event.target.value);
-              setBoostDb(readInputBoost(event.target.value));
-              try {
-                localStorage.setItem("cadence-device", event.target.value);
-              } catch {}
-              void controller
-                .prepare(
-                  event.target.value,
-                  prefs.profile,
-                  readInputBoost(event.target.value),
-                )
-                .then(() => controller.devices())
-                .then(setDevices)
-                .catch(() => {});
-            }}
-          >
-            <MicrophoneOptions device={device} devices={devices} />
-          </Select>
-          <InputBoost value={boostDb} onChange={changeBoost} />
-        </div>
-      ) : null}
       {progressSave.error && !panel ? (
         <div className="toast" role="alert">
           <span>
@@ -757,7 +762,7 @@ export function PracticeApp({
         }}
         title="A little better, every time."
       >
-        <div className="panel-body">
+        <DialogBody>
           <p>You finished {activeSong.title}.</p>
           <div className="actions">
             <Button onClick={() => controller.restart()}>
@@ -769,7 +774,7 @@ export function PracticeApp({
               Choose music
             </Button>
           </div>
-        </div>
+        </DialogBody>
       </Dialog>
 
       <div className="sr-only" aria-live="polite">
@@ -782,7 +787,7 @@ export function PracticeApp({
         }}
         title="Delete this song?"
       >
-        <div className="panel-body">
+        <DialogBody>
           <p>The song and its saved position will be removed.</p>
           <div className="actions">
             <Button onClick={() => setConfirmDelete(null)}>Keep song</Button>
@@ -798,7 +803,7 @@ export function PracticeApp({
               Confirm delete
             </Button>
           </div>
-        </div>
+        </DialogBody>
       </Dialog>
       <Dialog
         open={panel !== null}
@@ -807,35 +812,25 @@ export function PracticeApp({
         }}
         title="Your practice"
       >
-        <nav className="tabs" aria-label="Practice settings">
-          {(
-            [
-              ["library", Library, "Music"],
-              ["import", Upload, "Import"],
-              ["settings", Settings2, "Setup"],
-              ["account", UserRound, "Account"],
-            ] as const
-          ).map(([key, Icon, label]) => (
-            <button
-              key={key}
-              type="button"
-              aria-current={panel === key ? "page" : undefined}
-              onClick={() => {
-                const tabs = ["library", "import", "settings", "account"];
-                setTabDirection(
-                  tabs.indexOf(key) >= tabs.indexOf(panel ?? "library")
-                    ? 1
-                    : -1,
-                );
-                setPanel(key);
-                setFormError("");
-              }}
-            >
-              <Icon />
-              {label}
-            </button>
-          ))}
-        </nav>
+        <SegmentedControl
+          label="Practice settings"
+          className="tabs"
+          value={panel ?? "library"}
+          options={[
+            { value: "library", label: "Music", icon: Library },
+            { value: "import", label: "Import", icon: Upload },
+            { value: "settings", label: "Setup", icon: Settings2 },
+            { value: "account", label: "Account", icon: UserRound },
+          ]}
+          onChange={(value) => {
+            const tabs = ["library", "import", "settings", "account"];
+            setTabDirection(
+              tabs.indexOf(value) >= tabs.indexOf(panel ?? "library") ? 1 : -1,
+            );
+            setPanel(value as Panel);
+            setFormError("");
+          }}
+        />
         <DirectionalGroup
           transitionKey={panel ?? "closed"}
           direction={tabDirection}
@@ -844,14 +839,13 @@ export function PracticeApp({
         >
           {panel === "library" ? (
             <>
-              <label className="field">
-                <span>Search music</span>
-                <input
+              <Field label="Search music">
+                <Input
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search your library"
                 />
-              </label>
+              </Field>
               {library.data
                 .filter(
                   (song) =>
@@ -928,17 +922,15 @@ export function PracticeApp({
           ) : null}
           {panel === "import" ? (
             <>
-              <label className="field">
-                <span>Song title</span>
-                <input
+              <Field label="Song title">
+                <Input
                   value={title}
                   maxLength={100}
                   onChange={(event) => setTitle(event.target.value)}
                 />
-              </label>
-              <label className="field">
-                <span>Chord chart</span>
-                <textarea
+              </Field>
+              <Field label="Chord chart">
+                <Textarea
                   value={chart}
                   onChange={(event) => {
                     setChart(event.target.value);
@@ -946,25 +938,23 @@ export function PracticeApp({
                   }}
                   placeholder="C G Am F"
                 />
-              </label>
-              <label className="field">
-                <span>Attribution</span>
-                <input
+              </Field>
+              <Field label="Attribution">
+                <Input
                   value={attribution}
                   maxLength={500}
                   onChange={(event) => setAttribution(event.target.value)}
                 />
-              </label>
-              <label className="field">
-                <span>Or open a text / ChordPro file</span>
-                <input
+              </Field>
+              <Field label="Or open a text / ChordPro file">
+                <Input
                   type="file"
                   accept=".txt,.cho,.chopro,.chordpro,text/plain"
                   onChange={(event) =>
                     void importFile(event.target.files?.[0], false)
                   }
                 />
-              </label>
+              </Field>
               <p>
                 Use chord names, bracketed chords in lyrics, or |: repeat
                 sections :|. Unsupported chords are flagged before saving.
@@ -1167,16 +1157,15 @@ export function PracticeApp({
                       Export my data
                     </Button>
                   </div>
-                  <label className="field">
-                    <span>Restore a Cadence export</span>
-                    <input
+                  <Field label="Restore a Cadence export">
+                    <Input
                       type="file"
                       accept=".json,application/json"
                       onChange={(event) =>
                         void importFile(event.target.files?.[0], true)
                       }
                     />
-                  </label>
+                  </Field>
                   <p>
                     Restore adds copies of the imported songs and replaces your
                     preferences.
