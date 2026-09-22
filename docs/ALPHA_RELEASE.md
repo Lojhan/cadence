@@ -1,13 +1,15 @@
-Cadence 0.1.0-alpha.7 is an MIT-licensed preview for self-hosting and integration.
+Cadence 0.1.0-alpha.8 is an MIT-licensed preview for self-hosting and integration.
 It includes the reviewed practice UI, local Rust/WASM recognition,
 SQLite/PostgreSQL persistence, and container backup tools.
 
-Changes since alpha.6:
+Changes since alpha.7:
 
-- Rust/WASM detection now uses spectral whitening and iterative multi-pitch estimation before chord confirmation.
-- Pitch estimation is independent of the expected chord and retains octave information until the final chroma projection.
-- Buttons across practice, settings, account and authentication share light/dark hover colors; chord arrows remain unboxed.
-- Disabled buttons do not acquire hover colors; touch presses have matching feedback.
+- Added dedicated Guitar Tuner page (`/tuning`) with 9 standard & alternate presets (Standard, Drop D, Half Step Down, Full Step Down, Drop C, DADGAD, Open D, Open G, Open E).
+- Real-time pitch estimation with cents error, directional tuning cues, and emergency high-string break-risk warnings.
+- Interactive wire fretboard visualization with string gauge scaling and reference tone synthesis.
+- Automatic persistence of the player's active tuning to local preferences and database.
+- Songs support recommended tuning via ChordPro `{tuning:...}` directives with dynamic chord fingering adaptation for alternate tunings.
+- Practice dock features a vertical sliders settings icon that illuminates yellow when the guitar tuning differs from the song's recommended tuning.
 
 Alpha.5 also introduced per-input microphone boost and restored keyboard focus to
 modal openers. Input boost defaults off and can help quiet capture, but it also

@@ -96,8 +96,17 @@ const open: Record<string, [number[], number[]]> = {
     [0, 2, 1, 0, 3, 0],
   ],
 };
+
+import {
+  adaptVoicingForTuning,
+  getTuningPreset,
+  normalizeTuningId,
+} from "./tuning.js";
+
+export * from "./tuning.js";
+
 const chordPattern = /^([A-G])([#b]?)(maj7|m7|sus2|sus4|add9|m|7)?$/;
-export function parseChord(input: string): Chord {
+export function parseChord(input: string, tuning = "standard"): Chord {
   const symbol = input.trim();
   const match = chordPattern.exec(symbol);
   if (!match)
@@ -160,27 +169,39 @@ export function parseChord(input: string): Chord {
       "UNSUPPORTED_CHORD",
       `Unsupported chord fingering: ${symbol}`,
     );
+
+  const normalizedTuning = normalizeTuningId(tuning);
+  const finalVoicings =
+    normalizedTuning === "standard"
+      ? voicings
+      : voicings.map((v) => adaptVoicingForTuning(v, normalizedTuning));
+
   return {
     symbol,
     root,
     quality,
     notes,
     mask: notes.reduce((mask, n) => mask | (1 << n), 0),
-    voicings,
+    voicings: finalVoicings,
   };
 }
-export function fingeringPitchClasses(voicing: Voicing): Set<number> {
-  const tuning = [4, 9, 2, 7, 11, 4];
+export function fingeringPitchClasses(
+  voicing: Voicing,
+  tuning = "standard",
+): Set<number> {
+  const preset = getTuningPreset(tuning);
+  const openPitches = preset.openPitchClasses;
   return new Set(
     voicing.frets.flatMap((f, i) =>
-      f < 0 ? [] : [((tuning[i] ?? 0) + f) % 12],
+      f < 0 ? [] : [((openPitches[i] ?? 0) + f) % 12],
     ),
   );
 }
-export function parseChart(text: string): { chords: string[] } {
+export function parseChart(text: string): { chords: string[]; tuning: string } {
   if (new TextEncoder().encode(text).length > 1_048_576)
     throw new CadenceError("INVALID_CHART", "Chart size limit exceeded");
   const chords: string[] = [];
+  let detectedTuning = "standard";
   let repeatStart: number | null = null;
   const append = (token: string) => {
     if (token === "|:") {
@@ -206,6 +227,11 @@ export function parseChart(text: string): { chords: string[] } {
     const line = raw.trim();
     if (!line || line.startsWith("#")) continue;
     if (line.startsWith("{")) {
+      const tuningMatch = /^\{(?:tuning|tune):?\s*([^}]+)\}$/i.exec(line);
+      if (tuningMatch) {
+        detectedTuning = normalizeTuningId(tuningMatch[1] ?? "");
+        continue;
+      }
       if (
         /^\{(?:title|t|subtitle|st|comment|c|start_of_chorus|soc|end_of_chorus|eoc)(?::[^}]*)?\}$/.test(
           line,
@@ -247,7 +273,7 @@ export function parseChart(text: string): { chords: string[] } {
     throw new CadenceError("INVALID_CHART", "Unclosed repeat");
   if (!chords.length)
     throw new CadenceError("INVALID_CHART", "No chords found");
-  return { chords };
+  return { chords, tuning: detectedTuning };
 }
 export const defaultSongs: readonly Song[] = [
   {
@@ -257,6 +283,7 @@ export const defaultSongs: readonly Song[] = [
     attribution: "Cadence original exercise · MIT",
     revision: 1,
     catalog: true,
+    tuning: "standard",
   },
   {
     id: "catalog:slow",
@@ -265,6 +292,7 @@ export const defaultSongs: readonly Song[] = [
     attribution: "Cadence original exercise · MIT",
     revision: 1,
     catalog: true,
+    tuning: "standard",
   },
   {
     id: "catalog:morning",
@@ -273,6 +301,7 @@ export const defaultSongs: readonly Song[] = [
     attribution: "Cadence original exercise · MIT",
     revision: 1,
     catalog: true,
+    tuning: "standard",
   },
   {
     id: "catalog:minor",
@@ -281,5 +310,6 @@ export const defaultSongs: readonly Song[] = [
     attribution: "Cadence original exercise · MIT",
     revision: 1,
     catalog: true,
+    tuning: "standard",
   },
 ];

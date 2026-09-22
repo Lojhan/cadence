@@ -28,14 +28,23 @@ export function repository(query: Query): Repository {
     const notes = await query(
       sql`SELECT symbol FROM song_events WHERE song_id = ${row.id} ORDER BY ordinal`,
     );
+    const sourceChart = String(row.source_chart || "");
+    const tuningMatch = /\{(?:tuning|tune):?\s*([^}]+)\}/i.exec(sourceChart);
+    const tuning = tuningMatch
+      ? tuningMatch[1]
+          ?.trim()
+          .toLowerCase()
+          .replace(/[\s-]+/g, "_") || "standard"
+      : "standard";
     return {
       id: String(row.id),
       title: String(row.title),
-      sourceChart: String(row.source_chart || ""),
+      sourceChart,
       attribution: String(row.attribution),
       revision: Number(row.revision),
       catalog: Number(row.catalog) === 1,
       chords: notes.map((note) => String(note.symbol)),
+      tuning,
     };
   }
   return {

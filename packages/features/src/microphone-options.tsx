@@ -56,11 +56,33 @@ export function InputBoost({
     </label>
   );
 }
+export function isApplePlatformOrSafari(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  const isIOS =
+    /iPad|iPhone|iPod/.test(ua) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const isSafari =
+    /Safari/.test(ua) &&
+    !/Chrome|Chromium|CriOS|Edg|OPR|FxiOS|Android/.test(ua);
+  return isIOS || isSafari;
+}
+
+export function defaultInputBoost(): number {
+  return isApplePlatformOrSafari() ? 24 : 0;
+}
+
 export function readInputBoost(device: string): number {
   try {
-    const value = Number(localStorage.getItem(`cadence-input-boost:${device}`));
-    return [0, 6, 12, 18, 24, 30].includes(value) ? value : 0;
+    const raw = localStorage.getItem(`cadence-input-boost:${device}`);
+    if (raw !== null) {
+      const value = Number(raw);
+      if ([0, 6, 12, 18, 24, 30].includes(value)) {
+        return value;
+      }
+    }
+    return defaultInputBoost();
   } catch {
-    return 0;
+    return defaultInputBoost();
   }
 }

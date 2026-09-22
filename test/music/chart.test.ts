@@ -38,51 +38,33 @@ assert.throws(() => parseChart("nothing to play"), /No chords/);
 assert.throws(() => parseChart("[C"), /Unclosed/);
 assert.throws(() => parseChart("|: C G"), /Unclosed/);
 assert.throws(() => parseChart("C ".repeat(10001)), /limit/);
-for (const name of [
-  "C",
-  "G",
-  "Am",
-  "F",
-  "D",
-  "Em",
-  "E",
-  "A",
-  "Dm",
-  "Bm",
-  "F#m",
-  "Bb",
-  "C7",
-  "Cmaj7",
-  "Dm7",
-]) {
-  const chord = parseChord(name);
-  for (const voicing of chord.voicings)
-    assert.deepEqual(
-      [...fingeringPitchClasses(voicing)].sort((a, b) => a - b),
-      [...chord.notes].sort((a, b) => a - b),
-      `${name} fingering sounds the declared chord`,
-    );
-}
 for (const root of [
   "C",
   "C#",
+  "Db",
   "D",
   "D#",
+  "Eb",
   "E",
   "F",
   "F#",
+  "Gb",
   "G",
   "G#",
+  "Ab",
   "A",
   "A#",
+  "Bb",
   "B",
 ]) {
   for (const quality of ["", "m", "7", "m7", "maj7"]) {
-    const chord = parseChord(root + quality);
+    const name = root + quality;
+    const chord = parseChord(name);
     for (const voicing of chord.voicings)
       assert.deepEqual(
         [...fingeringPitchClasses(voicing)].sort((a, b) => a - b),
         [...chord.notes].sort((a, b) => a - b),
+        `${name} fingering sounds the declared chord`,
       );
   }
 }

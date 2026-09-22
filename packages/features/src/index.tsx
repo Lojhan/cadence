@@ -7,7 +7,12 @@ import type {
   StoredPreferences,
 } from "@cadence/contracts";
 import type { Session } from "@cadence/core";
-import { parseChart, parseChord } from "@cadence/music";
+import {
+  getTuningPreset,
+  parseChart,
+  parseChord,
+  TUNING_PRESETS,
+} from "@cadence/music";
 import {
   Button,
   ChordTimeline,
@@ -51,6 +56,10 @@ import {
 import { MicrophoneSetup } from "./microphone-setup.tsx";
 import { ProgressWrites } from "./progress-writes.ts";
 import { SoundCheck } from "./sound-check.tsx";
+import { useTuner } from "./tuner.ts";
+import { TuningPage } from "./tuning-page.tsx";
+
+export { TuningPage, useTuner };
 export type InitialData = {
   songs: Song[];
   preferences: StoredPreferences;
@@ -163,7 +172,13 @@ export function PracticeApp({
   );
   const activeSong =
     library.data.find((song) => song.id === session.songId) ?? firstSong;
-  const chord = parseChord(session.chords[session.index] ?? "C");
+  const chord = parseChord(
+    session.chords[session.index] ?? "C",
+    prefs.tuning || "standard",
+  );
+  const recommendedPreset = getTuningPreset(activeSong.tuning || "standard");
+  const currentPreset = getTuningPreset(prefs.tuning || "standard");
+  const tuningMismatch = recommendedPreset.id !== currentPreset.id;
   const shape =
     chord.voicings.find((shape) => shape.id === prefs.voicings[chord.symbol]) ??
     chord.voicings[0];
@@ -206,6 +221,7 @@ export function PracticeApp({
         title,
         chart,
         attribution,
+        tuning: editing?.tuning ?? "standard",
         ...(editing ? { id: editing.id, revision: editing.revision } : {}),
       }),
     onSuccess: async (song) => {
@@ -552,6 +568,11 @@ export function PracticeApp({
               numbers={prefs.numbers}
             />
           ) : null}
+          {tuningMismatch ? (
+            <span className="tuning-status-label">
+              Voicing adapted for {currentPreset.name} tuning
+            </span>
+          ) : null}
         </section>
         <ChordTimeline chords={session.chords} index={session.index} />
       </DirectionalGroup>
@@ -638,6 +659,17 @@ export function PracticeApp({
         }}
         onDevices={() => void toggleDevices()}
         onLibrary={() => openPanel("library")}
+        onTuner={() => {
+          window.location.href = tuningMismatch
+            ? `/tuning?preset=${recommendedPreset.id}`
+            : "/tuning";
+        }}
+        tuningMismatch={tuningMismatch}
+        tuningTitle={
+          tuningMismatch
+            ? `Tuning mismatch: song recommends ${recommendedPreset.name} (${currentPreset.name} active)`
+            : "Guitar tuner"
+        }
       />
       {devicesOpen ? (
         <div className="device-panel">
@@ -982,7 +1014,14 @@ export function PracticeApp({
                         download({
                           version: 1,
                           preferences: prefs,
-                          songs: [{ title, chart, attribution }],
+                          songs: [
+                            {
+                              title,
+                              chart,
+                              attribution,
+                              tuning: editing?.tuning ?? "standard",
+                            },
+                          ],
                         })
                       }
                     >
@@ -996,6 +1035,25 @@ export function PracticeApp({
           ) : null}
           {panel === "settings" ? (
             <>
+              <PreferenceRow
+                title="Guitar tuning"
+                detail="Active guitar tuning for chord voicings"
+                label="Guitar tuning"
+                value={prefs.tuning || "standard"}
+                disabled={preferenceBusy}
+                choices={TUNING_PRESETS.map((p) => p.id)}
+                labels={TUNING_PRESETS.map((p) => p.name)}
+                onChange={(value) => setPreference("tuning", value)}
+              />
+              <div className="row">
+                <strong>
+                  Instrument tuner
+                  <small>Open interactive guitar tuner</small>
+                </strong>
+                <a href="/tuning" className="pill">
+                  Open tuner
+                </a>
+              </div>
               <PreferenceRow
                 title="Handedness"
                 detail="Mirror the fretboard"

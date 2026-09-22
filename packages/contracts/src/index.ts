@@ -10,6 +10,7 @@ export const preferencesSchema = z
     lastSongId: z.string().max(100).default("catalog:four"),
     diagramSize: z.enum(["standard", "large"]).default("standard"),
     voicings: z.record(z.string().max(16), z.string().max(80)).default({}),
+    tuning: z.string().max(40).default("standard"),
   })
   .strict();
 export type Preferences = z.infer<typeof preferencesSchema>;
@@ -18,6 +19,7 @@ export const songInputSchema = z
     title: z.string().trim().min(1).max(100),
     chart: z.string().min(1).max(1_048_576),
     attribution: z.string().trim().max(500).default(""),
+    tuning: z.string().max(40).default("standard"),
   })
   .strict();
 export type SongInput = z.infer<typeof songInputSchema>;
@@ -29,6 +31,7 @@ export interface Song {
   attribution: string;
   revision: number;
   catalog: boolean;
+  tuning: string;
 }
 export interface Principal {
   userId: string;

@@ -88,7 +88,17 @@ export function createApplication(store: Store, newId: () => string) {
     },
     async saveSong(principal: Principal, raw: unknown) {
       const input = saveSongSchema.parse(raw);
-      const { chords } = parseChart(input.chart);
+      const { chords, tuning: chartTuning } = parseChart(input.chart);
+      const tuning =
+        input.tuning && input.tuning !== "standard"
+          ? input.tuning
+          : chartTuning || "standard";
+      const sourceChart =
+        input.chart.includes("{tuning") ||
+        input.chart.includes("{tune") ||
+        tuning === "standard"
+          ? input.chart
+          : `{tuning: ${tuning}}\n${input.chart}`;
       return run(principal, async (repo) => {
         if (input.id) await owned(repo, principal.userId, input.id);
         if (input.id && !input.revision)
@@ -101,7 +111,8 @@ export function createApplication(store: Store, newId: () => string) {
           attribution: input.attribution,
           revision: expected + 1,
           catalog: false,
-          sourceChart: input.chart,
+          sourceChart,
+          tuning,
         };
         await repo.putSong(principal.userId, song, expected);
         return song;
@@ -162,6 +173,7 @@ export function createApplication(store: Store, newId: () => string) {
             title: song.title,
             chart: song.sourceChart || song.chords.join(" "),
             attribution: song.attribution,
+            tuning: song.tuning ?? "standard",
             ...(position?.songRevision === song.revision
               ? {
                   position: {
@@ -211,6 +223,7 @@ export function createApplication(store: Store, newId: () => string) {
               sourceChart: song.chart,
               revision: 1,
               catalog: false,
+              tuning: song.tuning ?? "standard",
             },
             0,
           );

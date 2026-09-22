@@ -1,5 +1,17 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { ChevronDown, ChevronUp, Mic, MicOff, Music2, X } from "lucide-react";
+import {
+  AlertTriangle,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  Mic,
+  MicOff,
+  Music2,
+  Sliders,
+  Volume2,
+  VolumeX,
+  X,
+} from "lucide-react";
 import {
   type ButtonHTMLAttributes,
   Fragment,
@@ -240,6 +252,9 @@ export function PracticeDock({
   onToggle,
   onDevices,
   onLibrary,
+  onTuner,
+  tuningMismatch = false,
+  tuningTitle = "Guitar tuner",
 }: {
   listening: boolean;
   busy: boolean;
@@ -247,6 +262,9 @@ export function PracticeDock({
   onToggle: () => void;
   onDevices: () => void;
   onLibrary: () => void;
+  onTuner?: () => void;
+  tuningMismatch?: boolean;
+  tuningTitle?: string;
 }) {
   return (
     <nav
@@ -281,8 +299,277 @@ export function PracticeDock({
       <IconButton label="Open music library" onClick={onLibrary}>
         <Music2 />
       </IconButton>
+      {onTuner ? (
+        <IconButton
+          label={tuningTitle}
+          title={tuningTitle}
+          className={`tuner-btn ${tuningMismatch ? "tuner-warning" : ""}`}
+          onClick={onTuner}
+        >
+          <Sliders />
+        </IconButton>
+      ) : null}
     </nav>
   );
 }
 
 export { DirectionalGroup } from "./motion.tsx";
+
+export interface TunerStringInfo {
+  stringNumber: number; // 1 to 6
+  stringIndex: number; // 0 to 5
+  note: string; // e.g. "E2"
+  noteName: string; // e.g. "E"
+  pitchClass: number;
+  octave: number;
+  targetHz: number;
+  gauge: string;
+  isWound: boolean;
+}
+
+export interface TunerPresetInfo {
+  id: string;
+  name: string;
+  shortDescription: string;
+  strings: readonly TunerStringInfo[];
+}
+
+export function TuningSelect({
+  presets,
+  value,
+  onChange,
+  disabled,
+}: {
+  presets: readonly TunerPresetInfo[];
+  value: string;
+  onChange: (presetId: string) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <Select
+      label="Tuning preset"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      disabled={disabled}
+      className="tuning-select"
+    >
+      {presets.map((preset) => (
+        <option key={preset.id} value={preset.id}>
+          {preset.name} ({preset.strings.map((s) => s.noteName).join(" ")})
+        </option>
+      ))}
+    </Select>
+  );
+}
+
+export function TunerGauge({
+  string,
+  detectedHz,
+  cents,
+  direction,
+  emergencyBreakRisk,
+  onPlayReference,
+  playingReference,
+}: {
+  string: TunerStringInfo;
+  detectedHz: number | null;
+  cents: number | null;
+  direction: "up" | "down" | "in_tune" | "idle";
+  emergencyBreakRisk: boolean;
+  onPlayReference?: () => void;
+  playingReference?: boolean;
+}) {
+  const clampedCents = cents !== null ? Math.max(-50, Math.min(50, cents)) : 0;
+  const needlePercent = ((clampedCents + 50) / 100) * 100;
+
+  return (
+    <div className="tuner-gauge-card">
+      {emergencyBreakRisk && (
+        <div className="tuner-emergency-alert" role="alert">
+          <AlertTriangle aria-hidden="true" />
+          <span>
+            <strong>⚠️ Pitch is too high!</strong> Loosen string immediately to
+            prevent snapping.
+          </span>
+        </div>
+      )}
+
+      <div className="tuner-gauge-header">
+        <div className="tuner-string-meta">
+          <span className="tuner-string-number">
+            String {string.stringNumber}
+          </span>
+          <span className="tuner-string-gauge">
+            Gauge {string.gauge} {string.isWound ? "(wound)" : "(plain)"}
+          </span>
+        </div>
+
+        {onPlayReference && (
+          <Button
+            className="tuner-reference-btn"
+            onClick={onPlayReference}
+            title={`Play reference pitch ${string.note}`}
+            aria-label={`Play reference pitch ${string.note}`}
+          >
+            {playingReference ? <VolumeX /> : <Volume2 />}
+            <span>Reference {string.note}</span>
+          </Button>
+        )}
+      </div>
+
+      <div className="tuner-note-display">
+        <div className="tuner-note-primary">
+          <span className="tuner-note-letter">{string.noteName}</span>
+          <span className="tuner-note-octave">{string.octave}</span>
+        </div>
+        <div className="tuner-freq-targets">
+          <span className="tuner-target-hz">
+            Target: {string.targetHz.toFixed(2)} Hz
+          </span>
+          <span className="tuner-detected-hz">
+            Detected:{" "}
+            {detectedHz !== null && detectedHz > 0
+              ? `${detectedHz.toFixed(1)} Hz`
+              : "—"}
+          </span>
+        </div>
+      </div>
+
+      <div className="tuner-meter-container">
+        <div className="tuner-meter-labels">
+          <span>-50¢</span>
+          <span>-25¢</span>
+          <span className="tuner-meter-center">0¢</span>
+          <span>+25¢</span>
+          <span>+50¢</span>
+        </div>
+        <div className="tuner-meter-track">
+          <div className="tuner-meter-sweetspot" />
+          <div className="tuner-meter-centerline" />
+          {cents !== null && (
+            <div
+              className={`tuner-meter-needle ${direction === "in_tune" ? "in-tune" : ""}`}
+              style={{ left: `${needlePercent}%` }}
+            />
+          )}
+        </div>
+        <div className="tuner-cents-text">
+          {cents !== null
+            ? `${cents > 0 ? "+" : ""}${Math.round(cents)} cents`
+            : "Play string"}
+        </div>
+      </div>
+
+      <div className="tuner-direction-badge-wrap">
+        {direction === "in_tune" ? (
+          <div className="tuner-badge in-tune">
+            <Check />
+            <span>In Tune</span>
+          </div>
+        ) : direction === "up" ? (
+          <div className="tuner-badge tune-up">
+            <span>▲ Tune Up</span>
+          </div>
+        ) : direction === "down" ? (
+          <div className="tuner-badge tune-down">
+            <span>▼ Tune Down</span>
+          </div>
+        ) : (
+          <div className="tuner-badge idle">
+            <span>
+              Pluck string {string.stringNumber} ({string.note})
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export function TunerFretboard({
+  strings,
+  selectedStringIndex,
+  onSelectString,
+  hand = "right",
+}: {
+  strings: readonly TunerStringInfo[];
+  selectedStringIndex: number;
+  onSelectString: (index: number) => void;
+  hand?: "left" | "right";
+}) {
+  const displayedStrings =
+    hand === "left" ? [...strings].reverse() : [...strings];
+
+  return (
+    <section className="tuner-fretboard-wrap" aria-label="Guitar strings">
+      <div className="tuner-headstock-nut" />
+      <div className="tuner-strings-list">
+        {displayedStrings.map((s) => {
+          const isSelected = s.stringIndex === selectedStringIndex;
+          const thickness = Math.max(
+            1.5,
+            Math.min(5, (s.stringNumber / 6) * 4.5),
+          );
+          return (
+            <button
+              key={s.stringIndex}
+              type="button"
+              aria-pressed={isSelected}
+              className={`tuner-string-row ${isSelected ? "selected" : ""}`}
+              onClick={() => onSelectString(s.stringIndex)}
+            >
+              <div className="tuner-string-indicator">
+                <span className="tuner-string-note">{s.note}</span>
+                <span className="tuner-string-num">
+                  String {s.stringNumber}
+                </span>
+              </div>
+              <div className="tuner-string-wire-track">
+                <div
+                  className={`tuner-string-wire ${s.isWound ? "wound" : "plain"} ${isSelected ? "vibrating" : ""}`}
+                  style={{ height: `${thickness}px` }}
+                />
+              </div>
+              <div className="tuner-string-hz">{s.targetHz.toFixed(1)} Hz</div>
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+export function TuningWarningBanner({
+  recommendedTuningName,
+  currentTuningName,
+  onTuneNow,
+  onDismiss,
+}: {
+  recommendedTuningName: string;
+  currentTuningName: string;
+  onTuneNow: () => void;
+  onDismiss: () => void;
+}) {
+  return (
+    <div className="tuning-warning-banner" role="alert">
+      <div className="tuning-warning-content">
+        <AlertTriangle className="tuning-warning-icon" aria-hidden="true" />
+        <div className="tuning-warning-text">
+          <strong>Tuning Mismatch:</strong> This song recommends{" "}
+          <span className="tuning-highlight">{recommendedTuningName}</span>{" "}
+          tuning (guitar is set to{" "}
+          <span className="tuning-highlight">{currentTuningName}</span>).
+          Fingerings have been adapted.
+        </div>
+      </div>
+      <div className="tuning-warning-actions">
+        <Button className="primary tuning-tune-btn" onClick={onTuneNow}>
+          Tune to {recommendedTuningName}
+        </Button>
+        <IconButton label="Dismiss tuning warning" onClick={onDismiss}>
+          <X />
+        </IconButton>
+      </div>
+    </div>
+  );
+}

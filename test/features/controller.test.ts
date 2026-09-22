@@ -14,6 +14,7 @@ const controller = new PracticeController(
     chords: ["C", "G"],
     catalog: false,
     attribution: "",
+    tuning: "standard",
   },
   true,
   () => {},
