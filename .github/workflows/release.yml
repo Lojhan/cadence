@@ -3,9 +3,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Prerelease version (for example 0.1.0-alpha.12)
+        description: Prerelease version (for example 0.1.0-alpha.13)
         required: true
-        default: 0.1.0-alpha.12
+        default: 0.1.0-alpha.13
 permissions:
   contents: read
 concurrency:
@@ -42,7 +42,7 @@ jobs:
           targets: wasm32-unknown-unknown
       - run: pnpm install --frozen-lockfile
       - run: cargo install wasm-bindgen-cli --version 0.2.128 --locked
-      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm exec playwright install --with-deps chromium webkit
       - run: pnpm check
       - run: pnpm test:db
         env:

@@ -3,7 +3,7 @@ import {
   motion,
   useIsPresent,
   useReducedMotion,
-} from "motion/react";
+} from "framer-motion";
 import type { ReactNode } from "react";
 
 function Frame({

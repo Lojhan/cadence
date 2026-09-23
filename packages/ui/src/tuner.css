@@ -1,15 +1,10 @@
 .tuner-experience {
-  --background: #171e1b;
-  --surface: #202a23;
-  --surface-hover: #304135;
-  --foreground: #e2e9d8;
-  --muted-foreground: #9eac9c;
-  --border: #3b473c;
-  --primary: #b0cfa1;
-  --primary-foreground: #17231b;
-  --tuner-string: #556358;
-  --tuner-good: #b4dba0;
-  color-scheme: dark;
+  --surface: var(--soft);
+  --surface-hover: var(--hover);
+  --muted-foreground: var(--muted);
+  --border: var(--line);
+  --tuner-string: var(--string);
+  --tuner-good: var(--success);
   box-sizing: border-box;
   position: relative;
   display: grid;
@@ -17,34 +12,14 @@
   width: 100%;
   height: 100dvh;
   overflow: hidden;
-  padding: max(20px, env(safe-area-inset-top))
-    max(20px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom))
-    max(20px, env(safe-area-inset-left));
+  padding: max(22px, env(safe-area-inset-top))
+    max(24px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom))
+    max(24px, env(safe-area-inset-left));
   color: var(--foreground);
   background: radial-gradient(
-    ellipse 75% 60% at 50% 42%,
-    #233027 0%,
-    var(--background) 75%
-  );
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-}
-
-:root[data-theme="light"] .tuner-experience {
-  --background: #f3f1e9;
-  --surface: #e9ede2;
-  --surface-hover: #dce6d2;
-  --foreground: #273e35;
-  --muted-foreground: #647468;
-  --border: #cbd4c8;
-  --primary: #30664b;
-  --primary-foreground: #fcfbf6;
-  --tuner-string: #a0b09e;
-  --tuner-good: #30664b;
-  color-scheme: light;
-  background: radial-gradient(
-    ellipse 75% 60% at 50% 42%,
-    #fcfbf6 0%,
-    var(--background) 75%
+    ellipse at 50% 38%,
+    var(--glow),
+    var(--paper) 70%
   );
 }
 
@@ -79,14 +54,14 @@
   align-items: center;
 }
 .tuner-experience-topbar {
-  min-height: 48px;
+  min-height: 44px;
   justify-content: space-between;
 }
 .tuner-experience-brand {
   font:
-    26px / 0.95 Georgia,
+    25px Georgia,
     serif;
-  letter-spacing: -0.05em;
+  letter-spacing: -1px;
 }
 .tuner-experience-top-actions {
   gap: 4px;
@@ -94,8 +69,8 @@
 .tuner-icon-button {
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border: 0;
   border-radius: 50%;
   background: transparent;
@@ -107,9 +82,9 @@
   background: var(--surface-hover);
 }
 .tuner-icon-button svg {
-  width: 20px;
-  height: 20px;
-  stroke-width: 1.8;
+  width: 21px;
+  height: 21px;
+  stroke-width: 1.7;
 }
 .tuner-mode-switch {
   justify-self: center;
@@ -314,17 +289,27 @@ svg.tuner-wire {
 }
 .tuner-experience .tuner-control-dock .tuner-preset-trigger {
   display: inline-flex;
+  flex: 1 1 auto;
   align-items: center;
   justify-content: center;
-  width: auto;
-  min-width: 118px;
-  gap: 7px;
-  padding: 0 10px;
+  width: 0;
+  min-width: 0;
+  gap: 6px;
+  padding: 0 2px;
+  font-size: 14px;
   white-space: nowrap;
 }
 .tuner-preset-trigger svg {
   width: 18px;
   height: 18px;
+  flex: none;
+}
+.tuner-preset-name {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .tuner-preset-menu {
   width: min(250px, calc(100vw - 40px));
@@ -392,9 +377,8 @@ svg.tuner-wire {
 .tuner-gauge-symbol {
   fill: var(--muted-foreground);
   font:
-    18px Inter,
-    ui-sans-serif,
-    system-ui,
+    18px Arial,
+    Helvetica,
     sans-serif;
   text-anchor: middle;
   dominant-baseline: middle;
@@ -452,18 +436,7 @@ svg.tuner-wire {
   min-height: 80px;
 }
 .tuner-control-dock {
-  --dock: var(--surface);
-  --line: var(--border);
-  --muted-bg: var(--surface-hover);
-  --muted-ink: var(--foreground);
-  --ink: var(--primary);
-  --paper: var(--primary-foreground);
-  position: relative;
-  bottom: auto;
-  left: auto;
-  transform: none;
-  border-color: var(--border);
-  color: var(--foreground);
+  position: fixed;
 }
 .tuner-preset-menu button svg {
   width: 16px;
@@ -520,7 +493,7 @@ svg.tuner-wire {
 }
 @media (min-width: 700px) {
   .tuner-experience {
-    padding: 28px 44px;
+    padding: 26px 32px;
   }
   .tuner-strings-view {
     align-items: center;

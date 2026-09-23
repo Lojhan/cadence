@@ -32,7 +32,8 @@
     right: 8px;
   }
   .transport {
-    bottom: calc(14px + env(safe-area-inset-bottom));
+    --dock-bottom: calc(14px + env(safe-area-inset-bottom));
+    --dock-width: 249px;
     gap: 4px;
     padding: 8px;
   }
@@ -128,7 +129,8 @@
     width: auto;
   }
   .transport {
-    bottom: calc(8px + env(safe-area-inset-bottom));
+    --dock-bottom: calc(8px + env(safe-area-inset-bottom));
+    --dock-width: 273px;
     padding: 6px;
   }
   .transport .icon-button {

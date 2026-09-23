@@ -135,13 +135,16 @@
   right: 32px;
 }
 .transport {
+  --dock-bottom: calc(22px + env(safe-area-inset-bottom));
+  --dock-width: 281px;
   position: absolute;
-  bottom: calc(22px + env(safe-area-inset-bottom));
+  bottom: var(--dock-bottom);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
   gap: 8px;
+  width: min(var(--dock-width), calc(100vw - 32px));
   padding: 10px;
   border-radius: 999px;
   background: var(--dock);
@@ -165,6 +168,7 @@
 }
 .mic-group {
   display: flex;
+  flex: none;
   align-items: center;
   border-radius: 999px;
   background: var(--muted-bg);

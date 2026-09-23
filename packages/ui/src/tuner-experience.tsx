@@ -254,7 +254,7 @@ const noteNames = [
   "G♯",
 ];
 const centsToAngle = (cents: number | null) =>
-  cents === null ? 0 : Math.max(-28, Math.min(28, cents / 2));
+  cents === null ? 0 : Math.max(-40, Math.min(40, cents * 0.8));
 
 export function TunerChromaticGauge({
   cents,
@@ -282,7 +282,7 @@ export function TunerChromaticGauge({
     const y = size.height - 88;
     const radius = Math.max(
       48,
-      Math.min(y - 54, (size.width / 2 - 27) / Math.sin((32 * Math.PI) / 180)),
+      Math.min(y - 54, (size.width / 2 - 20) / Math.sin((44 * Math.PI) / 180)),
     );
     const point = (angle: number, distance: number) => ({
       x: x + Math.sin((angle * Math.PI) / 180) * distance,
@@ -301,11 +301,11 @@ export function TunerChromaticGauge({
         viewBox={`0 0 ${size.width} ${size.height}`}
         data-gauge-angle={angle}
       >
-        {[-30, -20, -10, -3, 3, 10, 20, 30].map((tick) => {
+        {[-42, -30, -18, -6, 6, 18, 30, 42].map((tick) => {
           const start = geometry.point(tick, geometry.radius - 7);
           const end = geometry.point(
             tick,
-            geometry.radius + (Math.abs(tick) === 30 ? 17 : 12),
+            geometry.radius + (Math.abs(tick) === 42 ? 17 : 12),
           );
           return (
             <line
@@ -318,7 +318,7 @@ export function TunerChromaticGauge({
             />
           );
         })}
-        {([-34, 34] as const).map((tick) => {
+        {([-44, 44] as const).map((tick) => {
           const point = geometry.point(tick, geometry.radius - 1);
           return (
             <text

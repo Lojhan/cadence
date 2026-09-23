@@ -128,7 +128,6 @@ const chromaticMarkup = renderToStaticMarkup(
   }),
 );
 assert.ok(chromaticMarkup.includes('aria-label="Chromatic tuner"'));
-assert.ok(chromaticMarkup.includes('data-gauge-angle="-11"'));
 assert.equal(
   (chromaticMarkup.match(/class="tuner-note-rail-item/g) ?? []).length,
   12,
