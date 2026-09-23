@@ -23,7 +23,11 @@ export function ControlDock({
 }) {
   return (
     <nav
-      className={cn("transport idle-ui", active && "listening", className)}
+      className={cn(
+        "transport idle-ui absolute bottom-[calc(22px+env(safe-area-inset-bottom))] left-1/2 z-2 flex w-[min(281px,calc(100vw-32px))] -translate-x-1/2 items-center gap-2 rounded-full border border-border/55 bg-[var(--dock)] p-2.5 transition-[opacity,visibility] duration-650 max-[600px]:bottom-[calc(14px+env(safe-area-inset-bottom))] max-[600px]:w-[min(249px,calc(100vw-32px))] max-[600px]:gap-1 max-[600px]:p-2 short-landscape:bottom-[calc(8px+env(safe-area-inset-bottom))] short-landscape:w-[min(273px,calc(100vw-32px))] short-landscape:p-1.5 [.is-idle_&]:pointer-events-none [.is-idle_&]:invisible [.is-idle_&]:opacity-0",
+        active && "listening",
+        className,
+      )}
       aria-label={label}
     >
       {children}
@@ -44,11 +48,24 @@ export function DockGroup({
 }
 
 export function DockButton({ className, ...props }: IconButtonProps) {
-  return <IconButton className={cn("dock-button", className)} {...props} />;
+  return (
+    <IconButton
+      className={cn(
+        "dock-button size-14 max-[600px]:size-[50px] short-landscape:h-11 [&_svg]:size-[21px] [&_svg]:stroke-[1.7]",
+        className,
+      )}
+      {...props}
+    />
+  );
 }
 
 export function DockDivider() {
-  return <span className="dock-divider" aria-hidden="true" />;
+  return (
+    <span
+      className="dock-divider mx-[3px] h-[30px] w-px bg-border"
+      aria-hidden="true"
+    />
+  );
 }
 
 export function DockSwitch({
@@ -64,7 +81,11 @@ export function DockSwitch({
 }) {
   return (
     <fieldset
-      className={cn("dock-switch", active && "listening", className)}
+      className={cn(
+        "dock-switch m-0 flex min-w-0 flex-none items-center overflow-hidden rounded-full border-0 bg-[var(--muted-bg)] p-0 text-[var(--muted-ink)]",
+        active && "listening bg-foreground text-background",
+        className,
+      )}
       aria-label={label}
     >
       {children}
@@ -74,7 +95,13 @@ export function DockSwitch({
 
 export function DockSwitchAction({ className, ...props }: IconButtonProps) {
   return (
-    <DockButton className={cn("dock-switch-action", className)} {...props} />
+    <DockButton
+      className={cn(
+        "dock-switch-action inline-flex flex-row items-center justify-center text-inherit",
+        className,
+      )}
+      {...props}
+    />
   );
 }
 
@@ -83,7 +110,10 @@ export function DockSwitchMenu({
   ...props
 }: Parameters<typeof DockButtonMenu>[0]) {
   return (
-    <DockButtonMenu className={cn("dock-switch-menu", className)} {...props} />
+    <DockButtonMenu
+      className={cn("dock-switch-menu text-inherit", className)}
+      {...props}
+    />
   );
 }
 
@@ -108,15 +138,18 @@ export function MicrophoneDockControls({
     <DockSwitch label="Microphone" active={listening} className="mic-group">
       <DockSwitchAction
         label={listening ? "Mute microphone" : "Unmute microphone"}
-        className="mic"
+        className="mic !w-[52px] justify-end gap-2 rounded-none"
         aria-pressed={listening}
         disabled={busy}
         onClick={onToggle}
       >
-        <span className="signal" aria-hidden="true">
-          <i />
-          <i />
-          <i />
+        <span
+          className="signal flex h-[18px] items-center gap-0.5"
+          aria-hidden="true"
+        >
+          <i className="h-[calc(3px+var(--signal,0)*8px)] w-0.5 rounded bg-current transition-[height] duration-75" />
+          <i className="h-[calc(3px+var(--signal,0)*12px)] w-0.5 rounded bg-current transition-[height] duration-75" />
+          <i className="h-[calc(3px+var(--signal,0)*10px)] w-0.5 rounded bg-current transition-[height] duration-75" />
         </span>
         {listening ? <Mic aria-hidden="true" /> : <MicOff aria-hidden="true" />}
       </DockSwitchAction>
@@ -131,7 +164,7 @@ export function MicrophoneDockControls({
         }
         open={open}
         onOpenChange={onOptionsOpenChange ?? setInternalOpen}
-        className="mic-options-toggle"
+        className="mic-options-toggle !w-11 rounded-none [&_svg]:size-4"
       >
         {children}
       </DockSwitchMenu>
@@ -173,7 +206,10 @@ export function DockButtonMenu({
       }
     >
       <MenuContext.Provider value={() => change(false)}>
-        <fieldset className="dock-menu" aria-label={label}>
+        <fieldset
+          className="dock-menu m-0 grid min-w-[190px] gap-[3px] border-0 p-0"
+          aria-label={label}
+        >
           {children}
         </fieldset>
       </MenuContext.Provider>
@@ -194,7 +230,7 @@ export function DockMenuItem({
   return (
     <button
       type="button"
-      className="dock-menu-item"
+      className="dock-menu-item flex min-h-11 w-full items-center justify-between rounded-[10px] border-0 bg-transparent px-3 py-2.5 text-left text-inherit hover:bg-[var(--muted-bg)] aria-[current=true]:bg-[var(--muted-bg)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
       aria-current={selected ? "true" : undefined}
       onClick={() => {
         onSelect();

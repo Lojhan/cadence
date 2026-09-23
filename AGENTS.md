@@ -49,6 +49,7 @@ Follow strict package layering. No package may import across forbidden boundarie
 
 1. **Test-First Development (TDD)**:
    - Always reproduce bugs or define new features with a failing test before editing implementation code.
+   - Tests must check meaningful behavior. Never add tests that merely assert source filenames, imports, CSS class names, or other implementation structure.
    - Test runner is **Poku** (`pnpm test` / `pnpm check`).
 2. **Empirical Honesty & Zero Hallucinations**:
    - Never claim recognition accuracy improvements, latency benchmarks, or device compatibility without real corpus evaluation data or physical device logs.

@@ -498,11 +498,13 @@ export function PracticeApp({
   return (
     <main
       ref={appElement}
-      className={`app ${idle ? "is-idle" : ""} ${prefs.diagramSize === "large" ? "large-diagram" : ""}`}
+      className={`app relative h-dvh overflow-hidden bg-[radial-gradient(ellipse_at_50%_38%,var(--glow),var(--paper)_70%)] text-foreground ${idle ? "is-idle" : ""} ${prefs.diagramSize === "large" ? "large-diagram" : ""}`}
     >
-      <header className="toolbar idle-ui">
-        <span className="wordmark">cadence</span>
-        <div className="header-actions">
+      <header className="toolbar idle-ui absolute inset-x-0 top-0 z-2 flex items-center justify-between px-8 py-[26px] transition-[opacity,visibility] duration-650 [.is-idle_&]:pointer-events-none [.is-idle_&]:invisible [.is-idle_&]:opacity-0 max-[600px]:px-6 max-[600px]:py-[22px] short-landscape:px-6 short-landscape:py-3">
+        <span className="wordmark font-[Georgia,serif] text-[25px] tracking-[-1px]">
+          cadence
+        </span>
+        <div className="header-actions flex gap-2">
           <IconButton
             label="Switch color theme"
             disabled={preferenceBusy}
@@ -515,8 +517,8 @@ export function PracticeApp({
               )
             }
           >
-            <Moon className="moon-icon" />
-            <Sun className="sun-icon" />
+            <Moon className="moon-icon dark:hidden" />
+            <Sun className="sun-icon hidden dark:block" />
           </IconButton>
           <IconButton
             label="Open settings"
@@ -529,14 +531,16 @@ export function PracticeApp({
       <DirectionalGroup
         transitionKey={`${session.sessionId}:${session.index}`}
         direction={stepDirection}
-        className="practice-sequence"
-        frameClassName="sequence-frame"
+        className="practice-sequence pointer-events-none absolute inset-0"
+        frameClassName="sequence-frame pointer-events-none absolute inset-0 data-[current=false]:pointer-events-none"
       >
         <section
-          className={`stage ${session.status === "transitioning" ? "matched" : ""}`}
+          className={`stage flex h-[calc(100%-190px)] items-center justify-center gap-[clamp(40px,10vw,170px)] px-[70px] pt-[86px] max-[600px]:h-[calc(100%-180px-env(safe-area-inset-bottom))] max-[600px]:flex-col max-[600px]:gap-[18px] max-[600px]:px-5 max-[600px]:pt-[72px] max-[600px]:pb-2 short-landscape:h-[calc(100%-140px)] short-landscape:flex-row short-landscape:gap-[65px] short-landscape:px-[60px] short-landscape:pt-[35px] ${session.status === "transitioning" ? "matched animate-match" : ""}`}
           aria-label="Practice stage"
         >
-          <h1 className="chord">{chord.symbol}</h1>
+          <h1 className="chord min-w-[1.45em] pr-[0.08em] text-center font-[Georgia,serif] text-[clamp(110px,19vw,270px)] leading-none tracking-[-0.085em] [.matched_&]:text-[var(--success)] max-[600px]:min-w-0 max-[600px]:text-[clamp(76px,23vw,108px)] short-landscape:text-[130px]">
+            {chord.symbol}
+          </h1>
           {shape ? (
             <Fretboard
               shape={shape}
@@ -551,7 +555,7 @@ export function PracticeApp({
       {session.index > 0 ? (
         <button
           type="button"
-          className="step-arrow previous idle-ui"
+          className="step-arrow previous idle-ui absolute top-[calc((100%-130px)/2+30px)] left-8 grid size-[52px] -translate-y-1/2 place-items-center border-0 bg-transparent text-muted-foreground transition-[opacity,visibility] duration-650 hover:text-primary active:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [.is-idle_&]:pointer-events-none [.is-idle_&]:invisible [.is-idle_&]:opacity-0 max-[600px]:top-[calc((100%-122px)/2+28px)] max-[600px]:left-2 max-[600px]:size-11 short-landscape:left-8"
           aria-label="Previous chord"
           onClick={() => {
             setStepDirection(-1);
@@ -564,7 +568,7 @@ export function PracticeApp({
       {session.index < session.chords.length - 1 ? (
         <button
           type="button"
-          className="step-arrow next idle-ui"
+          className="step-arrow next idle-ui absolute top-[calc((100%-130px)/2+30px)] right-8 grid size-[52px] -translate-y-1/2 place-items-center border-0 bg-transparent text-muted-foreground transition-[opacity,visibility] duration-650 hover:text-primary active:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [.is-idle_&]:pointer-events-none [.is-idle_&]:invisible [.is-idle_&]:opacity-0 max-[600px]:top-[calc((100%-122px)/2+28px)] max-[600px]:right-2 max-[600px]:size-11 short-landscape:right-8"
           aria-label="Next chord"
           onClick={() => {
             setStepDirection(1);
@@ -673,7 +677,10 @@ export function PracticeApp({
         }
       />
       {progressSave.error && !panel ? (
-        <div className="toast" role="alert">
+        <div
+          className="toast absolute top-[82px] left-1/2 z-4 flex w-max max-w-[calc(100%-32px)] -translate-x-1/2 items-center gap-2 rounded-2xl border border-border bg-[var(--white)] px-3 py-2 text-[13px] max-[600px]:top-[72px]"
+          role="alert"
+        >
           <span>
             {progressRecoveryError ||
               "Progress hasn’t saved. Keep this page open."}
@@ -697,7 +704,10 @@ export function PracticeApp({
           </IconButton>
         </div>
       ) : preferenceError && !panel ? (
-        <div className="toast" role="alert">
+        <div
+          className="toast absolute top-[82px] left-1/2 z-4 flex w-max max-w-[calc(100%-32px)] -translate-x-1/2 items-center gap-2 rounded-2xl border border-border bg-[var(--white)] px-3 py-2 text-[13px] max-[600px]:top-[72px]"
+          role="alert"
+        >
           <span>Settings haven’t saved. Keep this page open and retry.</span>
           <IconButton
             label="Retry saving settings"
@@ -708,7 +718,10 @@ export function PracticeApp({
           </IconButton>
         </div>
       ) : error ? (
-        <div className="toast" role="alert">
+        <div
+          className="toast absolute top-[82px] left-1/2 z-4 flex w-max max-w-[calc(100%-32px)] -translate-x-1/2 items-center gap-2 rounded-2xl border border-border bg-[var(--white)] px-3 py-2 text-[13px] max-[600px]:top-[72px]"
+          role="alert"
+        >
           {error}
           <IconButton
             label="Dismiss message"
@@ -727,12 +740,15 @@ export function PracticeApp({
       >
         <DialogBody>
           <p>You finished {activeSong.title}.</p>
-          <div className="actions">
+          <div className="actions mt-6 flex flex-wrap gap-2.5">
             <Button onClick={() => controller.restart()}>
               <RotateCcw />
               Repeat
             </Button>
-            <Button className="primary" onClick={() => openPanel("library")}>
+            <Button
+              className="primary !border-foreground !bg-foreground !text-[var(--white)] hover:!bg-primary hover:!text-background"
+              onClick={() => openPanel("library")}
+            >
               <Library />
               Choose music
             </Button>
@@ -752,10 +768,10 @@ export function PracticeApp({
       >
         <DialogBody>
           <p>The song and its saved position will be removed.</p>
-          <div className="actions">
+          <div className="actions mt-6 flex flex-wrap gap-2.5">
             <Button onClick={() => setConfirmDelete(null)}>Keep song</Button>
             <Button
-              className="primary"
+              className="primary !border-foreground !bg-foreground !text-[var(--white)] hover:!bg-primary hover:!text-background"
               onClick={() => {
                 const song = library.data.find(
                   (song) => song.id === confirmDelete,
@@ -777,7 +793,7 @@ export function PracticeApp({
       >
         <SegmentedControl
           label="Practice settings"
-          className="tabs"
+          className="tabs mx-7 mb-6 gap-0.5 p-1 max-[480px]:mx-5 max-[480px]:mb-6 max-[480px]:[&_button]:min-h-[60px] max-[480px]:[&_button]:flex-col max-[480px]:[&_button]:gap-1.5 max-[480px]:[&_button]:px-[3px] max-[480px]:[&_button]:py-2.5 max-[480px]:[&_button]:text-[11px]"
           value={panel ?? "library"}
           options={[
             { value: "library", label: "Music", icon: Library },
@@ -797,8 +813,8 @@ export function PracticeApp({
         <DirectionalGroup
           transitionKey={panel ?? "closed"}
           direction={tabDirection}
-          className="panel-body panel-motion"
-          frameClassName="panel-frame"
+          className="panel-body panel-motion grid min-h-0 overflow-y-auto overscroll-contain px-7 pb-7 [scrollbar-width:thin] max-[480px]:px-5 max-[480px]:pb-6 [&_h2]:mb-5 [&_h2]:font-[Georgia,serif] [&_h2]:text-[30px] [&_h2]:leading-[1.15] [&_h2]:tracking-[-0.7px] max-[480px]:[&_h2]:text-[28px] [&_p]:mb-5 [&_p]:text-sm [&_p]:leading-[1.65] [&_p]:text-muted-foreground"
+          frameClassName="panel-frame col-start-1 row-start-1 min-w-0 data-[current=false]:pointer-events-none"
         >
           {panel === "library" ? (
             <>
@@ -818,10 +834,13 @@ export function PracticeApp({
                     ),
                 )
                 .map((song) => (
-                  <div className="song" key={song.id}>
+                  <div
+                    className="song flex items-center gap-3 border-b border-border"
+                    key={song.id}
+                  >
                     <button
                       type="button"
-                      className="song-select"
+                      className="song-select min-h-[72px] flex-1 border-0 bg-transparent py-[18px] text-left text-inherit focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [&_strong]:text-[15px] [&_strong]:font-medium [&_small]:mt-[7px] [&_small]:block [&_small]:text-xs [&_small]:leading-normal [&_small]:text-muted-foreground"
                       onClick={() => void selectSong(song)}
                     >
                       <strong>{song.title}</strong>
@@ -870,7 +889,7 @@ export function PracticeApp({
                     )}
                   </div>
                 ))}
-              <div className="actions">
+              <div className="actions mt-6 flex flex-wrap gap-2.5">
                 <Button
                   onClick={() => {
                     controller.restart();
@@ -923,15 +942,18 @@ export function PracticeApp({
                 sections :|. Unsupported chords are flagged before saving.
               </p>
               {preview.length ? (
-                <section className="import-preview" aria-label="Import preview">
+                <section
+                  className="import-preview my-4 font-[Georgia,serif] text-2xl leading-[1.6] [overflow-wrap:anywhere]"
+                  aria-label="Import preview"
+                >
                   {preview.slice(0, 30).join(" · ")}
                   {preview.length > 30 ? " …" : ""}
                 </section>
               ) : null}
-              <div className="actions">
+              <div className="actions mt-6 flex flex-wrap gap-2.5">
                 <Button onClick={review}>Review chart</Button>
                 <Button
-                  className="primary"
+                  className="primary !border-foreground !bg-foreground !text-[var(--white)] hover:!bg-primary hover:!text-background"
                   disabled={
                     !preview.length || !title.trim() || saveMutation.isPending
                   }
@@ -998,12 +1020,15 @@ export function PracticeApp({
                 labels={TUNING_PRESETS.map((p) => p.name)}
                 onChange={(value) => setPreference("tuning", value)}
               />
-              <div className="row">
+              <div className="row flex items-center justify-between gap-6 border-b border-border py-5 max-[480px]:grid max-[480px]:grid-cols-1 max-[480px]:gap-3 max-[480px]:py-[18px] [&_strong]:text-sm [&_strong]:font-medium [&_small]:mt-[5px] [&_small]:block [&_small]:text-xs [&_small]:leading-normal [&_small]:text-muted-foreground">
                 <strong>
                   Instrument tuner
                   <small>Open interactive guitar tuner</small>
                 </strong>
-                <a href="/tuning" className="pill">
+                <a
+                  href="/tuning"
+                  className="pill inline-flex min-h-[46px] items-center justify-center gap-[9px] rounded-[30px] border border-border bg-[var(--white)] px-[18px] py-3 text-[13px] hover:bg-accent hover:text-foreground active:bg-accent active:text-foreground"
+                >
                   Open tuner
                 </a>
               </div>
@@ -1107,7 +1132,7 @@ export function PracticeApp({
           {panel === "account"
             ? (account ?? (
                 <>
-                  <div className="actions">
+                  <div className="actions mt-6 flex flex-wrap gap-2.5">
                     <Button
                       onClick={() =>
                         void gateway
@@ -1137,7 +1162,10 @@ export function PracticeApp({
               ))
             : null}
           {preferenceError ? (
-            <div className="error" role="alert">
+            <div
+              className="error my-3 text-[13px] leading-normal text-[#ae563d] empty:hidden"
+              role="alert"
+            >
               <p>Settings haven’t saved. Your changes still apply here.</p>
               <Button
                 disabled={preferenceBusy}
@@ -1156,7 +1184,10 @@ export function PracticeApp({
             </div>
           ) : null}
           {progressSave.error ? (
-            <div className="error" role="alert">
+            <div
+              className="error my-3 text-[13px] leading-normal text-[#ae563d] empty:hidden"
+              role="alert"
+            >
               <p>{progressRecoveryError || "Progress hasn’t saved."}</p>
               <Button
                 disabled={progressSave.saving || recoveringProgress}
@@ -1182,7 +1213,10 @@ export function PracticeApp({
             </div>
           ) : null}
           {formError ? (
-            <div className="error" role="alert">
+            <div
+              className="error my-3 text-[13px] leading-normal text-[#ae563d] empty:hidden"
+              role="alert"
+            >
               {formError}
             </div>
           ) : null}
@@ -1211,7 +1245,7 @@ function PreferenceRow({
   onChange: (value: string) => void;
 }) {
   return (
-    <div className="row">
+    <div className="row flex items-center justify-between gap-6 border-b border-border py-5 max-[480px]:grid max-[480px]:grid-cols-1 max-[480px]:gap-3 max-[480px]:py-[18px] [&_strong]:text-sm [&_strong]:font-medium [&_small]:mt-[5px] [&_small]:block [&_small]:text-xs [&_small]:leading-normal [&_small]:text-muted-foreground">
       <strong>
         {title}
         <small>{detail}</small>

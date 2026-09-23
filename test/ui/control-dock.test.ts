@@ -30,10 +30,9 @@ const dock = renderToStaticMarkup(
   ),
 );
 assert.ok(dock.includes('aria-label="Test controls"'));
-assert.ok(dock.includes('class="transport idle-ui listening'));
 assert.ok(dock.includes('aria-label="Start"'));
 assert.ok(dock.includes('aria-label="Choose profile"'));
-assert.ok(dock.includes('class="dock-divider"'));
+assert.ok(dock.includes('aria-hidden="true"'));
 
 const switchMarkup = renderToStaticMarkup(
   createElement(
@@ -55,4 +54,4 @@ const switchMarkup = renderToStaticMarkup(
 assert.ok(switchMarkup.includes('aria-label="Microphone"'));
 assert.ok(switchMarkup.includes('aria-pressed="true"'));
 assert.ok(switchMarkup.includes('aria-label="Microphone options"'));
-assert.ok(switchMarkup.includes("dock-switch-action"));
+assert.ok(switchMarkup.includes("signal"));

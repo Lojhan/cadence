@@ -1,3 +1,4 @@
+import { Button, themeClassName } from "@cadence/ui";
 import styles from "@cadence/ui/styles.css?url";
 import type { QueryClient } from "@tanstack/react-query";
 import {
@@ -21,12 +22,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     }),
     shellComponent: Root,
     errorComponent: ({ error, reset }) => (
-      <main className="panel-body">
-        <h1>Could not open your practice.</h1>
-        <p>{error instanceof Error ? error.message : "Please try again."}</p>
-        <button type="button" onClick={reset}>
-          Try again
-        </button>
+      <main className="mx-auto max-w-lg p-8 text-foreground">
+        <h1 className="font-[Georgia,serif] text-3xl">
+          Could not open your practice.
+        </h1>
+        <p className="my-5 text-sm leading-relaxed text-muted-foreground">
+          {error instanceof Error ? error.message : "Please try again."}
+        </p>
+        <Button onClick={reset}>Try again</Button>
       </main>
     ),
   },
@@ -35,7 +38,7 @@ const themeScript =
   "try{var t=localStorage.getItem('cadence-theme');document.documentElement.dataset.theme=t==='dark'||((!t||t==='system')&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light'}catch{}";
 function Root({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={themeClassName} suppressHydrationWarning>
       <head>
         <script>{themeScript}</script>
         <HeadContent />

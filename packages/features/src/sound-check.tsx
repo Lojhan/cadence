@@ -32,7 +32,7 @@ export function SoundCheck({
     await check.start(device, profile, boostDb, onOpen);
   }
   return (
-    <div className="sound-check">
+    <div className="sound-check pt-[22px] [&_meter]:my-4 [&_meter]:block [&_meter]:h-5 [&_meter]:w-full">
       <InputBoost value={boostDb} onChange={onBoost} />
       <p>Standard guitar tuning · A4 440 Hz</p>
       <Button disabled={check.busy} onClick={() => void toggle()}>

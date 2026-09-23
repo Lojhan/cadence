@@ -78,9 +78,9 @@ export function MicrophoneSetup({
           onOpen={onAccess}
           onReady={(ready) => setReadyInput(ready ? input : null)}
         />
-        <div className="actions">
+        <div className="actions mt-6 flex flex-wrap gap-2.5">
           <Button
-            className="primary"
+            className="primary !border-foreground !bg-foreground !text-[var(--white)] hover:!bg-primary hover:!text-background"
             disabled={saving || readyInput !== input}
             onClick={onComplete}
           >
@@ -88,7 +88,7 @@ export function MicrophoneSetup({
             Finish setup
           </Button>
         </div>
-        <p className="note">
+        <p className="note mt-5 text-xs">
           You can change these choices in Setup. Closing this dialog leaves
           manual practice available.
         </p>

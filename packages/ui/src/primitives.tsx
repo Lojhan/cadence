@@ -3,7 +3,7 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { cn } from "./lib/cn.ts";
 
 export const buttonVariants = cva(
-  "pill inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-transparent px-5 text-sm font-semibold transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-40",
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-transparent px-5 text-sm font-semibold transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-40",
   {
     variants: {
       variant: {

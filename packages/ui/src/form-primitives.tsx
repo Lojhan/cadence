@@ -26,15 +26,27 @@ export function Field({
 }: FieldProps) {
   return (
     <label
-      className={cn("cadence-field", className)}
+      className={cn(
+        "cadence-field my-5 block text-[13px] text-foreground max-[480px]:my-[18px]",
+        className,
+      )}
       htmlFor={htmlFor}
       data-slot="field"
     >
-      <span className="cadence-field-label">{label}</span>
+      <span className="cadence-field-label mb-2 block font-medium">
+        {label}
+      </span>
       {children}
-      {hint && <span className="cadence-field-hint">{hint}</span>}
+      {hint && (
+        <span className="cadence-field-hint mt-2 block text-xs leading-normal text-muted-foreground">
+          {hint}
+        </span>
+      )}
       {error && (
-        <span className="cadence-field-error" role="alert">
+        <span
+          className="cadence-field-error mt-2 block text-xs leading-normal text-destructive"
+          role="alert"
+        >
           {error}
         </span>
       )}
@@ -46,7 +58,10 @@ export function Input({ className, ...props }: ComponentPropsWithRef<"input">) {
   return (
     <input
       data-slot="input"
-      className={cn("cadence-input", className)}
+      className={cn(
+        "cadence-input min-h-12 w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm leading-[1.4] text-foreground transition-[background,border-color] duration-200 hover:bg-secondary focus-visible:border-primary max-[480px]:min-h-[50px] max-[480px]:text-base",
+        className,
+      )}
       {...props}
     />
   );
@@ -59,7 +74,10 @@ export function Textarea({
   return (
     <textarea
       data-slot="textarea"
-      className={cn("cadence-input cadence-textarea", className)}
+      className={cn(
+        "cadence-input cadence-textarea min-h-36 w-full resize-y rounded-xl border border-border bg-background px-3.5 py-3 text-sm leading-[1.4] text-foreground transition-[background,border-color] duration-200 hover:bg-secondary focus-visible:border-primary max-[480px]:text-base",
+        className,
+      )}
       {...props}
     />
   );
@@ -80,13 +98,19 @@ export function Select({
 }: SelectProps) {
   return (
     <span
-      className={cn("cadence-select-control", wrapperClassName)}
+      className={cn(
+        "cadence-select-control relative block w-[180px] shrink-0 [&>svg]:pointer-events-none [&>svg]:absolute [&>svg]:top-1/2 [&>svg]:right-3.5 [&>svg]:size-4 [&>svg]:-translate-y-1/2 [&>svg]:text-muted-foreground max-[480px]:w-full",
+        wrapperClassName,
+      )}
       data-slot="select-control"
     >
       <select
         data-slot="select"
         aria-label={label}
-        className={cn("cadence-select", className)}
+        className={cn(
+          "cadence-select min-h-11 w-full cursor-pointer appearance-none rounded-xl border border-border bg-background py-3 pr-[42px] pl-3.5 text-sm leading-[1.4] text-foreground transition-[background,border-color] duration-200 hover:bg-secondary focus-visible:border-primary max-[480px]:min-h-[50px] max-[480px]:text-base",
+          className,
+        )}
         {...props}
       >
         {children}
@@ -108,6 +132,7 @@ export interface SegmentedControlProps {
   options: readonly SegmentOption[];
   onChange: (value: string) => void;
   className?: string;
+  activeClassName?: string;
 }
 
 export function SegmentedControl({
@@ -116,10 +141,14 @@ export function SegmentedControl({
   options,
   onChange,
   className,
+  activeClassName = "bg-[var(--white)] text-foreground",
 }: SegmentedControlProps) {
   return (
     <nav
-      className={cn("cadence-segments", className)}
+      className={cn(
+        "cadence-segments flex shrink-0 gap-1 rounded-[17px] border border-border bg-background p-[5px]",
+        className,
+      )}
       aria-label={label}
       data-slot="segmented-control"
     >
@@ -128,6 +157,10 @@ export function SegmentedControl({
         return (
           <button
             key={option.value}
+            className={cn(
+              "inline-flex min-h-[46px] flex-1 items-center justify-center gap-[7px] rounded-xl border-0 bg-transparent px-2 py-2.5 text-xs text-muted-foreground transition-colors duration-200 hover:bg-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [&_svg]:size-[17px]",
+              option.value === value && activeClassName,
+            )}
             type="button"
             data-slot="segment"
             aria-current={option.value === value ? "page" : undefined}
@@ -157,7 +190,10 @@ export function Surface({
   return (
     <Component
       data-slot="surface"
-      className={cn("cadence-surface", className)}
+      className={cn(
+        "cadence-surface rounded-lg border border-border bg-[var(--white)] text-foreground",
+        className,
+      )}
       {...props}
     >
       {children}

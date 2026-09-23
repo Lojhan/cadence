@@ -54,10 +54,13 @@ const stringsMarkup = renderToStaticMarkup(
 );
 assert.ok(stringsMarkup.includes('aria-label="String by string tuner"'));
 assert.equal(
-  (stringsMarkup.match(/class="tuner-string-cell/g) ?? []).length,
+  (stringsMarkup.match(/aria-label="Select [A-G][#♯]?\d string"/g) ?? [])
+    .length,
   6,
 );
-assert.equal((stringsMarkup.match(/tuner-preset-trigger/g) ?? []).length, 1);
+assert.ok(
+  stringsMarkup.includes('aria-label="Tuning presets, Standard selected"'),
+);
 assert.ok(stringsMarkup.includes('aria-label="Tuner controls"'));
 assert.ok(stringsMarkup.includes('aria-pressed="true"'));
 assert.ok(stringsMarkup.includes('aria-label="Play reference pitch D3"'));
@@ -68,7 +71,8 @@ assert.ok(!stringsMarkup.includes('aria-label="Microphone settings"'));
 assert.ok(stringsMarkup.includes("Play the selected string"));
 assert.ok(!stringsMarkup.includes("0¢"), "silence has no tuning result");
 assert.ok(
-  stringsMarkup.includes('class="tuner-readout"'),
+  stringsMarkup.includes('data-empty="true"') &&
+    stringsMarkup.includes('role="status"'),
   "tuner readout keeps space for live feedback",
 );
 
@@ -128,10 +132,8 @@ const chromaticMarkup = renderToStaticMarkup(
   }),
 );
 assert.ok(chromaticMarkup.includes('aria-label="Chromatic tuner"'));
-assert.equal(
-  (chromaticMarkup.match(/class="tuner-note-rail-item/g) ?? []).length,
-  12,
-);
+assert.ok(chromaticMarkup.includes("A♯"));
+assert.ok(chromaticMarkup.includes("G♯"));
 const silentChromatic = renderToStaticMarkup(
   createElement(TunerExperience, { ...base, mode: "chromatic" }),
 );
