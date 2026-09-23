@@ -53,6 +53,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { PracticeController } from "./controller.ts";
+import { useMicrophoneCheck } from "./microphone-check.ts";
 import {
   InputBoost,
   MicrophoneOptions,
@@ -64,7 +65,7 @@ import { SoundCheck } from "./sound-check.tsx";
 import { useTuner } from "./tuner.ts";
 import { TuningPage } from "./tuning-page.tsx";
 
-export { TuningPage, useTuner };
+export { readInputBoost, TuningPage, useMicrophoneCheck, useTuner };
 export type InitialData = {
   songs: Song[];
   preferences: StoredPreferences;

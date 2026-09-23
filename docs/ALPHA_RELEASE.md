@@ -1,19 +1,18 @@
-Cadence 0.1.0-alpha.9 is an MIT-licensed preview for self-hosting and integration.
+Cadence 0.1.0-alpha.10 is an MIT-licensed preview for self-hosting and integration.
 It includes the responsive tuner, local Rust/WASM recognition,
 SQLite/PostgreSQL persistence, and container backup tools.
 
-Changes since alpha.8:
+Changes since alpha.9:
 
-- Replaced the initial tuner layout with full-viewport string-by-string and chromatic views. Strings stand vertically on phones and run horizontally on tablets and desktop; one chevron opens the nine tuning presets.
-- Moved tuner pitch estimation and sample-time stabilization to Rust/WASM through the AudioWorklet and Web Worker path. The interface waits for a confirmed pitch before showing a tension warning.
-- Added a Cadence shadcn preset, semantic Tailwind v4 theme, reusable controls and overlays, and modular public UI styles. Published UI CSS is precompiled for downstream consumers.
-- Serialized tuning/theme preference saves and separated a suggested `?preset=` preview from the stored setting. Choosing the previewed tuning now persists it correctly.
-- Local development and the default loopback container accept `localhost`, `127.0.0.1`, and `[::1]` on port 3000. External deployments still require the configured host.
+- The tuner now shows the adjustment direction in words and leaves the chromatic result blank until it has a pitch.
+- The tuner uses the saved microphone input and per-input boost. It exposes these controls and supports automatic string selection with a manual override.
+- Practice and tuner now compose the same control dock, with reusable buttons and button menus. The tuning preset selector is in the tuner dock.
+- Public sound check now uses a reusable microphone controller and hook for hosted onboarding to consume.
+- Removed a workspace test assertion for a design prototype intentionally deleted after alpha.9.
 
-Per-input microphone boost in the practice flow still defaults off and can help
-quiet capture, but it also amplifies noise. The tuner has no automatic input
-boost. Its synthetic tests do not prove real-guitar accuracy or fix the reported
-iPhone/iPad Safari microphone level; physical-device retests remain necessary.
+Per-input microphone boost can help quiet capture, but it also amplifies noise.
+The tuner and sound-check synthetic tests do not prove real-guitar accuracy or
+fix the reported iPhone/iPad Safari microphone level; physical-device retests remain necessary.
 
 Recognition remains **experimental**. No profile meets every release target.
 On the corrected calibration subset, Balanced recognizes 102/116 qualifying strums
@@ -34,7 +33,7 @@ version, and required migration hashes for both databases. Companion dependencie
 to this release. Container images are tested on native AMD64 and ARM64 runners
 before their shared manifest is published.
 
-No database schema migrations were added since alpha.8. Back up before upgrading.
+No database schema migrations were added since alpha.9. Back up before upgrading.
 Alpha.1 cannot import full version 2 archives; individual-song exports remain
 version 1. See [portability](https://github.com/Lojhan/cadence/blob/main/docs/PORTABILITY.md)
 and [operations](https://github.com/Lojhan/cadence/blob/main/docs/OPERATIONS.md).

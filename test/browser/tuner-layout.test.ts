@@ -100,8 +100,17 @@ try {
 
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
   await page.goto(`${origin}/tuning?preset=drop_d`);
+  const tunerDock = page.getByRole("navigation", { name: "Tuner controls" });
+  assert.equal(
+    await tunerDock.count(),
+    1,
+    "tuner uses the shared control dock",
+  );
   await page.locator(".tuner-preset-trigger").click();
-  await page.getByRole("button", { name: "Drop D" }).click();
+  await page.getByRole("button", { name: "Drop D", exact: true }).click();
+  await tunerDock.getByRole("button", { name: "Microphone settings" }).click();
+  await page.getByRole("combobox", { name: "Microphone input" }).waitFor();
+  await page.getByRole("combobox", { name: "Input boost" }).waitFor();
   await page.goto(`${origin}/tuning`);
   await page.locator(".tuner-preset-trigger").waitFor();
   assert.match(

@@ -2,6 +2,7 @@ import type { CadenceGateway, StoredPreferences } from "@cadence/contracts";
 import { getTuningPreset, TUNING_PRESETS } from "@cadence/music";
 import { TunerExperience } from "@cadence/ui";
 import { useEffect, useMemo, useState } from "react";
+import { readInputBoost } from "./microphone-options.tsx";
 import { useTuner } from "./tuner.ts";
 import { createTuningPreferenceWriter } from "./tuning-preferences.ts";
 
@@ -23,6 +24,10 @@ export function TuningPage({
   );
   const [saveStatus, setSaveStatus] = useState("");
   const [mode, setMode] = useState<"strings" | "chromatic">("strings");
+  const [autoDetectString, setAutoDetectString] = useState(true);
+  const [device, setDevice] = useState("");
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+  const [boostDb, setBoostDb] = useState(0);
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">(
     initialPreferences.values.theme === "dark" ? "dark" : "light",
   );
@@ -42,6 +47,25 @@ export function TuningPage({
     [gateway, initialPreferences],
   );
   useEffect(() => () => writer.dispose(), [writer]);
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("cadence-device") ?? "";
+      setDevice(saved);
+      setBoostDb(readInputBoost(saved));
+    } catch {}
+    const refresh = () => {
+      void navigator.mediaDevices
+        ?.enumerateDevices()
+        .then((all) =>
+          setDevices(all.filter((item) => item.kind === "audioinput")),
+        )
+        .catch(() => {});
+    };
+    refresh();
+    navigator.mediaDevices?.addEventListener("devicechange", refresh);
+    return () =>
+      navigator.mediaDevices?.removeEventListener("devicechange", refresh);
+  }, []);
   useEffect(() => {
     setSelectedTuning(
       getTuningPreset(initialTuningId ?? initialPreferences.values.tuning).id,
@@ -72,7 +96,12 @@ export function TuningPage({
     return () => media.removeEventListener("change", apply);
   }, [preferences.theme]);
 
-  const tuner = useTuner({ tuningId: selectedTuning });
+  const tuner = useTuner({
+    tuningId: selectedTuning,
+    autoDetectString,
+    deviceId: device,
+    boostDb,
+  });
   const toggleTheme = () => {
     const theme = resolvedTheme === "dark" ? "light" : "dark";
     void writer.update({ theme });
@@ -88,7 +117,30 @@ export function TuningPage({
       }}
       strings={tuner.preset.strings}
       selectedStringIndex={tuner.selectedStringIndex}
-      onSelectString={tuner.setSelectedStringIndex}
+      onSelectString={(index) => {
+        setAutoDetectString(false);
+        tuner.setSelectedStringIndex(index);
+      }}
+      autoDetectString={autoDetectString}
+      onAutoDetectStringChange={setAutoDetectString}
+      inputDevice={device}
+      inputDevices={devices}
+      onInputDeviceChange={(next) => {
+        tuner.stopTuning();
+        setDevice(next);
+        setBoostDb(readInputBoost(next));
+        try {
+          localStorage.setItem("cadence-device", next);
+        } catch {}
+      }}
+      inputBoost={boostDb}
+      onInputBoostChange={(next) => {
+        tuner.stopTuning();
+        setBoostDb(next);
+        try {
+          localStorage.setItem(`cadence-input-boost:${device}`, String(next));
+        } catch {}
+      }}
       mode={mode}
       onModeChange={setMode}
       detectedHz={tuner.detectedHz}
@@ -98,10 +150,18 @@ export function TuningPage({
       direction={tuner.direction}
       emergencyBreakRisk={tuner.emergencyBreakRisk}
       listening={tuner.listening}
-      busy={false}
+      busy={tuner.busy}
       onToggleListening={() => {
         if (tuner.listening) tuner.stopTuning();
-        else void tuner.startTuning();
+        else
+          void tuner.startTuning().then(() =>
+            navigator.mediaDevices
+              ?.enumerateDevices()
+              .then((all) =>
+                setDevices(all.filter((item) => item.kind === "audioinput")),
+              )
+              .catch(() => {}),
+          );
       }}
       onBack={onBack ?? (() => window.location.assign("/"))}
       theme={resolvedTheme}

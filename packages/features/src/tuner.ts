@@ -11,16 +11,21 @@ import { useCallback, useEffect, useRef, useState } from "react";
 export interface UseTunerOptions {
   tuningId: string;
   autoDetectString?: boolean;
+  deviceId?: string;
+  boostDb?: number;
 }
 
 export function useTuner({
   tuningId,
   autoDetectString = false,
+  deviceId = "",
+  boostDb = 0,
 }: UseTunerOptions) {
   const preset = getTuningPreset(tuningId);
 
   const [selectedStringIndex, setSelectedStringIndex] = useState(0);
   const [listening, setListening] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [detectedHz, setDetectedHz] = useState<number | null>(null);
   const [cents, setCents] = useState<number | null>(null);
   const [chromaticCents, setChromaticCents] = useState<number | null>(null);
@@ -40,6 +45,8 @@ export function useTuner({
   presetRef.current = preset;
   const referenceOscRef = useRef<OscillatorNode | null>(null);
   const isListeningRef = useRef(false);
+  const autoDetectRef = useRef(autoDetectString);
+  autoDetectRef.current = autoDetectString;
 
   const targetString = preset.strings[selectedStringIndex] ?? preset.strings[0];
 
@@ -122,6 +129,7 @@ export function useTuner({
 
   const startTuning = useCallback(async () => {
     stopTuning();
+    setBusy(true);
     setError(null);
     const microphone = new TunerMicrophone((event) => {
       if (microphoneRef.current !== microphone || !isListeningRef.current)
@@ -165,7 +173,7 @@ export function useTuner({
       );
       const currentPreset = presetRef.current;
       let activeIndex = selectedIndexRef.current;
-      if (autoDetectString) {
+      if (autoDetectRef.current) {
         activeIndex = findClosestString(detected, currentPreset).stringIndex;
         selectedIndexRef.current = activeIndex;
         setSelectedStringIndex(activeIndex);
@@ -185,7 +193,7 @@ export function useTuner({
     });
     microphoneRef.current = microphone;
     try {
-      await microphone.start();
+      await microphone.start(deviceId, boostDb);
       if (microphoneRef.current !== microphone) return;
       isListeningRef.current = true;
       setListening(true);
@@ -195,8 +203,11 @@ export function useTuner({
         err instanceof Error ? err.message : "Failed to access microphone",
       );
       stopTuning();
+    } finally {
+      if (microphoneRef.current === microphone || !microphoneRef.current)
+        setBusy(false);
     }
-  }, [autoDetectString, stopTuning]);
+  }, [deviceId, boostDb, stopTuning]);
 
   useEffect(() => {
     // A target change invalidates the prior string-relative reading immediately.
@@ -221,6 +232,7 @@ export function useTuner({
     setSelectedStringIndex,
     targetString,
     listening,
+    busy,
     detectedHz,
     cents,
     chromaticCents,

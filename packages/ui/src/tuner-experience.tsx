@@ -1,9 +1,10 @@
 import {
   Check,
-  ChevronDown,
   Mic,
   MicOff,
   Moon,
+  Settings2,
+  Sliders,
   Sun,
   Volume2,
   X,
@@ -15,6 +16,13 @@ import {
   useRef,
   useState,
 } from "react";
+import {
+  ControlDock,
+  DockButton,
+  DockButtonMenu,
+  DockDivider,
+  DockMenuItem,
+} from "./control-dock.tsx";
 import { SegmentedControl } from "./form-primitives.tsx";
 import type { TunerPresetInfo, TunerStringInfo } from "./index.tsx";
 import { IconButton } from "./primitives.tsx";
@@ -44,6 +52,13 @@ export interface TunerExperienceProps {
   onToggleTheme?: () => void;
   onPlayReference?: () => void;
   playingReference?: boolean;
+  autoDetectString?: boolean;
+  onAutoDetectStringChange?: (enabled: boolean) => void;
+  inputDevice?: string;
+  inputDevices?: readonly { deviceId: string; label: string }[];
+  onInputDeviceChange?: (deviceId: string) => void;
+  inputBoost?: number;
+  onInputBoostChange?: (boostDb: number) => void;
   saveStatus?: string;
   error?: string | null;
 }
@@ -94,34 +109,33 @@ export function TunerPresetMenu({
   value: string;
   onChange: (presetId: string) => void;
 }) {
-  const details = useRef<HTMLDetailsElement>(null);
   const selected = presets.find((preset) => preset.id === value);
   return (
-    <details className="tuner-preset-picker" ref={details}>
-      <summary
-        className="tuner-preset-trigger"
-        aria-label={`Tuning presets${selected ? `, ${selected.name} selected` : ""}`}
-      >
-        <ChevronDown aria-hidden="true" />
-      </summary>
-      <fieldset className="tuner-preset-menu">
-        <legend className="sr-only">Tuning presets</legend>
+    <DockButtonMenu
+      label={`Tuning presets${selected ? `, ${selected.name} selected` : ""}`}
+      className="tuner-preset-trigger"
+      icon={
+        <>
+          <Sliders aria-hidden="true" />
+          <span className="tuner-preset-name">
+            {selected?.name ?? "Tuning"}
+          </span>
+        </>
+      }
+    >
+      <div className="tuner-preset-menu">
         {presets.map((preset) => (
-          <button
+          <DockMenuItem
             key={preset.id}
-            type="button"
-            aria-current={preset.id === value ? "true" : undefined}
-            onClick={() => {
-              onChange(preset.id);
-              if (details.current) details.current.open = false;
-            }}
+            selected={preset.id === value}
+            onSelect={() => onChange(preset.id)}
           >
             <span>{preset.name}</span>
             {preset.id === value && <Check aria-hidden="true" />}
-          </button>
+          </DockMenuItem>
         ))}
-      </fieldset>
-    </details>
+      </div>
+    </DockButtonMenu>
   );
 }
 
@@ -203,17 +217,11 @@ export function TunerStringBoard({
   selectedStringIndex,
   onSelectString,
   pluck = 0,
-  presets,
-  value,
-  onPresetChange,
 }: {
   strings: readonly TunerStringInfo[];
   selectedStringIndex: number;
   onSelectString: (index: number) => void;
   pluck?: number;
-  presets: readonly TunerPresetInfo[];
-  value: string;
-  onPresetChange: (presetId: string) => void;
 }) {
   return (
     <div className="tuner-string-board">
@@ -237,11 +245,6 @@ export function TunerStringBoard({
           </div>
         );
       })}
-      <TunerPresetMenu
-        presets={presets}
-        value={value}
-        onChange={onPresetChange}
-      />
     </div>
   );
 }
@@ -389,8 +392,18 @@ export function TunerExperience(props: TunerExperienceProps) {
     previousHz.current = props.detectedHz;
   }, [props.detectedHz, props.listening]);
   if (!selected) return null;
-  const displayNote = props.detectedNote ?? "A2";
+  const displayNote = props.detectedNote;
   const chromaticCents = props.chromaticCents ?? null;
+  const directionText =
+    props.detectedHz === null
+      ? null
+      : props.direction === "up"
+        ? "Tighten the string"
+        : props.direction === "down"
+          ? "Loosen the string"
+          : props.direction === "in_tune"
+            ? "In tune"
+            : null;
   return (
     <section
       className="tuner-experience"
@@ -440,10 +453,27 @@ export function TunerExperience(props: TunerExperienceProps) {
                   ? `${props.detectedHz.toFixed(1)} Hz`
                   : "Play the selected string"}
               </p>
+              {props.onAutoDetectStringChange && (
+                <button
+                  type="button"
+                  className="tuner-auto-button"
+                  aria-pressed={!!props.autoDetectString}
+                  onClick={() =>
+                    props.onAutoDetectStringChange?.(!props.autoDetectString)
+                  }
+                >
+                  Auto-select string {props.autoDetectString ? "on" : "off"}
+                </button>
+              )}
               {props.cents !== null && (
                 <p className="tuner-cents-live">
                   {props.cents > 0 ? "+" : ""}
                   {Math.round(props.cents)}¢
+                </p>
+              )}
+              {directionText && (
+                <p className="tuner-direction" role="status">
+                  {directionText}
                 </p>
               )}
               {props.onPlayReference && (
@@ -462,9 +492,6 @@ export function TunerExperience(props: TunerExperienceProps) {
               selectedStringIndex={props.selectedStringIndex}
               onSelectString={props.onSelectString}
               pluck={pluck}
-              presets={props.presets}
-              value={props.value}
-              onPresetChange={props.onPresetChange}
             />
           </section>
         ) : (
@@ -474,44 +501,121 @@ export function TunerExperience(props: TunerExperienceProps) {
           >
             <div className="tuner-chromatic-heading">
               <div className="tuner-target-note">
-                <TunerNote note={displayNote} />
+                {displayNote ? (
+                  <TunerNote note={displayNote} />
+                ) : (
+                  <span>—</span>
+                )}
               </div>
               <p className="tuner-instruction">
                 {props.detectedHz
                   ? `${props.detectedHz.toFixed(1)} Hz`
                   : "Play any string"}
               </p>
-              <p className="tuner-cents-live">
-                {chromaticCents !== null
-                  ? `${chromaticCents > 0 ? "+" : ""}${Math.round(chromaticCents)}¢`
-                  : "0¢"}
-              </p>
+              {chromaticCents !== null && (
+                <p className="tuner-cents-live">
+                  {chromaticCents > 0 ? "+" : ""}
+                  {Math.round(chromaticCents)}¢
+                </p>
+              )}
             </div>
-            <TunerChromaticGauge cents={chromaticCents} note={displayNote} />
+            <TunerChromaticGauge
+              cents={chromaticCents}
+              note={displayNote ?? ""}
+            />
           </section>
         )}
       </main>
       <footer className="tuner-experience-toolbar">
-        <button
-          type="button"
-          className="tuner-mic-button"
-          aria-label={props.listening ? "Mute microphone" : "Unmute microphone"}
-          aria-pressed={!props.listening}
-          disabled={props.busy}
-          onClick={props.onToggleListening}
-        >
-          {props.listening ? (
-            <Mic aria-hidden="true" />
-          ) : (
-            <MicOff aria-hidden="true" />
-          )}
-        </button>
         <span className="tuner-mic-status" role="status">
           <span className="tuner-status-dot" />
           {props.error ||
-            props.saveStatus ||
-            (props.listening ? "Listening" : "Microphone off")}
+            (props.busy
+              ? "Starting microphone…"
+              : props.listening
+                ? "Listening"
+                : "Microphone off")}
         </span>
+        <ControlDock
+          label="Tuner controls"
+          active={props.listening}
+          className="tuner-control-dock"
+        >
+          <DockButton
+            className="tuner-mic-button"
+            label={props.listening ? "Mute microphone" : "Unmute microphone"}
+            aria-pressed={props.listening}
+            disabled={props.busy}
+            onClick={props.onToggleListening}
+          >
+            {props.listening ? (
+              <Mic aria-hidden="true" />
+            ) : (
+              <MicOff aria-hidden="true" />
+            )}
+          </DockButton>
+          <DockDivider />
+          <TunerPresetMenu
+            presets={props.presets}
+            value={props.value}
+            onChange={props.onPresetChange}
+          />
+          {props.onInputDeviceChange && props.onInputBoostChange && (
+            <DockButtonMenu
+              label="Microphone settings"
+              icon={<Settings2 aria-hidden="true" />}
+              className="tuner-input-trigger"
+              align="end"
+            >
+              <div className="tuner-input-fields">
+                <label>
+                  Microphone input
+                  <select
+                    value={props.inputDevice ?? ""}
+                    onChange={(event) =>
+                      props.onInputDeviceChange?.(event.target.value)
+                    }
+                  >
+                    <option value="">System default</option>
+                    {props.inputDevice &&
+                      !props.inputDevices?.some(
+                        (device) => device.deviceId === props.inputDevice,
+                      ) && (
+                        <option value={props.inputDevice} disabled>
+                          Saved microphone unavailable
+                        </option>
+                      )}
+                    {props.inputDevices?.map((device) => (
+                      <option key={device.deviceId} value={device.deviceId}>
+                        {device.label || "Microphone"}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Input boost
+                  <select
+                    value={props.inputBoost ?? 0}
+                    onChange={(event) =>
+                      props.onInputBoostChange?.(Number(event.target.value))
+                    }
+                  >
+                    {[0, 6, 12, 18, 24, 30].map((value) => (
+                      <option key={value} value={value}>
+                        {value === 0 ? "Off" : `+${value} dB`}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </DockButtonMenu>
+          )}
+        </ControlDock>
+        {props.saveStatus && (
+          <span className="tuner-save-status" role="status">
+            {props.saveStatus}
+          </span>
+        )}
       </footer>
       {props.emergencyBreakRisk && (
         <div className="tuner-experience-warning" role="alert">

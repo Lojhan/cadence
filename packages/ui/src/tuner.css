@@ -191,6 +191,26 @@
   font-weight: 650;
   font-variant-numeric: tabular-nums;
 }
+.tuner-direction {
+  margin: 6px 0 0;
+  color: var(--primary);
+  font-size: 15px;
+  font-weight: 700;
+}
+.tuner-auto-button {
+  margin-top: 7px;
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted-foreground);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.tuner-auto-button[aria-pressed="true"] {
+  color: var(--primary);
+}
 .tuner-reference-button {
   display: inline-grid;
   place-items: center;
@@ -280,49 +300,20 @@ svg.tuner-wire {
   font-size: 18px;
   line-height: 1;
 }
-.tuner-preset-picker {
-  position: absolute;
-  right: 0;
-  bottom: 6px;
-  z-index: 3;
-}
-.tuner-preset-trigger {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  color: var(--muted-foreground);
-  cursor: pointer;
-  list-style: none;
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
-}
-.tuner-preset-trigger::-webkit-details-marker {
-  display: none;
-}
-.tuner-preset-trigger:hover {
-  background: var(--surface-hover);
-  color: var(--foreground);
+.tuner-experience .tuner-control-dock .tuner-preset-trigger {
+  width: auto;
+  min-width: 96px;
+  gap: 7px;
+  padding: 0 10px;
 }
 .tuner-preset-trigger svg {
-  width: 19px;
-  height: 19px;
-  transition: transform 0.2s ease;
+  width: 18px;
+  height: 18px;
 }
 .tuner-preset-menu {
-  position: absolute;
-  right: 0;
-  bottom: calc(100% + 9px);
   width: min(250px, calc(100vw - 40px));
   max-height: min(330px, 48dvh);
   overflow: auto;
-  padding: 7px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background: var(--surface);
-  box-shadow: 0 12px 30px #0005;
 }
 .tuner-preset-menu button {
   display: flex;
@@ -439,11 +430,21 @@ svg.tuner-wire {
   content: "";
 }
 .tuner-experience-toolbar {
+  flex-direction: column;
   justify-content: center;
-  gap: 14px;
-  min-height: 76px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border);
+  gap: 5px;
+  min-height: 100px;
+  padding-top: 5px;
+}
+.tuner-control-dock {
+  --dock: var(--surface);
+  --line: var(--border);
+  position: relative;
+  bottom: auto;
+  left: auto;
+  transform: none;
+  border-color: var(--border);
+  color: var(--foreground);
 }
 .tuner-mic-button {
   display: grid;
@@ -463,9 +464,8 @@ svg.tuner-wire {
   transform: scale(1.04);
 }
 .tuner-mic-button[aria-pressed="true"] {
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--muted-foreground);
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 .tuner-mic-button svg {
   width: 22px;
@@ -475,13 +475,32 @@ svg.tuner-wire {
   width: 16px;
   height: 16px;
 }
-.tuner-preset-picker[open] .tuner-preset-trigger svg {
-  transform: rotate(180deg);
-}
 .tuner-mic-status {
   gap: 7px;
   color: var(--muted-foreground);
   font-size: 13px;
+}
+.tuner-input-fields {
+  display: grid;
+  gap: 10px;
+  min-width: 220px;
+  padding: 5px;
+}
+.tuner-input-fields label {
+  display: grid;
+  gap: 4px;
+}
+.tuner-input-fields select {
+  width: 100%;
+  padding: 7px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: inherit;
+}
+.tuner-save-status {
+  font-size: 11px;
+  color: var(--muted-foreground);
 }
 .tuner-status-dot {
   width: 6px;
@@ -560,23 +579,6 @@ svg.tuner-wire {
     min-width: 52px;
     min-height: 52px;
     padding: 0;
-  }
-  .tuner-preset-picker {
-    position: relative;
-    right: auto;
-    bottom: auto;
-    left: 2px;
-    align-self: flex-start;
-    margin-top: -4px;
-  }
-  .tuner-preset-trigger {
-    width: 52px;
-    height: 52px;
-  }
-  .tuner-preset-menu {
-    right: auto;
-    bottom: calc(100% + 7px);
-    left: 0;
   }
   .tuner-chromatic-view {
     flex-direction: row;

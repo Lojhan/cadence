@@ -194,6 +194,32 @@
   background: var(--line);
   margin: 0 3px;
 }
+.dock-menu {
+  display: grid;
+  gap: 3px;
+  min-width: 190px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.dock-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.dock-menu-item:hover,
+.dock-menu-item[aria-current="true"] {
+  background: var(--muted-bg);
+}
 .signal {
   display: flex;
   align-items: center;

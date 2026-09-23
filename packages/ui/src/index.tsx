@@ -9,9 +9,23 @@ import {
   X,
 } from "lucide-react";
 import { Fragment, type ReactNode } from "react";
-import { Popover } from "./overlays.tsx";
+import {
+  ControlDock,
+  DockButton,
+  DockButtonMenu,
+  DockDivider,
+  DockGroup,
+} from "./control-dock.tsx";
 import { Button, IconButton } from "./primitives.tsx";
 
+export {
+  ControlDock,
+  DockButton,
+  DockButtonMenu,
+  DockDivider,
+  DockGroup,
+  DockMenuItem,
+} from "./control-dock.tsx";
 export type {
   FieldProps,
   SegmentedControlProps,
@@ -198,12 +212,9 @@ export function PracticeDock({
   tuningTitle?: string;
 }) {
   return (
-    <nav
-      className={`transport idle-ui ${listening ? "listening" : ""}`}
-      aria-label="Practice controls"
-    >
-      <div className="mic-group">
-        <IconButton
+    <ControlDock label="Practice controls" active={listening}>
+      <DockGroup className="mic-group">
+        <DockButton
           label={listening ? "Mute microphone" : "Unmute microphone"}
           className="mic"
           aria-pressed={listening}
@@ -216,38 +227,32 @@ export function PracticeDock({
             <i />
           </span>
           {listening ? <Mic /> : <MicOff />}
-        </IconButton>
-        <Popover
+        </DockButton>
+        <DockButtonMenu
+          label="Microphone options"
+          icon={devicesOpen ? <ChevronDown /> : <ChevronUp />}
           open={devicesOpen}
           onOpenChange={() => onDevices()}
-          trigger={
-            <IconButton
-              label="Microphone options"
-              aria-expanded={devicesOpen}
-              className="mic-options-toggle"
-            >
-              {devicesOpen ? <ChevronDown /> : <ChevronUp />}
-            </IconButton>
-          }
+          className="mic-options-toggle"
         >
           {deviceContent}
-        </Popover>
-      </div>
-      <span className="dock-divider" />
-      <IconButton label="Open music library" onClick={onLibrary}>
+        </DockButtonMenu>
+      </DockGroup>
+      <DockDivider />
+      <DockButton label="Open music library" onClick={onLibrary}>
         <Music2 />
-      </IconButton>
+      </DockButton>
       {onTuner ? (
-        <IconButton
+        <DockButton
           label={tuningTitle}
           title={tuningTitle}
           className={`tuner-btn ${tuningMismatch ? "tuner-warning" : ""}`}
           onClick={onTuner}
         >
           <Sliders />
-        </IconButton>
+        </DockButton>
       ) : null}
-    </nav>
+    </ControlDock>
   );
 }
 

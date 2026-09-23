@@ -2,6 +2,20 @@ export type TunerAudioEvent =
   | { type: "reading"; frequency: number | null; confidence: number }
   | { type: "error"; message: string };
 
+export function tunerAudioConstraints(
+  deviceId: string,
+): MediaStreamConstraints {
+  return {
+    audio: {
+      ...(deviceId ? { deviceId: { exact: deviceId } } : {}),
+      echoCancellation: false,
+      noiseSuppression: false,
+      autoGainControl: false,
+    },
+    video: false,
+  };
+}
+
 /** Browser-only capture. Pitch and confidence are produced by the Rust/WASM worker. */
 export class TunerMicrophone {
   private stream: MediaStream | undefined;
@@ -9,6 +23,7 @@ export class TunerMicrophone {
   private worker: Worker | undefined;
   private capture: AudioWorkletNode | undefined;
   private source: MediaStreamAudioSourceNode | undefined;
+  private gain: GainNode | undefined;
   private generation = 0;
   private disposed = false;
   private active = false;
@@ -16,20 +31,17 @@ export class TunerMicrophone {
 
   constructor(private readonly emit: (event: TunerAudioEvent) => void) {}
 
-  async start() {
+  async start(deviceId = "", boostDb = 0) {
+    if (!Number.isFinite(boostDb) || boostDb < 0 || boostDb > 30)
+      throw new Error("Input boost must be between 0 and 30 dB");
     if (this.disposed) throw new Error("Tuner microphone has been disposed");
     this.stop();
     const generation = this.generation;
     if (!navigator.mediaDevices?.getUserMedia || !window.isSecureContext)
       throw new Error("Microphone access requires HTTPS or localhost.");
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        echoCancellation: false,
-        noiseSuppression: false,
-        autoGainControl: false,
-      },
-      video: false,
-    });
+    const stream = await navigator.mediaDevices.getUserMedia(
+      tunerAudioConstraints(deviceId),
+    );
     if (generation !== this.generation || this.disposed) {
       for (const track of stream.getTracks()) track.stop();
       return;
@@ -107,7 +119,11 @@ export class TunerMicrophone {
         });
       capture.port.postMessage({ port: channel.port2 }, [channel.port2]);
       this.source = context.createMediaStreamSource(stream);
-      this.source.connect(capture);
+      const gain = context.createGain();
+      gain.gain.value = 10 ** (boostDb / 20);
+      this.gain = gain;
+      this.source.connect(gain);
+      gain.connect(capture);
       capture.connect(context.destination);
       await ready;
       this.cancelInit = undefined;
@@ -139,12 +155,14 @@ export class TunerMicrophone {
       track.stop();
     }
     this.source?.disconnect();
+    this.gain?.disconnect();
     this.capture?.disconnect();
     this.worker?.terminate();
     if (this.context) this.context.onstatechange = null;
     void this.context?.close();
     this.stream = undefined;
     this.source = undefined;
+    this.gain = undefined;
     this.capture = undefined;
     this.worker = undefined;
     this.context = undefined;
