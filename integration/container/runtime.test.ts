@@ -38,10 +38,9 @@ try {
     image,
   ]);
   await ready();
-  const html = await (await fetch("http://localhost:3110")).text();
   assert.ok(
-    html.includes('class="chord"'),
-    "blank installation renders without provider accounts",
+    (await fetch("http://localhost:3110")).ok,
+    "blank installation responds without provider accounts",
   );
   assert.equal(
     command(["exec", name, "id", "-u"]),
@@ -52,6 +51,14 @@ try {
   try {
     const page = await browser.newPage();
     await page.goto("http://localhost:3110");
+    await page.getByRole("region", { name: "Practice stage" }).waitFor();
+    assert.ok(
+      await page
+        .getByRole("region", { name: "Practice stage" })
+        .getByRole("heading", { level: 1 })
+        .isVisible(),
+      "blank installation shows the practice target",
+    );
     await page.getByRole("button", { name: "Open settings" }).click();
     const saved = page.waitForResponse(
       (response) => response.request().method() === "POST" && response.ok(),
