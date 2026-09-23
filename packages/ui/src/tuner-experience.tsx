@@ -318,14 +318,15 @@ export function TunerChromaticGauge({
             />
           );
         })}
-        {([-44, 44] as const).map((tick) => {
-          const point = geometry.point(tick, geometry.radius - 1);
+        {([-42, 42] as const).map((tick) => {
+          const end = geometry.point(tick, geometry.radius + 17);
           return (
             <text
               key={tick}
               className="tuner-gauge-symbol"
-              x={point.x}
-              y={point.y}
+              x={end.x + (tick < 0 ? -10 : 10)}
+              y={end.y + 16}
+              dy="0.35em"
             >
               {tick < 0 ? "♭" : "♯"}
             </text>

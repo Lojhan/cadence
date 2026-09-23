@@ -381,7 +381,6 @@ svg.tuner-wire {
     Helvetica,
     sans-serif;
   text-anchor: middle;
-  dominant-baseline: middle;
 }
 .tuner-gauge-needle {
   stroke: var(--primary);

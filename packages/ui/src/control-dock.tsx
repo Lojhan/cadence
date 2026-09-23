@@ -51,6 +51,42 @@ export function DockDivider() {
   return <span className="dock-divider" aria-hidden="true" />;
 }
 
+export function DockSwitch({
+  label,
+  active = false,
+  className,
+  children,
+}: {
+  label: string;
+  active?: boolean;
+  className?: string;
+  children?: ReactNode;
+}) {
+  return (
+    <fieldset
+      className={cn("dock-switch", active && "listening", className)}
+      aria-label={label}
+    >
+      {children}
+    </fieldset>
+  );
+}
+
+export function DockSwitchAction({ className, ...props }: IconButtonProps) {
+  return (
+    <DockButton className={cn("dock-switch-action", className)} {...props} />
+  );
+}
+
+export function DockSwitchMenu({
+  className,
+  ...props
+}: Parameters<typeof DockButtonMenu>[0]) {
+  return (
+    <DockButtonMenu className={cn("dock-switch-menu", className)} {...props} />
+  );
+}
+
 export function MicrophoneDockControls({
   listening,
   busy = false,
@@ -69,8 +105,8 @@ export function MicrophoneDockControls({
   const [internalOpen, setInternalOpen] = useState(false);
   const open = optionsOpen ?? internalOpen;
   return (
-    <DockGroup className="mic-group">
-      <DockButton
+    <DockSwitch label="Microphone" active={listening} className="mic-group">
+      <DockSwitchAction
         label={listening ? "Mute microphone" : "Unmute microphone"}
         className="mic"
         aria-pressed={listening}
@@ -83,8 +119,8 @@ export function MicrophoneDockControls({
           <i />
         </span>
         {listening ? <Mic aria-hidden="true" /> : <MicOff aria-hidden="true" />}
-      </DockButton>
-      <DockButtonMenu
+      </DockSwitchAction>
+      <DockSwitchMenu
         label="Microphone options"
         icon={
           open ? (
@@ -98,8 +134,8 @@ export function MicrophoneDockControls({
         className="mic-options-toggle"
       >
         {children}
-      </DockButtonMenu>
-    </DockGroup>
+      </DockSwitchMenu>
+    </DockSwitch>
   );
 }
 

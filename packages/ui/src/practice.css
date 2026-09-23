@@ -166,14 +166,24 @@
   background: #422006;
   border: 1px solid #854d0e;
 }
-.mic-group {
+.dock-switch {
   display: flex;
   flex: none;
   align-items: center;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
   border-radius: 999px;
   background: var(--muted-bg);
   color: var(--muted-ink);
   overflow: hidden;
+}
+.dock-switch-action {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 .transport .mic {
   width: 72px;
@@ -184,7 +194,7 @@
   width: 44px;
   border-radius: 0;
 }
-.listening .mic-group {
+.dock-switch.listening {
   background: var(--ink);
   color: var(--paper);
 }

@@ -15,6 +15,9 @@ export {
   DockDivider,
   DockGroup,
   DockMenuItem,
+  DockSwitch,
+  DockSwitchAction,
+  DockSwitchMenu,
   MicrophoneDockControls,
 } from "./control-dock.tsx";
 export type {
