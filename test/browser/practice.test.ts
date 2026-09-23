@@ -615,6 +615,9 @@ try {
   await page.getByRole("button", { name: "Close", exact: true }).click();
   await page.getByRole("button", { name: "Open settings" }).click();
   await page.context().setOffline(true);
+  const stageBeforeNotice = await page
+    .locator('.sequence-frame[data-current="true"] .stage')
+    .boundingBox();
   await page.getByRole("combobox", { name: "Appearance" }).selectOption("dark");
   await page.waitForFunction(
     () => document.documentElement.dataset.theme === "dark",
@@ -625,6 +628,15 @@ try {
     .getByRole("dialog")
     .getByRole("button", { name: "Retry saving settings" })
     .waitFor({ timeout: 3000 });
+  const stageAfterNotice = await page
+    .locator('.sequence-frame[data-current="true"] .stage')
+    .boundingBox();
+  assert.ok(
+    stageBeforeNotice &&
+      stageAfterNotice &&
+      Math.abs(stageBeforeNotice.y - stageAfterNotice.y) < 1,
+    "a settings notice does not move the practice stage",
+  );
   await page
     .getByRole("combobox", { name: "Handedness" })
     .selectOption("right");

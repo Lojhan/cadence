@@ -37,11 +37,7 @@ export function TuningPage({
         setPreferences(state.values);
         if (state.status === "error") setSelectedTuning(state.values.tuning);
         setSaveStatus(
-          state.status === "saving"
-            ? "Saving…"
-            : state.status === "saved"
-              ? "Saved"
-              : "Could not save preference",
+          state.status === "error" ? "Could not save preference" : "",
         );
       }),
     [gateway, initialPreferences],
@@ -71,11 +67,6 @@ export function TuningPage({
       getTuningPreset(initialTuningId ?? initialPreferences.values.tuning).id,
     );
   }, [initialTuningId, initialPreferences.values.tuning]);
-  useEffect(() => {
-    if (saveStatus !== "Saved") return;
-    const timer = setTimeout(() => setSaveStatus(""), 2000);
-    return () => clearTimeout(timer);
-  }, [saveStatus]);
   useEffect(() => {
     const media = matchMedia("(prefers-color-scheme: dark)");
     const apply = () => {

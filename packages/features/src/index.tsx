@@ -498,7 +498,7 @@ export function PracticeApp({
   return (
     <main
       ref={appElement}
-      className={`app ${idle ? "is-idle" : ""} ${prefs.diagramSize === "large" ? "large-diagram" : ""} ${(progressSave.error || preferenceError || error) && !panel ? "has-notice" : ""}`}
+      className={`app ${idle ? "is-idle" : ""} ${prefs.diagramSize === "large" ? "large-diagram" : ""}`}
     >
       <header className="toolbar idle-ui">
         <span className="wordmark">cadence</span>
@@ -544,11 +544,6 @@ export function PracticeApp({
               hand={prefs.hand}
               numbers={prefs.numbers}
             />
-          ) : null}
-          {tuningMismatch ? (
-            <span className="tuning-status-label">
-              Voicing adapted for {currentPreset.name} tuning
-            </span>
           ) : null}
         </section>
         <ChordTimeline chords={session.chords} index={session.index} />
@@ -668,9 +663,7 @@ export function PracticeApp({
         }
         onLibrary={() => openPanel("library")}
         onTuner={() => {
-          window.location.href = tuningMismatch
-            ? `/tuning?preset=${recommendedPreset.id}`
-            : "/tuning";
+          window.location.href = "/tuning";
         }}
         tuningMismatch={tuningMismatch}
         tuningTitle={

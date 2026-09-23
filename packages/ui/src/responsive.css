@@ -8,9 +8,6 @@
     gap: 18px;
     padding: 72px 20px 8px;
   }
-  .has-notice .stage {
-    padding-top: 136px;
-  }
   .toast {
     top: 72px;
   }
@@ -22,9 +19,6 @@
     width: auto;
     height: clamp(150px, 34dvh, 290px);
     max-width: calc(100vw - 110px);
-  }
-  .has-notice .diagram {
-    min-height: 0;
   }
   .step-arrow {
     width: 44px;

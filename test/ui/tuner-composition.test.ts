@@ -63,9 +63,33 @@ assert.ok(stringsMarkup.includes('aria-pressed="true"'));
 assert.ok(stringsMarkup.includes('aria-label="Play reference pitch D3"'));
 assert.ok((stringsMarkup.match(/data-slot="icon-button"/g) ?? []).length >= 3);
 assert.ok(stringsMarkup.includes("Auto-select string"));
-assert.ok(stringsMarkup.includes('aria-label="Microphone settings"'));
+assert.ok(stringsMarkup.includes('aria-label="Microphone options"'));
+assert.ok(!stringsMarkup.includes('aria-label="Microphone settings"'));
 assert.ok(stringsMarkup.includes("Play the selected string"));
 assert.ok(!stringsMarkup.includes("0¢"), "silence has no tuning result");
+assert.ok(
+  stringsMarkup.includes('class="tuner-readout"'),
+  "tuner readout keeps space for live feedback",
+);
+
+const offMarkup = renderToStaticMarkup(
+  createElement(TunerExperience, {
+    ...base,
+    listening: false,
+    saveStatus: "Saved",
+  }),
+);
+assert.ok(
+  !offMarkup.includes("Microphone off"),
+  "The microphone button is the sole idle status indicator",
+);
+assert.ok(!offMarkup.includes(">Saved<"), "The dock has no saved label");
+assert.ok(
+  !renderToStaticMarkup(
+    createElement(TunerExperience, { ...base, saveStatus: "Saving…" }),
+  ).includes("Saving…"),
+  "The dock has no saving label",
+);
 
 const flatMarkup = renderToStaticMarkup(
   createElement(TunerExperience, {

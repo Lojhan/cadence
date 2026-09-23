@@ -1,20 +1,10 @@
-import {
-  AlertTriangle,
-  ChevronDown,
-  ChevronUp,
-  Mic,
-  MicOff,
-  Music2,
-  Sliders,
-  X,
-} from "lucide-react";
+import { AlertTriangle, Music2, Sliders, X } from "lucide-react";
 import { Fragment, type ReactNode } from "react";
 import {
   ControlDock,
   DockButton,
-  DockButtonMenu,
   DockDivider,
-  DockGroup,
+  MicrophoneDockControls,
 } from "./control-dock.tsx";
 import { Button, IconButton } from "./primitives.tsx";
 
@@ -25,6 +15,7 @@ export {
   DockDivider,
   DockGroup,
   DockMenuItem,
+  MicrophoneDockControls,
 } from "./control-dock.tsx";
 export type {
   FieldProps,
@@ -213,31 +204,17 @@ export function PracticeDock({
 }) {
   return (
     <ControlDock label="Practice controls" active={listening}>
-      <DockGroup className="mic-group">
-        <DockButton
-          label={listening ? "Mute microphone" : "Unmute microphone"}
-          className="mic"
-          aria-pressed={listening}
-          disabled={busy}
-          onClick={onToggle}
-        >
-          <span className="signal" aria-hidden="true">
-            <i />
-            <i />
-            <i />
-          </span>
-          {listening ? <Mic /> : <MicOff />}
-        </DockButton>
-        <DockButtonMenu
-          label="Microphone options"
-          icon={devicesOpen ? <ChevronDown /> : <ChevronUp />}
-          open={devicesOpen}
-          onOpenChange={() => onDevices()}
-          className="mic-options-toggle"
-        >
-          {deviceContent}
-        </DockButtonMenu>
-      </DockGroup>
+      <MicrophoneDockControls
+        listening={listening}
+        busy={busy}
+        onToggle={onToggle}
+        optionsOpen={devicesOpen}
+        onOptionsOpenChange={(open) => {
+          if (open !== devicesOpen) onDevices();
+        }}
+      >
+        {deviceContent}
+      </MicrophoneDockControls>
       <DockDivider />
       <DockButton label="Open music library" onClick={onLibrary}>
         <Music2 />

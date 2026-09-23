@@ -1,14 +1,4 @@
-import {
-  Check,
-  Mic,
-  MicOff,
-  Moon,
-  Settings2,
-  Sliders,
-  Sun,
-  Volume2,
-  X,
-} from "lucide-react";
+import { Check, Moon, Sliders, Sun, Volume2, X } from "lucide-react";
 import {
   type CSSProperties,
   useEffect,
@@ -18,10 +8,10 @@ import {
 } from "react";
 import {
   ControlDock,
-  DockButton,
   DockButtonMenu,
   DockDivider,
   DockMenuItem,
+  MicrophoneDockControls,
 } from "./control-dock.tsx";
 import { SegmentedControl } from "./form-primitives.tsx";
 import type { TunerPresetInfo, TunerStringInfo } from "./index.tsx";
@@ -465,17 +455,23 @@ export function TunerExperience(props: TunerExperienceProps) {
                   Auto-select string {props.autoDetectString ? "on" : "off"}
                 </button>
               )}
-              {props.cents !== null && (
-                <p className="tuner-cents-live">
-                  {props.cents > 0 ? "+" : ""}
-                  {Math.round(props.cents)}¢
+              <div className="tuner-readout">
+                <p
+                  className="tuner-cents-live"
+                  data-empty={props.cents === null}
+                >
+                  {props.cents === null
+                    ? "\u00a0"
+                    : `${props.cents > 0 ? "+" : ""}${Math.round(props.cents)}¢`}
                 </p>
-              )}
-              {directionText && (
-                <p className="tuner-direction" role="status">
-                  {directionText}
+                <p
+                  className="tuner-direction"
+                  data-empty={!directionText}
+                  role="status"
+                >
+                  {directionText || "\u00a0"}
                 </p>
-              )}
+              </div>
               {props.onPlayReference && (
                 <IconButton
                   className="tuner-reference-button"
@@ -512,12 +508,14 @@ export function TunerExperience(props: TunerExperienceProps) {
                   ? `${props.detectedHz.toFixed(1)} Hz`
                   : "Play any string"}
               </p>
-              {chromaticCents !== null && (
-                <p className="tuner-cents-live">
-                  {chromaticCents > 0 ? "+" : ""}
-                  {Math.round(chromaticCents)}¢
-                </p>
-              )}
+              <p
+                className="tuner-cents-live"
+                data-empty={chromaticCents === null}
+              >
+                {chromaticCents === null
+                  ? "\u00a0"
+                  : `${chromaticCents > 0 ? "+" : ""}${Math.round(chromaticCents)}¢`}
+              </p>
             </div>
             <TunerChromaticGauge
               cents={chromaticCents}
@@ -527,46 +525,25 @@ export function TunerExperience(props: TunerExperienceProps) {
         )}
       </main>
       <footer className="tuner-experience-toolbar">
-        <span className="tuner-mic-status" role="status">
-          <span className="tuner-status-dot" />
-          {props.error ||
-            (props.busy
-              ? "Starting microphone…"
-              : props.listening
-                ? "Listening"
-                : "Microphone off")}
-        </span>
+        {(props.error ||
+          (props.saveStatus &&
+            props.saveStatus !== "Saving…" &&
+            props.saveStatus !== "Saved")) && (
+          <span className="tuner-toolbar-error" role="alert">
+            {props.error || props.saveStatus}
+          </span>
+        )}
         <ControlDock
           label="Tuner controls"
           active={props.listening}
           className="tuner-control-dock"
         >
-          <DockButton
-            className="tuner-mic-button"
-            label={props.listening ? "Mute microphone" : "Unmute microphone"}
-            aria-pressed={props.listening}
-            disabled={props.busy}
-            onClick={props.onToggleListening}
+          <MicrophoneDockControls
+            listening={props.listening}
+            busy={props.busy}
+            onToggle={props.onToggleListening}
           >
-            {props.listening ? (
-              <Mic aria-hidden="true" />
-            ) : (
-              <MicOff aria-hidden="true" />
-            )}
-          </DockButton>
-          <DockDivider />
-          <TunerPresetMenu
-            presets={props.presets}
-            value={props.value}
-            onChange={props.onPresetChange}
-          />
-          {props.onInputDeviceChange && props.onInputBoostChange && (
-            <DockButtonMenu
-              label="Microphone settings"
-              icon={<Settings2 aria-hidden="true" />}
-              className="tuner-input-trigger"
-              align="end"
-            >
+            {props.onInputDeviceChange && props.onInputBoostChange && (
               <div className="tuner-input-fields">
                 <label>
                   Microphone input
@@ -608,14 +585,15 @@ export function TunerExperience(props: TunerExperienceProps) {
                   </select>
                 </label>
               </div>
-            </DockButtonMenu>
-          )}
+            )}
+          </MicrophoneDockControls>
+          <DockDivider />
+          <TunerPresetMenu
+            presets={props.presets}
+            value={props.value}
+            onChange={props.onPresetChange}
+          />
         </ControlDock>
-        {props.saveStatus && (
-          <span className="tuner-save-status" role="status">
-            {props.saveStatus}
-          </span>
-        )}
       </footer>
       {props.emergencyBreakRisk && (
         <div className="tuner-experience-warning" role="alert">

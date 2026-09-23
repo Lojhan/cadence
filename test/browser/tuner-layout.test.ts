@@ -50,6 +50,15 @@ try {
       const wires = [...document.querySelectorAll(".tuner-wire")];
       const boxes = cells.map((cell) => cell.getBoundingClientRect());
       const wire = wires[0]?.getBoundingClientRect();
+      const presetIcon = document
+        .querySelector(".tuner-preset-trigger svg")
+        ?.getBoundingClientRect();
+      const presetName = document
+        .querySelector(".tuner-preset-name")
+        ?.getBoundingClientRect();
+      const stage = document
+        .querySelector(".tuner-experience-stage")
+        ?.getBoundingClientRect();
       return {
         scrollWidth: document.documentElement.scrollWidth,
         scrollHeight: document.documentElement.scrollHeight,
@@ -63,15 +72,37 @@ try {
         ),
         wireWidth: wire?.width ?? 0,
         wireHeight: wire?.height ?? 0,
+        presetHorizontal:
+          !!presetIcon &&
+          !!presetName &&
+          presetName.left >= presetIcon.right &&
+          Math.abs(
+            (presetName.top + presetName.bottom) / 2 -
+              (presetIcon.top + presetIcon.bottom) / 2,
+          ) < 4,
+        stringCenterOffset:
+          stage && boxes.length > 0
+            ? Math.abs(
+                ((boxes[0]?.left ?? 0) +
+                  (boxes[boxes.length - 1]?.right ?? 0)) /
+                  2 -
+                  (stage.left + stage.right) / 2,
+              )
+            : Number.POSITIVE_INFINITY,
       };
     });
     assert.equal(layout.count, 6);
     assert.equal(layout.presetCount, 1);
+    assert.ok(layout.presetHorizontal, "preset icon and label align in a row");
     assert.ok(
       layout.scrollWidth <= width && layout.scrollHeight <= height,
       `tuner fits ${width}×${height}`,
     );
     if (width < 700) {
+      assert.ok(
+        layout.stringCenterOffset < 4,
+        "phone string board is centered on the tuner stage",
+      );
       assert.ok(
         layout.xIncreasing && layout.wireHeight > layout.wireWidth,
         "phone strings are vertical",
@@ -108,9 +139,22 @@ try {
   );
   await page.locator(".tuner-preset-trigger").click();
   await page.getByRole("button", { name: "Drop D", exact: true }).click();
-  await tunerDock.getByRole("button", { name: "Microphone settings" }).click();
+  await tunerDock.getByRole("button", { name: "Microphone options" }).click();
   await page.getByRole("combobox", { name: "Microphone input" }).waitFor();
   await page.getByRole("combobox", { name: "Input boost" }).waitFor();
+  await page.keyboard.press("Escape");
+  await page.waitForFunction(
+    () =>
+      document.activeElement?.getAttribute("aria-label") ===
+      "Microphone options",
+  );
+  assert.equal(
+    await page.evaluate(() =>
+      document.activeElement?.getAttribute("aria-label"),
+    ),
+    "Microphone options",
+    "closing microphone options restores focus to its trigger",
+  );
   await page.goto(`${origin}/tuning`);
   await page.locator(".tuner-preset-trigger").waitFor();
   assert.match(
@@ -118,6 +162,22 @@ try {
       "",
     /Drop D selected/,
     "selecting the previewed preset persists it",
+  );
+  await page.getByRole("button", { name: "Close tuner" }).click();
+  assert.equal(
+    await page.getByText(/Voicing adapted for/).count(),
+    0,
+    "tuning advice does not add a third item to the practice stage",
+  );
+  await page
+    .getByRole("button", { name: /Tuning mismatch:|Guitar tuner/ })
+    .click();
+  await page.locator(".tuner-preset-trigger").waitFor();
+  assert.match(
+    (await page.locator(".tuner-preset-trigger").getAttribute("aria-label")) ??
+      "",
+    /Drop D selected/,
+    "returning through practice keeps the saved tuning",
   );
   await page.close();
 } finally {

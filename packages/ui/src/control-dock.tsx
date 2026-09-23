@@ -1,3 +1,4 @@
+import { ChevronDown, ChevronUp, Mic, MicOff } from "lucide-react";
 import {
   createContext,
   type HTMLAttributes,
@@ -48,6 +49,58 @@ export function DockButton({ className, ...props }: IconButtonProps) {
 
 export function DockDivider() {
   return <span className="dock-divider" aria-hidden="true" />;
+}
+
+export function MicrophoneDockControls({
+  listening,
+  busy = false,
+  onToggle,
+  optionsOpen,
+  onOptionsOpenChange,
+  children,
+}: {
+  listening: boolean;
+  busy?: boolean;
+  onToggle: () => void;
+  optionsOpen?: boolean;
+  onOptionsOpenChange?: (open: boolean) => void;
+  children?: ReactNode;
+}) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = optionsOpen ?? internalOpen;
+  return (
+    <DockGroup className="mic-group">
+      <DockButton
+        label={listening ? "Mute microphone" : "Unmute microphone"}
+        className="mic"
+        aria-pressed={listening}
+        disabled={busy}
+        onClick={onToggle}
+      >
+        <span className="signal" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </span>
+        {listening ? <Mic aria-hidden="true" /> : <MicOff aria-hidden="true" />}
+      </DockButton>
+      <DockButtonMenu
+        label="Microphone options"
+        icon={
+          open ? (
+            <ChevronDown aria-hidden="true" />
+          ) : (
+            <ChevronUp aria-hidden="true" />
+          )
+        }
+        open={open}
+        onOpenChange={onOptionsOpenChange ?? setInternalOpen}
+        className="mic-options-toggle"
+      >
+        {children}
+      </DockButtonMenu>
+    </DockGroup>
+  );
 }
 
 const MenuContext = createContext<(() => void) | null>(null);

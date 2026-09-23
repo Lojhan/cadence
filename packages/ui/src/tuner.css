@@ -74,8 +74,7 @@
 .tuner-experience-topbar,
 .tuner-experience-top-actions,
 .tuner-mode-switch,
-.tuner-experience-toolbar,
-.tuner-mic-status {
+.tuner-experience-toolbar {
   display: flex;
   align-items: center;
 }
@@ -192,10 +191,23 @@
   font-variant-numeric: tabular-nums;
 }
 .tuner-direction {
-  margin: 6px 0 0;
+  margin: 0;
   color: var(--primary);
   font-size: 15px;
   font-weight: 700;
+}
+.tuner-readout {
+  display: grid;
+  grid-template-rows: 19px 21px;
+  gap: 6px;
+  margin-top: 12px;
+}
+.tuner-readout .tuner-cents-live {
+  margin: 0;
+}
+.tuner-readout [data-empty="true"],
+.tuner-chromatic-heading .tuner-cents-live[data-empty="true"] {
+  visibility: hidden;
 }
 .tuner-auto-button {
   margin-top: 7px;
@@ -239,7 +251,7 @@
   justify-content: space-around;
   width: 100%;
   min-height: 0;
-  padding: 25px 44px 5px 0;
+  padding: 25px 22px 5px;
 }
 .tuner-string-cell {
   position: relative;
@@ -301,10 +313,14 @@ svg.tuner-wire {
   line-height: 1;
 }
 .tuner-experience .tuner-control-dock .tuner-preset-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: auto;
-  min-width: 96px;
+  min-width: 118px;
   gap: 7px;
   padding: 0 10px;
+  white-space: nowrap;
 }
 .tuner-preset-trigger svg {
   width: 18px;
@@ -430,15 +446,18 @@ svg.tuner-wire {
   content: "";
 }
 .tuner-experience-toolbar {
+  position: relative;
   flex-direction: column;
   justify-content: center;
-  gap: 5px;
-  min-height: 100px;
-  padding-top: 5px;
+  min-height: 80px;
 }
 .tuner-control-dock {
   --dock: var(--surface);
   --line: var(--border);
+  --muted-bg: var(--surface-hover);
+  --muted-ink: var(--foreground);
+  --ink: var(--primary);
+  --paper: var(--primary-foreground);
   position: relative;
   bottom: auto;
   left: auto;
@@ -446,39 +465,9 @@ svg.tuner-wire {
   border-color: var(--border);
   color: var(--foreground);
 }
-.tuner-mic-button {
-  display: grid;
-  place-items: center;
-  width: 56px;
-  height: 56px;
-  border: 0;
-  border-radius: 50%;
-  background: var(--primary);
-  color: var(--primary-foreground);
-  transition:
-    filter 0.2s ease,
-    transform 0.2s ease;
-}
-.tuner-mic-button:hover {
-  filter: brightness(1.12);
-  transform: scale(1.04);
-}
-.tuner-mic-button[aria-pressed="true"] {
-  background: var(--primary);
-  color: var(--primary-foreground);
-}
-.tuner-mic-button svg {
-  width: 22px;
-  height: 22px;
-}
 .tuner-preset-menu button svg {
   width: 16px;
   height: 16px;
-}
-.tuner-mic-status {
-  gap: 7px;
-  color: var(--muted-foreground);
-  font-size: 13px;
 }
 .tuner-input-fields {
   display: grid;
@@ -498,17 +487,21 @@ svg.tuner-wire {
   background: var(--surface);
   color: inherit;
 }
-.tuner-save-status {
-  font-size: 11px;
-  color: var(--muted-foreground);
-}
-.tuner-status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--tuner-good);
-  box-shadow: 0 0 0 5px #b4dba018;
-  animation: tuner-breathe 2s ease-in-out infinite;
+.tuner-toolbar-error {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  width: max-content;
+  max-width: min(420px, 90vw);
+  padding: 8px 12px;
+  transform: translateX(-50%);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--foreground);
+  font-size: 13px;
+  text-align: center;
+  z-index: 3;
 }
 .tuner-experience-warning {
   position: absolute;
@@ -525,13 +518,6 @@ svg.tuner-wire {
   text-align: center;
   font-size: 13px;
 }
-@keyframes tuner-breathe {
-  50% {
-    box-shadow: 0 0 0 9px #b4dba006;
-    opacity: 0.6;
-  }
-}
-
 @media (min-width: 700px) {
   .tuner-experience {
     padding: 28px 44px;
