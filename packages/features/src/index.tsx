@@ -60,6 +60,10 @@ import {
   readInputBoost,
 } from "./microphone-options.tsx";
 import { MicrophoneSetup } from "./microphone-setup.tsx";
+import {
+  createPreferenceWriter,
+  type PreferenceWriteState,
+} from "./preference-writes.ts";
 import { ProgressWrites } from "./progress-writes.ts";
 import { SoundCheck } from "./sound-check.tsx";
 import { useTuner } from "./tuner.ts";
@@ -92,21 +96,24 @@ export function PracticeApp({
   account?: ReactNode;
 }) {
   const queryClient = useQueryClient();
-  const [preferenceDraft, setPreferenceDraft] =
-    useState<StoredPreferences | null>(null);
-  const [preferenceError, setPreferenceError] = useState("");
+  const [preferenceState, setPreferenceState] = useState<PreferenceWriteState>({
+    values: initial.preferences.values,
+    status: "idle",
+    error: "",
+    dirty: false,
+  });
+  const [preferenceWriter] = useState(() =>
+    createPreferenceWriter(gateway, initial.preferences, setPreferenceState),
+  );
+  useEffect(() => () => preferenceWriter.dispose(), [preferenceWriter]);
   const library = useQuery({
     queryKey: ["library"],
     queryFn: gateway.library,
     initialData: initial.songs,
   });
-  const preferences = useQuery({
-    queryKey: ["preferences"],
-    queryFn: gateway.preferences,
-    initialData: initial.preferences,
-    enabled: preferenceDraft === null,
-  });
-  const prefs = (preferenceDraft ?? preferences.data).values;
+  const prefs = preferenceState.values;
+  const preferenceError =
+    preferenceState.status === "error" ? preferenceState.error : "";
   const [stepDirection, setStepDirection] = useState(1);
   const [tabDirection, setTabDirection] = useState(1);
   const [panel, setPanel] = useState<Panel | null>(null);
@@ -190,37 +197,7 @@ export function PracticeApp({
     chord.voicings[0];
   const listening =
     session.status === "listening" || session.status === "transitioning";
-  const preferenceMutation = useMutation({
-    scope: { id: "preferences" },
-    // Attempt once even offline, so failed changes have an explicit retry path.
-    networkMode: "always",
-    retry: false,
-    onMutate: async (values: StoredPreferences) => {
-      setPreferenceDraft(values);
-      await queryClient.cancelQueries({ queryKey: ["preferences"] });
-    },
-    mutationFn: (input: StoredPreferences) => gateway.savePreferences(input),
-    onSuccess: (next, values) => {
-      queryClient.setQueryData(["preferences"], next);
-      setPreferenceDraft((draft) => (draft === values ? null : draft));
-      setPreferenceError("");
-    },
-    onError: (error: Error) => setPreferenceError(error.message),
-  });
-  const restorePreferences = useMutation({
-    scope: { id: "preferences" },
-    networkMode: "always",
-    retry: false,
-    mutationFn: (_discarded: StoredPreferences) => gateway.preferences(),
-    onSuccess: (next, discarded) => {
-      queryClient.setQueryData(["preferences"], next);
-      setPreferenceDraft((draft) => (draft === discarded ? null : draft));
-      setPreferenceError("");
-    },
-    onError: (error: Error) => setPreferenceError(error.message),
-  });
-  const preferenceBusy =
-    preferenceMutation.isPending || restorePreferences.isPending;
+  const preferenceBusy = preferenceState.status === "saving";
   const saveMutation = useMutation({
     mutationFn: () =>
       gateway.saveSong({
@@ -432,10 +409,8 @@ export function PracticeApp({
       if (request !== selecting.current) return;
       positions.current.set(song.id, position?.revision ?? 0);
       controller.replace(song, position?.index ?? 0);
-      await preferenceMutation.mutateAsync({
-        values: { ...prefs, lastSongId: song.id },
-        revision: (preferenceDraft ?? preferences.data).revision,
-      });
+      if (!(await preferenceWriter.update({ lastSongId: song.id })))
+        throw new Error(preferenceWriter.getState().error);
       setPanel(null);
     } catch (error) {
       setFormError(
@@ -464,10 +439,7 @@ export function PracticeApp({
     name: K,
     value: Preferences[K],
   ) {
-    preferenceMutation.mutate({
-      values: { ...prefs, [name]: value },
-      revision: (preferenceDraft ?? preferences.data).revision,
-    });
+    void preferenceWriter.update({ [name]: value });
   }
   function changeBoost(value: number) {
     controller.pause();
@@ -505,13 +477,12 @@ export function PracticeApp({
     try {
       const contents = await file.text();
       if (archive) {
-        if (preferenceDraft)
+        if (preferenceState.dirty)
           throw new Error("Save your settings before restoring an archive.");
         await gateway.importData(JSON.parse(contents));
-        await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ["library"] }),
-          queryClient.invalidateQueries({ queryKey: ["preferences"] }),
-        ]);
+        await queryClient.invalidateQueries({ queryKey: ["library"] });
+        if (!(await preferenceWriter.discard()))
+          throw new Error(preferenceWriter.getState().error);
         setFormError("");
       } else {
         setChart(contents);
@@ -738,9 +709,7 @@ export function PracticeApp({
           <IconButton
             label="Retry saving settings"
             disabled={preferenceBusy}
-            onClick={() =>
-              preferenceDraft && preferenceMutation.mutate(preferenceDraft)
-            }
+            onClick={() => void preferenceWriter.retry()}
           >
             <RotateCcw />
           </IconButton>
@@ -1179,18 +1148,14 @@ export function PracticeApp({
               <p>Settings haven’t saved. Your changes still apply here.</p>
               <Button
                 disabled={preferenceBusy}
-                onClick={() =>
-                  preferenceDraft && preferenceMutation.mutate(preferenceDraft)
-                }
+                onClick={() => void preferenceWriter.retry()}
               >
                 <RotateCcw />
                 Retry saving settings
               </Button>
               <Button
                 disabled={preferenceBusy}
-                onClick={() =>
-                  preferenceDraft && restorePreferences.mutate(preferenceDraft)
-                }
+                onClick={() => void preferenceWriter.discard()}
               >
                 Use saved settings
               </Button>
