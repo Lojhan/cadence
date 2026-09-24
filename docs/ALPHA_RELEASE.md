@@ -1,11 +1,12 @@
-Cadence 0.1.0-alpha.16 is an MIT-licensed preview for self-hosting and integration.
+Cadence 0.1.0-alpha.17 is an MIT-licensed preview for self-hosting and integration.
 It includes the responsive tuner, local Rust/WASM recognition,
 SQLite/PostgreSQL persistence, and container backup tools.
 
-Changes since alpha.15:
+Changes since alpha.16:
 
-- The public interface now uses Tailwind utilities for its components, responsive layouts, motion, and light/dark theme tokens instead of authored selector stylesheets.
-- The shared microphone switch uses balanced spacing around its options chevron on practice and tuning while retaining the full-size options touch target.
+- The practice modal and guitar tuner now share rounded, keyboard-accessible tabs built on Radix primitives.
+- Practice settings place selects below their labels on narrow screens and beside them on desktop.
+- The practice modal uses an overlay scrollbar that fades after scrolling without reducing content width.
 
 Per-input microphone boost can help quiet capture, but it also amplifies noise.
 The tuner and sound-check synthetic tests do not prove real-guitar accuracy or
@@ -30,7 +31,7 @@ version, and required migration hashes for both databases. Companion dependencie
 to this release. Container images are tested on native AMD64 and ARM64 runners
 before their shared manifest is published.
 
-No database schema migrations were added since alpha.15. Back up before upgrading.
+No database schema migrations were added since alpha.16. Back up before upgrading.
 Alpha.1 cannot import full version 2 archives; individual-song exports remain
 version 1. See [portability](https://github.com/Lojhan/cadence/blob/main/docs/PORTABILITY.md)
 and [operations](https://github.com/Lojhan/cadence/blob/main/docs/OPERATIONS.md).
