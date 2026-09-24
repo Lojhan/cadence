@@ -10,6 +10,7 @@ Changes since alpha.17:
 - Shared songs are stored once for all users. Personal songs and practice
   positions remain user-specific. A revised shared chart updates its global
   row and resets positions that refer to the earlier chord sequence.
+- Unchanged catalog releases now skip song writes during user provisioning.
 - `pnpm catalog:prepare` validates reviewed charts before generating the
   public catalog. Eighty-two candidate titles remain unimported.
 

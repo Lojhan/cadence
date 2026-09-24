@@ -59,6 +59,13 @@ export function repository(query: Query): Repository {
       );
     },
     async seedCatalog(songs) {
+      const hash = createHash("sha256")
+        .update(JSON.stringify(songs))
+        .digest("hex");
+      const [release] = await query(
+        sql`SELECT hash FROM catalog_releases WHERE version = '1'`,
+      );
+      if (release?.hash === hash) return;
       for (const song of songs) {
         const inserted = await query(
           sql`INSERT INTO songs (id, owner_id, catalog, title, attribution, revision, source_chart) VALUES (${song.id}, NULL, 1, ${song.title}, ${song.attribution}, ${song.revision}, ${song.sourceChart ?? song.chords.join(" ")}) ON CONFLICT (id) DO NOTHING RETURNING id`,
@@ -77,9 +84,6 @@ export function repository(query: Query): Repository {
           );
         }
       }
-      const hash = createHash("sha256")
-        .update(JSON.stringify(songs))
-        .digest("hex");
       await query(
         sql`INSERT INTO catalog_releases (version, hash) VALUES ('1', ${hash}) ON CONFLICT (version) DO UPDATE SET hash = ${hash} RETURNING version`,
       );

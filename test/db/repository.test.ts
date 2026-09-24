@@ -1,6 +1,8 @@
+import { createHash } from "node:crypto";
 import { strict as assert } from "poku";
 import { createApplication } from "../../packages/application/src/index.ts";
 import { openPostgres } from "../../packages/db/src/postgres/index.ts";
+import { repository } from "../../packages/db/src/repository.ts";
 import { openSqlite } from "../../packages/db/src/sqlite/index.ts";
 
 const store = process.env.CADENCE_TEST_DATABASE_URL
@@ -27,6 +29,23 @@ try {
     catalog: true,
     revision: 1,
   };
+  let catalogQueries = 0;
+  const cachedCatalog = repository(async () => {
+    catalogQueries++;
+    return [
+      {
+        hash: createHash("sha256")
+          .update(JSON.stringify([shared]))
+          .digest("hex"),
+      },
+    ];
+  });
+  await cachedCatalog.seedCatalog([shared]);
+  assert.equal(
+    catalogQueries,
+    1,
+    "an unchanged catalog avoids song writes on every hosted request",
+  );
   await store.transaction((repo) => repo.seedCatalog([shared]));
   assert.deepEqual(
     (await app.library(bob)).find((item) => item.id === shared.id)?.chords,
