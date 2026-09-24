@@ -97,6 +97,7 @@ const open: Record<string, [number[], number[]]> = {
   ],
 };
 
+import { curatedSongs } from "./catalog-curated.js";
 import {
   adaptVoicingForTuning,
   getTuningPreset,
@@ -312,4 +313,5 @@ export const defaultSongs: readonly Song[] = [
     catalog: true,
     tuning: "standard",
   },
+  ...curatedSongs,
 ];

@@ -63,10 +63,25 @@ export function repository(query: Query): Repository {
         const inserted = await query(
           sql`INSERT INTO songs (id, owner_id, catalog, title, attribution, revision, source_chart) VALUES (${song.id}, NULL, 1, ${song.title}, ${song.attribution}, ${song.revision}, ${song.sourceChart ?? song.chords.join(" ")}) ON CONFLICT (id) DO NOTHING RETURNING id`,
         );
-        if (inserted.length) await events(song);
+        if (inserted.length) {
+          await events(song);
+          continue;
+        }
+        const updated = await query(
+          sql`UPDATE songs SET title = ${song.title}, attribution = ${song.attribution}, revision = ${song.revision}, source_chart = ${song.sourceChart ?? song.chords.join(" ")} WHERE id = ${song.id} AND catalog = 1 AND revision < ${song.revision} RETURNING id`,
+        );
+        if (updated.length) {
+          await events(song);
+          await query(
+            sql`DELETE FROM practice_positions WHERE song_id = ${song.id} RETURNING song_id`,
+          );
+        }
       }
+      const hash = createHash("sha256")
+        .update(JSON.stringify(songs))
+        .digest("hex");
       await query(
-        sql`INSERT INTO catalog_releases (version, hash) VALUES ('1', ${createHash("sha256").update(JSON.stringify(songs)).digest("hex")}) ON CONFLICT (version) DO NOTHING RETURNING version`,
+        sql`INSERT INTO catalog_releases (version, hash) VALUES ('1', ${hash}) ON CONFLICT (version) DO UPDATE SET hash = ${hash} RETURNING version`,
       );
     },
     async listSongs(userId) {

@@ -31,7 +31,8 @@
     "eval:wasm": "tsx tooling/evaluate-wasm.ts",
     "test:audio-parity": "poku test/evaluation/wasm-corpus.test.ts",
     "db:generate": "tsx tooling/generate.ts",
-    "dev:wasm": "tsx tooling/dev-wasm.ts"
+    "dev:wasm": "tsx tooling/dev-wasm.ts",
+    "catalog:prepare": "tsx tooling/prepare-catalog.ts"
   },
   "devDependencies": {
     "@babel/parser": "7.29.9",

@@ -17,10 +17,51 @@ try {
   await app.provision(bob);
   const initial = await app.library(alice);
   assert.ok(initial.length >= 4);
+  const shared = {
+    id: "catalog:test-shared",
+    title: "Shared practice",
+    attribution: "Cadence test",
+    chords: ["C", "G"],
+    sourceChart: "C G",
+    tuning: "standard",
+    catalog: true,
+    revision: 1,
+  };
+  await store.transaction((repo) => repo.seedCatalog([shared]));
+  assert.deepEqual(
+    (await app.library(bob)).find((item) => item.id === shared.id)?.chords,
+    ["C", "G"],
+    "one catalog entry is visible to every user",
+  );
+  await app.savePosition(alice, {
+    songId: shared.id,
+    songRevision: 1,
+    index: 1,
+    completed: false,
+    revision: 0,
+  });
+  await store.transaction((repo) =>
+    repo.seedCatalog([
+      { ...shared, chords: ["Am", "F"], sourceChart: "Am F", revision: 2 },
+    ]),
+  );
+  assert.deepEqual(
+    (await app.library(alice)).find((item) => item.id === shared.id)?.chords,
+    ["Am", "F"],
+    "a new catalog revision updates the shared entry",
+  );
+  assert.equal(await app.position(alice, shared.id), null);
+  await app.savePosition(alice, {
+    songId: shared.id,
+    songRevision: 2,
+    index: 0,
+    completed: false,
+    revision: 0,
+  });
   await app.provision(alice);
   assert.equal(
     (await app.library(alice)).length,
-    initial.length,
+    initial.length + 1,
     "catalog seed is idempotent",
   );
   const song = await app.saveSong(alice, {
