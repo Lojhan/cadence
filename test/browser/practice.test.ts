@@ -377,6 +377,97 @@ try {
     );
     await page.getByRole("button", { name: "Microphone options" }).click();
   }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole("button", { name: "Open settings" }).click();
+  await page.getByRole("tab", { name: "Setup" }).click();
+  await page.keyboard.press("ArrowRight");
+  await page.waitForFunction(() =>
+    document
+      .querySelector('[role="tab"][data-state="active"]')
+      ?.textContent?.includes("Account"),
+  );
+  assert.equal(
+    await page
+      .getByRole("tab", { name: "Account" })
+      .getAttribute("aria-selected"),
+    "true",
+    "arrow keys switch modal tabs",
+  );
+  await page.keyboard.press("ArrowLeft");
+  await page.waitForFunction(() =>
+    document
+      .querySelector('[role="tab"][data-state="active"]')
+      ?.textContent?.includes("Setup"),
+  );
+  const mobilePreferenceLayout = await page.evaluate(() => {
+    const select = document.querySelector<HTMLSelectElement>(
+      'select[aria-label="Guitar tuning"]',
+    );
+    const row = select?.closest(".row");
+    const label = row?.querySelector("strong");
+    if (!select || !row || !label) throw new Error("Tuning row missing");
+    return {
+      label: label.getBoundingClientRect().toJSON(),
+      select: select.getBoundingClientRect().toJSON(),
+      row: row.getBoundingClientRect().toJSON(),
+    };
+  });
+  assert.ok(
+    mobilePreferenceLayout.select.top >= mobilePreferenceLayout.label.bottom &&
+      mobilePreferenceLayout.select.width >=
+        mobilePreferenceLayout.row.width - 2,
+    "mobile preference select sits below its label and fills the row",
+  );
+  const scrollViewport = page.locator('[data-slot="scroll-area-viewport"]');
+  const scrollThumb = page.locator('[data-slot="scroll-area-thumb"]');
+  assert.ok(
+    (await scrollViewport.evaluate((element) => element.clientHeight)) >= 250,
+    "settings panel has usable height on a phone",
+  );
+  assert.equal(
+    await scrollViewport.evaluate(
+      (element) => getComputedStyle(element).scrollbarWidth,
+    ),
+    "none",
+    "the native scrollbar does not reserve space",
+  );
+  await scrollViewport.evaluate((element) => {
+    element.scrollTop = 300;
+  });
+  await page.waitForFunction(
+    () =>
+      document
+        .querySelector('[data-slot="scroll-area-thumb"]')
+        ?.getAttribute("data-visible") === "true",
+  );
+  assert.ok(
+    await scrollThumb.isVisible(),
+    "overlay thumb appears while scrolling",
+  );
+  await page.waitForFunction(
+    () =>
+      document
+        .querySelector('[data-slot="scroll-area-thumb"]')
+        ?.getAttribute("data-visible") === "false",
+  );
+  await page.setViewportSize({ width: 1024, height: 768 });
+  const desktopPreferenceLayout = await page.evaluate(() => {
+    const select = document.querySelector<HTMLSelectElement>(
+      'select[aria-label="Guitar tuning"]',
+    );
+    const label = select?.closest(".row")?.querySelector("strong");
+    if (!select || !label) throw new Error("Tuning row missing");
+    return {
+      label: label.getBoundingClientRect().toJSON(),
+      select: select.getBoundingClientRect().toJSON(),
+    };
+  });
+  assert.ok(
+    desktopPreferenceLayout.select.left >= desktopPreferenceLayout.label.right,
+    "desktop preference select sits to the right of its label",
+  );
+  await page.getByRole("button", { name: "Close", exact: true }).click();
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole("button", { name: "Open settings" }).click();
   await page.getByRole("combobox", { name: "Handedness" }).selectOption("left");
   await page.waitForFunction(() =>
@@ -534,7 +625,7 @@ try {
     0,
   );
   await page.getByRole("button", { name: "Open music library" }).click();
-  await page.getByRole("button", { name: "Import", exact: true }).click();
+  await page.getByRole("tab", { name: "Import", exact: true }).click();
   await page.getByLabel("Song title", { exact: true }).fill("Browser exercise");
   await page.getByLabel("Chord chart", { exact: true }).fill("Em Am C G");
   for (const theme of ["light", "dark"]) {
@@ -797,7 +888,7 @@ try {
     .selectOption("right");
   await page.getByRole("button", { name: "Close", exact: true }).click();
   await page.getByRole("button", { name: "Open music library" }).click();
-  await page.getByRole("button", { name: "Import", exact: true }).click();
+  await page.getByRole("tab", { name: "Import", exact: true }).click();
   await page.getByLabel("Song title", { exact: true }).fill("Layout exercise");
   await page
     .getByLabel("Chord chart", { exact: true })
@@ -960,7 +1051,7 @@ try {
       ).cadenceTestInputScale = 0.01;
     });
     await page.getByRole("button", { name: "Open music library" }).click();
-    await page.getByRole("button", { name: "Import", exact: true }).click();
+    await page.getByRole("tab", { name: "Import", exact: true }).click();
     await page
       .getByLabel("Song title", { exact: true })
       .fill("Quiet input exercise");

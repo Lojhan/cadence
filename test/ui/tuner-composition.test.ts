@@ -53,6 +53,9 @@ const stringsMarkup = renderToStaticMarkup(
   createElement(TunerExperience, base),
 );
 assert.ok(stringsMarkup.includes('aria-label="String by string tuner"'));
+assert.ok(stringsMarkup.includes('role="tablist"'));
+assert.ok(stringsMarkup.includes('aria-label="Tuner mode"'));
+assert.ok(stringsMarkup.includes('role="tabpanel"'));
 assert.equal(
   (stringsMarkup.match(/aria-label="Select [A-G][#♯]?\d string"/g) ?? [])
     .length,
@@ -132,6 +135,7 @@ const chromaticMarkup = renderToStaticMarkup(
   }),
 );
 assert.ok(chromaticMarkup.includes('aria-label="Chromatic tuner"'));
+assert.ok(chromaticMarkup.includes('aria-selected="true"'));
 assert.ok(chromaticMarkup.includes("A♯"));
 assert.ok(chromaticMarkup.includes("G♯"));
 const silentChromatic = renderToStaticMarkup(

@@ -7,9 +7,9 @@ import {
   DockMenuItem,
   MicrophoneDockControls,
 } from "./control-dock.tsx";
-import { SegmentedControl } from "./form-primitives.tsx";
 import type { TunerPresetInfo, TunerStringInfo } from "./index.tsx";
 import { IconButton } from "./primitives.tsx";
+import { Tabs, TabsContent } from "./tabs.tsx";
 
 export type TunerMode = "strings" | "chromatic";
 
@@ -45,28 +45,6 @@ export interface TunerExperienceProps {
   onInputBoostChange?: (boostDb: number) => void;
   saveStatus?: string;
   error?: string | null;
-}
-
-export function TunerModeSwitch({
-  mode,
-  onChange,
-}: {
-  mode: TunerMode;
-  onChange: (mode: TunerMode) => void;
-}) {
-  return (
-    <SegmentedControl
-      className="tuner-mode-switch mt-4 justify-self-center rounded-full bg-secondary p-1 [&_button]:min-h-11 [&_button]:min-w-[124px] [&_button]:rounded-full [&_button]:border-0 [&_button]:px-3 [&_button]:py-0 [&_button]:text-[13px] [&_button]:font-semibold [&_button]:whitespace-nowrap"
-      activeClassName="bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
-      label="Tuner mode"
-      value={mode}
-      options={[
-        { value: "strings", label: "String by string" },
-        { value: "chromatic", label: "Chromatic" },
-      ]}
-      onChange={(value) => onChange(value as TunerMode)}
-    />
-  );
 }
 
 export function TunerNote({ note }: { note: string }) {
@@ -432,103 +410,118 @@ export function TunerExperience(props: TunerExperienceProps) {
           </IconButton>
         </div>
       </header>
-      <TunerModeSwitch mode={props.mode} onChange={props.onModeChange} />
-      <main className="tuner-experience-stage grid min-h-0 w-full place-items-center">
-        {props.mode === "strings" ? (
-          <section
-            className="tuner-experience-view tuner-strings-view flex h-full min-h-0 w-[min(100%,1140px)] flex-col pt-[clamp(16px,3vh,34px)] min-[700px]:items-center min-[700px]:gap-[clamp(16px,2vh,28px)] min-[700px]:px-[max(12px,3vw)] min-[700px]:pt-0 min-[1000px]:flex-row min-[1000px]:gap-[clamp(35px,6vw,100px)] short-phone:pt-[9px]"
-            aria-label="String by string tuner"
-          >
-            <div className="tuner-experience-intro flex-none text-center min-[700px]:w-full min-[1000px]:w-[clamp(230px,25%,360px)] min-[1000px]:text-left">
-              <div className="tuner-target-note mt-[5px] font-[Georgia,serif] text-[76px] leading-[0.95] tracking-[-0.065em] min-[700px]:text-[clamp(76px,10vw,140px)] short-phone:text-[58px]">
-                <TunerNote note={selected.note} />
-              </div>
-              <p className="tuner-instruction mt-[11px] text-[15px] text-muted-foreground">
-                {props.detectedHz
-                  ? `${props.detectedHz.toFixed(1)} Hz`
-                  : "Play the selected string"}
-              </p>
-              {props.onAutoDetectStringChange && (
-                <button
-                  type="button"
-                  className="tuner-auto-button mt-[7px] cursor-pointer rounded-full border border-border bg-secondary px-2.5 py-[3px] text-xs text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary aria-pressed:text-primary"
-                  aria-pressed={!!props.autoDetectString}
-                  onClick={() =>
-                    props.onAutoDetectStringChange?.(!props.autoDetectString)
-                  }
-                >
-                  Auto-select string {props.autoDetectString ? "on" : "off"}
-                </button>
-              )}
-              <div className="tuner-readout mt-3 grid grid-rows-[19px_21px] gap-1.5 [&_.tuner-cents-live]:m-0 [&_[data-empty=true]]:invisible">
-                <p
-                  className="tuner-cents-live mt-3 text-sm font-semibold text-primary tabular-nums data-[empty=true]:invisible"
-                  data-empty={props.cents === null}
-                >
-                  {props.cents === null
-                    ? "\u00a0"
-                    : `${props.cents > 0 ? "+" : ""}${Math.round(props.cents)}¢`}
-                </p>
-                <p
-                  className="tuner-direction text-[15px] font-bold text-primary data-[empty=true]:invisible"
-                  data-empty={!directionText}
-                  role="status"
-                >
-                  {directionText || "\u00a0"}
-                </p>
-              </div>
-              {props.onPlayReference && (
-                <IconButton
-                  className="tuner-reference-button mt-3 inline-grid size-11 place-items-center rounded-full border-0 bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground [&_svg]:size-5"
-                  label={`Play reference pitch ${selected.note}`}
-                  aria-pressed={!!props.playingReference}
-                  onClick={props.onPlayReference}
-                >
-                  <Volume2 aria-hidden="true" />
-                </IconButton>
-              )}
-            </div>
-            <TunerStringBoard
-              strings={props.strings}
-              selectedStringIndex={props.selectedStringIndex}
-              onSelectString={props.onSelectString}
-              pluck={pluck}
-            />
-          </section>
-        ) : (
-          <section
-            className="tuner-experience-view tuner-chromatic-view flex h-full min-h-0 w-[min(100%,1140px)] flex-col items-center pt-[clamp(22px,5vh,60px)] min-[700px]:w-[min(100%,980px)] min-[700px]:flex-row min-[700px]:gap-[60px] min-[700px]:p-0 short-phone:pt-2.5"
-            aria-label="Chromatic tuner"
-          >
-            <div className="tuner-chromatic-heading flex-none text-center min-[700px]:w-[30%] min-[700px]:text-left [&_.tuner-target-note]:mt-2.5 [&_.tuner-instruction]:mt-3">
-              <div className="tuner-target-note mt-[5px] font-[Georgia,serif] text-[76px] leading-[0.95] tracking-[-0.065em] min-[700px]:text-[clamp(76px,10vw,140px)] short-phone:text-[58px]">
-                {displayNote ? (
-                  <TunerNote note={displayNote} />
-                ) : (
-                  <span>—</span>
-                )}
-              </div>
-              <p className="tuner-instruction mt-[11px] text-[15px] text-muted-foreground">
-                {props.detectedHz
-                  ? `${props.detectedHz.toFixed(1)} Hz`
-                  : "Play any string"}
-              </p>
-              <p
-                className="tuner-cents-live mt-3 text-sm font-semibold text-primary tabular-nums data-[empty=true]:invisible"
-                data-empty={chromaticCents === null}
+      <Tabs
+        label="Tuner mode"
+        value={props.mode}
+        options={[
+          { value: "strings", label: "String by string" },
+          { value: "chromatic", label: "Chromatic" },
+        ]}
+        onChange={(value) => props.onModeChange(value as TunerMode)}
+        className="contents"
+        listClassName="tuner-mode-switch mt-4 justify-self-center [&_[data-slot=tabs-trigger]]:min-w-[124px]"
+      >
+        <TabsContent value={props.mode} asChild>
+          <main className="tuner-experience-stage grid min-h-0 w-full place-items-center">
+            {props.mode === "strings" ? (
+              <section
+                className="tuner-experience-view tuner-strings-view flex h-full min-h-0 w-[min(100%,1140px)] flex-col pt-[clamp(16px,3vh,34px)] min-[700px]:items-center min-[700px]:gap-[clamp(16px,2vh,28px)] min-[700px]:px-[max(12px,3vw)] min-[700px]:pt-0 min-[1000px]:flex-row min-[1000px]:gap-[clamp(35px,6vw,100px)] short-phone:pt-[9px]"
+                aria-label="String by string tuner"
               >
-                {chromaticCents === null
-                  ? "\u00a0"
-                  : `${chromaticCents > 0 ? "+" : ""}${Math.round(chromaticCents)}¢`}
-              </p>
-            </div>
-            <TunerChromaticGauge
-              cents={chromaticCents}
-              note={displayNote ?? ""}
-            />
-          </section>
-        )}
-      </main>
+                <div className="tuner-experience-intro flex-none text-center min-[700px]:w-full min-[1000px]:w-[clamp(230px,25%,360px)] min-[1000px]:text-left">
+                  <div className="tuner-target-note mt-[5px] font-[Georgia,serif] text-[76px] leading-[0.95] tracking-[-0.065em] min-[700px]:text-[clamp(76px,10vw,140px)] short-phone:text-[58px]">
+                    <TunerNote note={selected.note} />
+                  </div>
+                  <p className="tuner-instruction mt-[11px] text-[15px] text-muted-foreground">
+                    {props.detectedHz
+                      ? `${props.detectedHz.toFixed(1)} Hz`
+                      : "Play the selected string"}
+                  </p>
+                  {props.onAutoDetectStringChange && (
+                    <button
+                      type="button"
+                      className="tuner-auto-button mt-[7px] cursor-pointer rounded-full border border-border bg-secondary px-2.5 py-[3px] text-xs text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary aria-pressed:text-primary"
+                      aria-pressed={!!props.autoDetectString}
+                      onClick={() =>
+                        props.onAutoDetectStringChange?.(
+                          !props.autoDetectString,
+                        )
+                      }
+                    >
+                      Auto-select string {props.autoDetectString ? "on" : "off"}
+                    </button>
+                  )}
+                  <div className="tuner-readout mt-3 grid grid-rows-[19px_21px] gap-1.5 [&_.tuner-cents-live]:m-0 [&_[data-empty=true]]:invisible">
+                    <p
+                      className="tuner-cents-live mt-3 text-sm font-semibold text-primary tabular-nums data-[empty=true]:invisible"
+                      data-empty={props.cents === null}
+                    >
+                      {props.cents === null
+                        ? "\u00a0"
+                        : `${props.cents > 0 ? "+" : ""}${Math.round(props.cents)}¢`}
+                    </p>
+                    <p
+                      className="tuner-direction text-[15px] font-bold text-primary data-[empty=true]:invisible"
+                      data-empty={!directionText}
+                      role="status"
+                    >
+                      {directionText || "\u00a0"}
+                    </p>
+                  </div>
+                  {props.onPlayReference && (
+                    <IconButton
+                      className="tuner-reference-button mt-3 inline-grid size-11 place-items-center rounded-full border-0 bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground [&_svg]:size-5"
+                      label={`Play reference pitch ${selected.note}`}
+                      aria-pressed={!!props.playingReference}
+                      onClick={props.onPlayReference}
+                    >
+                      <Volume2 aria-hidden="true" />
+                    </IconButton>
+                  )}
+                </div>
+                <TunerStringBoard
+                  strings={props.strings}
+                  selectedStringIndex={props.selectedStringIndex}
+                  onSelectString={props.onSelectString}
+                  pluck={pluck}
+                />
+              </section>
+            ) : (
+              <section
+                className="tuner-experience-view tuner-chromatic-view flex h-full min-h-0 w-[min(100%,1140px)] flex-col items-center pt-[clamp(22px,5vh,60px)] min-[700px]:w-[min(100%,980px)] min-[700px]:flex-row min-[700px]:gap-[60px] min-[700px]:p-0 short-phone:pt-2.5"
+                aria-label="Chromatic tuner"
+              >
+                <div className="tuner-chromatic-heading flex-none text-center min-[700px]:w-[30%] min-[700px]:text-left [&_.tuner-target-note]:mt-2.5 [&_.tuner-instruction]:mt-3">
+                  <div className="tuner-target-note mt-[5px] font-[Georgia,serif] text-[76px] leading-[0.95] tracking-[-0.065em] min-[700px]:text-[clamp(76px,10vw,140px)] short-phone:text-[58px]">
+                    {displayNote ? (
+                      <TunerNote note={displayNote} />
+                    ) : (
+                      <span>—</span>
+                    )}
+                  </div>
+                  <p className="tuner-instruction mt-[11px] text-[15px] text-muted-foreground">
+                    {props.detectedHz
+                      ? `${props.detectedHz.toFixed(1)} Hz`
+                      : "Play any string"}
+                  </p>
+                  <p
+                    className="tuner-cents-live mt-3 text-sm font-semibold text-primary tabular-nums data-[empty=true]:invisible"
+                    data-empty={chromaticCents === null}
+                  >
+                    {chromaticCents === null
+                      ? "\u00a0"
+                      : `${chromaticCents > 0 ? "+" : ""}${Math.round(chromaticCents)}¢`}
+                  </p>
+                </div>
+                <TunerChromaticGauge
+                  cents={chromaticCents}
+                  note={displayNote ?? ""}
+                />
+              </section>
+            )}
+          </main>
+        </TabsContent>
+      </Tabs>
       <footer className="tuner-experience-toolbar relative flex min-h-20 flex-col items-center justify-center">
         {(props.error ||
           (props.saveStatus &&

@@ -22,15 +22,12 @@ export {
 } from "./control-dock.tsx";
 export type {
   FieldProps,
-  SegmentedControlProps,
-  SegmentOption,
   SelectProps,
   SurfaceProps,
 } from "./form-primitives.tsx";
 export {
   Field,
   Input,
-  SegmentedControl,
   Select,
   Surface,
   Textarea,
@@ -46,6 +43,9 @@ export {
 } from "./overlays.tsx";
 export type { ButtonProps, IconButtonProps } from "./primitives.tsx";
 export { Button, buttonVariants, IconButton } from "./primitives.tsx";
+export { ScrollArea } from "./scroll-area.tsx";
+export type { TabOption, TabsProps } from "./tabs.tsx";
+export { Tabs, TabsContent } from "./tabs.tsx";
 export { themeClassName } from "./theme.ts";
 export type DiagramShape = {
   frets: readonly number[];
@@ -269,7 +269,6 @@ export {
   TunerExperience,
   type TunerExperienceProps,
   type TunerMode,
-  TunerModeSwitch,
   TunerNote,
   TunerPresetMenu,
   TunerStringBoard,

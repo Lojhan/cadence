@@ -1,10 +1,5 @@
 import { ChevronDown } from "lucide-react";
-import type {
-  ComponentPropsWithRef,
-  ComponentType,
-  HTMLAttributes,
-  ReactNode,
-} from "react";
+import type { ComponentPropsWithRef, HTMLAttributes, ReactNode } from "react";
 import { cn } from "./lib/cn.ts";
 
 export interface FieldProps {
@@ -117,62 +112,6 @@ export function Select({
       </select>
       <ChevronDown aria-hidden="true" />
     </span>
-  );
-}
-
-export interface SegmentOption {
-  value: string;
-  label: string;
-  icon?: ComponentType<{ "aria-hidden"?: boolean }>;
-}
-
-export interface SegmentedControlProps {
-  label: string;
-  value: string;
-  options: readonly SegmentOption[];
-  onChange: (value: string) => void;
-  className?: string;
-  activeClassName?: string;
-}
-
-export function SegmentedControl({
-  label,
-  value,
-  options,
-  onChange,
-  className,
-  activeClassName = "bg-[var(--white)] text-foreground",
-}: SegmentedControlProps) {
-  return (
-    <nav
-      className={cn(
-        "cadence-segments flex shrink-0 gap-1 rounded-[17px] border border-border bg-background p-[5px]",
-        className,
-      )}
-      aria-label={label}
-      data-slot="segmented-control"
-    >
-      {options.map((option) => {
-        const Icon = option.icon;
-        return (
-          <button
-            key={option.value}
-            className={cn(
-              "inline-flex min-h-[46px] flex-1 items-center justify-center gap-[7px] rounded-xl border-0 bg-transparent px-2 py-2.5 text-xs text-muted-foreground transition-colors duration-200 hover:bg-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [&_svg]:size-[17px]",
-              option.value === value && activeClassName,
-            )}
-            type="button"
-            data-slot="segment"
-            aria-current={option.value === value ? "page" : undefined}
-            aria-pressed={option.value === value}
-            onClick={() => onChange(option.value)}
-          >
-            {Icon && <Icon aria-hidden={true} />}
-            {option.label}
-          </button>
-        );
-      })}
-    </nav>
   );
 }
 

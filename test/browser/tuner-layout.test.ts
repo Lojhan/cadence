@@ -142,7 +142,16 @@ try {
       viewport: { width: 390, height: 844 },
     });
     await phone.goto(`${origin}/tuning`);
-    await phone.getByRole("button", { name: "Chromatic" }).click();
+    await phone.getByRole("tab", { name: "Chromatic" }).click();
+    await phone.keyboard.press("ArrowLeft");
+    assert.equal(
+      await phone
+        .getByRole("tab", { name: "String by string" })
+        .getAttribute("aria-selected"),
+      "true",
+      "arrow keys switch tuner tabs",
+    );
+    await phone.keyboard.press("ArrowRight");
     const gauge = await phone.locator(".tuner-gauge-art").evaluate((svg) => {
       const ticks = [...svg.querySelectorAll(".tuner-gauge-tick")];
       const coordinates = ticks.flatMap((tick) => [

@@ -5,9 +5,10 @@ import {
   DialogBody,
   Field,
   Input,
-  SegmentedControl,
   Select,
   Surface,
+  Tabs,
+  TabsContent,
   Textarea,
 } from "../../packages/ui/src/index.tsx";
 
@@ -42,20 +43,29 @@ assert.ok(select.includes('data-slot="select"'));
 assert.ok(select.includes('aria-label="Tuning"'));
 assert.ok(select.includes('value="standard"'));
 
-const segmented = renderToStaticMarkup(
-  createElement(SegmentedControl, {
-    label: "Practice settings",
-    value: "library",
-    options: [
-      { value: "library", label: "Music" },
-      { value: "settings", label: "Setup" },
-    ],
-    onChange: () => {},
-  }),
+const tabs = renderToStaticMarkup(
+  createElement(
+    Tabs,
+    {
+      label: "Practice settings",
+      value: "library",
+      options: [
+        { value: "library", label: "Music" },
+        { value: "settings", label: "Setup" },
+      ],
+      onChange: () => {},
+    },
+    createElement(TabsContent, { value: "library" }, "Music library"),
+    createElement(TabsContent, { value: "settings" }, "Settings"),
+  ),
 );
-assert.ok(segmented.includes('aria-label="Practice settings"'));
-assert.ok(segmented.includes('aria-current="page"'));
-assert.equal((segmented.match(/data-slot="segment"/g) ?? []).length, 2);
+assert.ok(tabs.includes('role="tablist"'));
+assert.ok(tabs.includes('aria-label="Practice settings"'));
+assert.equal((tabs.match(/role="tab"/g) ?? []).length, 2);
+assert.ok(tabs.includes('aria-selected="true"'));
+assert.ok(tabs.includes('role="tabpanel"'));
+assert.ok(tabs.includes("Music library"));
+assert.ok(!tabs.includes('aria-pressed="true"'));
 
 const surface = renderToStaticMarkup(
   createElement(Surface, { as: "section" }, "Content"),
