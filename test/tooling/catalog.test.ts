@@ -66,8 +66,37 @@ assert.equal(buildCatalog(fullList, new Map()).pending.length, 100);
 const imported = defaultSongs.filter((song) =>
   song.id.startsWith("catalog:starter:"),
 );
-assert.ok(imported.length >= 18);
+assert.equal(imported.length, 51);
 assert.equal(new Set(imported.map((song) => song.id)).size, imported.length);
+const importedReview = JSON.parse(
+  readFileSync(
+    new URL("../../docs/catalog/imported-review.json", import.meta.url),
+    "utf8",
+  ),
+) as { rank: number; source_url: string; chord_count: number }[];
+const pendingReview = JSON.parse(
+  readFileSync(
+    new URL("../../docs/catalog/pending-review.json", import.meta.url),
+    "utf8",
+  ),
+) as { rank: number; reason: string }[];
+assert.deepEqual(
+  importedReview.map(({ rank }) => rank),
+  imported.map((song) => Number(song.id.slice(-3))),
+);
+assert.deepEqual(
+  pendingReview.map(({ rank }) => rank),
+  fullList.filter(({ attribution }) => !attribution).map(({ rank }) => rank),
+);
+assert.equal(importedReview.length + pendingReview.length, 100);
+for (const review of importedReview) {
+  assert.ok(review.source_url.startsWith("https://"));
+  const song = imported.find((item) =>
+    item.id.endsWith(String(review.rank).padStart(3, "0")),
+  );
+  assert.equal(review.chord_count, song?.chords.length);
+}
+for (const review of pendingReview) assert.ok(review.reason.length > 20);
 for (const song of imported) {
   assert.equal(song.catalog, true);
   assert.ok(song.attribution.trim());

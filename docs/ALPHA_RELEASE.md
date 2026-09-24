@@ -1,23 +1,19 @@
-Cadence 0.1.0-alpha.18 is an MIT-licensed preview for self-hosting and integration.
+Cadence 0.1.0-alpha.19 is an MIT-licensed preview for self-hosting and integration.
 It includes the responsive tuner, local Rust/WASM recognition,
 SQLite/PostgreSQL persistence, and container backup tools.
 
-Changes since alpha.17:
+Changes since alpha.18:
 
-- Eighteen chord-only songs join the shared starter catalog. Their source pages,
-  composition attributions, and guitar-key transpositions are recorded in
+- Thirty-three additional chord-only songs join the shared starter catalog,
+  bringing it to 51. Source and transcription reviews are recorded in
   `docs/catalog/imported-review.json`.
-- Shared songs are stored once for all users. Personal songs and practice
-  positions remain user-specific. A revised shared chart updates its global
-  row and resets positions that refer to the earlier chord sequence.
-- Unchanged catalog releases now skip song writes during user provisioning.
-- `pnpm catalog:prepare` validates reviewed charts before generating the
-  public catalog. Eighty-two candidate titles remain unimported.
+- The other 49 candidates and their outstanding source or rights checks are
+  recorded in `docs/catalog/pending-review.json`.
 
-The charts were transcribed from traditional harmonizations in the Public
-Domain Song Anthology, whose new material is CC0. The anthology identifies
-the underlying versions as public domain in the United States. The charts
-contain no lyrics, melody notation, or recordings. Physical guitar playthrough
+The new charts use the CC0 Public Domain Song Anthology and the CC0
+Public Domain Christmas Songs ChordPro collection. Source maintainers identify
+the underlying versions as public domain. The charts contain no lyrics,
+melody notation, or recordings. Physical guitar playthrough
 and country-specific rights review remain advisable before promoting this
 starter catalog beyond the current alpha audience.
 
@@ -44,7 +40,7 @@ version, and required migration hashes for both databases. Companion dependencie
 to this release. Container images are tested on native AMD64 and ARM64 runners
 before their shared manifest is published.
 
-No database schema migrations were added since alpha.17. Back up before upgrading.
+No database schema migrations were added since alpha.18. Back up before upgrading.
 Alpha.1 cannot import full version 2 archives; individual-song exports remain
 version 1. See [portability](https://github.com/Lojhan/cadence/blob/main/docs/PORTABILITY.md)
 and [operations](https://github.com/Lojhan/cadence/blob/main/docs/OPERATIONS.md).
