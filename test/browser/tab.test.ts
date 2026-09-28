@@ -249,6 +249,44 @@ E|--3--------------|`);
         landscapeTab.y + landscapeTab.height,
       "all six string rows fit in the landscape tab viewport",
     );
+    assert.ok(
+      landscapeTab.x >= 16 && landscapeTab.x + landscapeTab.width <= 844 - 16,
+      "a landscape device without a notch keeps normal edge spacing",
+    );
+    const device = await mobilePage.context().newCDPSession(mobilePage);
+    const notchDirections: [number, number][] = [
+      [59, 0],
+      [0, 59],
+    ];
+    for (const [left, right] of notchDirections) {
+      await device.send("Emulation.setSafeAreaInsetsOverride", {
+        insets: { top: 0, right, bottom: 0, left },
+      });
+      const safeTab = await mobilePage
+        .getByRole("region", { name: "Guitar tablature" })
+        .boundingBox();
+      const safeLabels = await mobilePage
+        .locator("[data-tab-labels]")
+        .boundingBox();
+      if (!safeTab || !safeLabels)
+        throw new Error("Landscape safe-area bounds are unavailable");
+      assert.ok(
+        safeTab.x >= Math.max(16, left) &&
+          safeTab.x + safeTab.width <= 844 - Math.max(16, right),
+        "landscape score stays within both device safe areas",
+      );
+      assert.ok(
+        safeLabels.x >= left,
+        "fixed string labels clear the device notch",
+      );
+      if (screenshotDirectory)
+        await mobilePage.screenshot({
+          path: join(
+            screenshotDirectory,
+            left ? "landscape-safe-left.png" : "landscape-safe-right.png",
+          ),
+        });
+    }
     await mobilePage.close();
   }
 } finally {

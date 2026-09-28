@@ -1,13 +1,12 @@
-Cadence 0.1.0-alpha.22 is an MIT-licensed preview for self-hosting and integration.
+Cadence 0.1.0-alpha.23 is an MIT-licensed preview for self-hosting and integration.
 
-Changes since alpha.21:
+Changes since alpha.22:
 
-- The fixed string labels no longer paint a flat color over the app's radial
-  background. The scrolling score fades out beneath them in both themes.
-- Short landscape viewports fit and center all six strings, chord labels, and
-  rhythm cues. The continuous horizontal score and audio-driven scroll remain.
-- Catalog data, recognition behavior, saved charts, and database schema are
-  unchanged from alpha.21.
+- Landscape tablature respects the device's left and right CSS safe-area
+  insets. String labels and notes clear an iPhone notch in either orientation.
+  Devices without side insets retain the ordinary 16px edge spacing.
+- The score, catalog data, recognition behavior, saved charts, and database
+  schema are unchanged from alpha.22.
 
 Recognition remains **experimental**. Synthetic tab tests, including the
 G–D–Am–C exercise, do not establish accuracy on a live guitar or mobile device.
