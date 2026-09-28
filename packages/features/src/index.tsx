@@ -184,7 +184,7 @@ export function PracticeApp({
     if (initial.position) instance.replace(firstSong, initial.position.index);
     return instance;
   });
-  const { session, busy, error } = useSyncExternalStore(
+  const { session, busy, error, anchorRevision } = useSyncExternalStore(
     controller.subscribe,
     controller.getSnapshot,
     controller.getSnapshot,
@@ -546,7 +546,14 @@ export function PracticeApp({
       </header>
       {activeSong.tab ? (
         <div className="absolute inset-x-20 top-24 bottom-40 max-[600px]:inset-x-3 max-[600px]:top-20 max-[600px]:bottom-36">
-          <TabViewer tab={activeSong.tab} index={session.index} />
+          <TabViewer
+            tab={activeSong.tab}
+            index={session.index}
+            anchorRevision={anchorRevision}
+            strings={Array.from(getTuningPreset(activeSong.tab.tuning).strings)
+              .reverse()
+              .map((string) => string.noteName)}
+          />
         </div>
       ) : (
         <DirectionalGroup
@@ -574,7 +581,7 @@ export function PracticeApp({
           <ChordTimeline chords={session.chords} index={session.index} />
         </DirectionalGroup>
       )}
-      {session.index > 0 ? (
+      {!activeSong.tab && session.index > 0 ? (
         <button
           type="button"
           className="step-arrow previous idle-ui absolute top-[calc((100%-130px)/2+30px)] left-8 grid size-[52px] -translate-y-1/2 place-items-center border-0 bg-transparent text-muted-foreground transition-[opacity,visibility] duration-650 hover:text-primary active:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [.is-idle_&]:pointer-events-none [.is-idle_&]:invisible [.is-idle_&]:opacity-0 max-[600px]:top-[calc((100%-122px)/2+28px)] max-[600px]:left-2 max-[600px]:size-11 short-landscape:left-8"
@@ -587,7 +594,7 @@ export function PracticeApp({
           <ChevronLeft />
         </button>
       ) : null}
-      {session.index < session.chords.length - 1 ? (
+      {!activeSong.tab && session.index < session.chords.length - 1 ? (
         <button
           type="button"
           className="step-arrow next idle-ui absolute top-[calc((100%-130px)/2+30px)] right-8 grid size-[52px] -translate-y-1/2 place-items-center border-0 bg-transparent text-muted-foreground transition-[opacity,visibility] duration-650 hover:text-primary active:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [.is-idle_&]:pointer-events-none [.is-idle_&]:invisible [.is-idle_&]:opacity-0 max-[600px]:top-[calc((100%-122px)/2+28px)] max-[600px]:right-2 max-[600px]:size-11 short-landscape:right-8"
@@ -983,6 +990,14 @@ export function PracticeApp({
                       ASCII tab (e, B, G, D, A, E). Tab advances when the Rust
                       engine hears each note group. Unsupported notation is
                       flagged before saving.
+                    </p>
+                    <p>
+                      In tab, add optional lines such as{" "}
+                      <code>{"{chords: G - D -}"}</code> and{" "}
+                      <code>{"{rhythm: D8 U8 D4 P4}"}</code> before a six-string
+                      staff. One token describes each note group; D, U, and P
+                      mean downstroke, upstroke, and pluck. Rhythm marks are
+                      playing cues; the microphone follows the note groups.
                     </p>
                     {preview.length ? (
                       <section

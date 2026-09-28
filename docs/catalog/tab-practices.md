@@ -3,8 +3,11 @@
 The four `catalog:tab:*` entries in `packages/music/src/index.ts` are original
 six-string **chord-voicing exercises**. They contain no lyrics, vocal melody,
 instrumental hook, solo, recording, or copied published tablature. Their
-headings and repeated chord columns give beginners a complete, player-paced
-practice sequence. They are reductions, not note-for-note transcriptions.
+chord-change labels and original down/up eighth-note exercise give beginners
+a complete, player-paced practice sequence. The cues are displayed but their
+timing and stroke direction are not graded. These are reductions, not
+note-for-note transcriptions. See [tablature annotations](../TABLATURE_NOTATION.md)
+for the saved format.
 
 | Entry | Basis | Rights and attribution |
 | --- | --- | --- |

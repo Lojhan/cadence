@@ -23,7 +23,12 @@ interface Audio {
 }
 export class PracticeController {
   private song: Song;
-  private snapshot: { session: Session; busy: boolean; error: string };
+  private snapshot: {
+    session: Session;
+    busy: boolean;
+    error: string;
+    anchorRevision: number;
+  };
   private meter = { level: 0, progress: 0 };
   private meterListeners = new Set<() => void>();
   getMeter = () => this.meter;
@@ -59,6 +64,7 @@ export class PracticeController {
       },
       busy: false,
       error: "",
+      anchorRevision: 0,
     };
   }
   getSnapshot = () => this.snapshot;
@@ -88,7 +94,16 @@ export class PracticeController {
   }
   private dispatch(event: Event) {
     const result = transition(this.snapshot.session, event);
-    this.snapshot = { ...this.snapshot, session: result.state };
+    const recognizedAdvance =
+      event.type === "transition-ended" &&
+      this.snapshot.session.status === "transitioning" &&
+      result.state.index !== this.snapshot.session.index;
+    this.snapshot = {
+      ...this.snapshot,
+      session: result.state,
+      anchorRevision:
+        this.snapshot.anchorRevision + (recognizedAdvance ? 1 : 0),
+    };
     for (const effect of result.effects) {
       if (effect.type === "arm") this.audio?.arm(this.target());
       if (effect.type === "mute") this.audio?.mute();

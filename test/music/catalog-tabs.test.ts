@@ -14,6 +14,7 @@ for (const [id, title, minimumEvents] of expected) {
   if (!song?.sourceChart) throw new Error(`${title} has no source chart`);
   assert.ok(song.title.includes(title));
   assert.ok(song.catalog);
+  assert.equal(song.revision, 2, `${title} upgrades existing catalog rows`);
   assert.ok(song.sourceChart);
   const tab = parseTab(song.sourceChart);
   assert.ok(
@@ -23,6 +24,12 @@ for (const [id, title, minimumEvents] of expected) {
   assert.equal(song.chords.length, tab.events.length);
   assert.deepEqual(song.tab?.events, tab.events);
   assert.ok(tab.staves.length > 1, `${title} spans multiple staves`);
+  assert.ok(tab.events[0]?.chord);
+  assert.equal(tab.events[1]?.chord, undefined);
+  assert.ok(
+    tab.events.every((event) => event.rhythm?.value === 8),
+    `${title} includes an explicit eighth-note stroke for every event`,
+  );
 }
 
 const knocking = defaultSongs.find((song) => song.id === "catalog:tab:knockin");

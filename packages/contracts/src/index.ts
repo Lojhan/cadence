@@ -32,6 +32,11 @@ export interface TabEvent {
   staff: number;
   column: number;
   notes: TabNote[];
+  chord?: string;
+  rhythm?: {
+    stroke: "down" | "up" | "pluck";
+    value?: 1 | 2 | 4 | 8 | 16;
+  };
 }
 export interface TabStaff {
   lines: string[];

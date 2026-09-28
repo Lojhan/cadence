@@ -287,13 +287,17 @@ function tabPractice(
   const strings = ["e", "B", "G", "D", "A", "E"];
   const sourceChart = sections
     .map(({ heading, chords }) => {
-      const voicings = chords.map((symbol) => {
-        const voicing = parseChord(symbol).voicings[0];
-        if (!voicing) throw new Error(`No voicing for ${symbol}`);
-        return voicing.frets;
-      });
+      const voicings = chords
+        .flatMap((symbol) => [symbol, symbol])
+        .map((symbol) => {
+          const voicing = parseChord(symbol).voicings[0];
+          if (!voicing) throw new Error(`No voicing for ${symbol}`);
+          return voicing.frets;
+        });
       return [
         heading,
+        `{chords: ${chords.flatMap((symbol) => [symbol, "-"]).join(" ")}}`,
+        `{rhythm: ${chords.flatMap(() => ["D8", "U8"]).join(" ")}}`,
         ...strings.map(
           (string, index) =>
             `${string}|${voicings
@@ -314,7 +318,7 @@ function tabPractice(
     sourceChart,
     chords: tab.events.map((event) => tabEventLabel(event.notes)),
     tab,
-    revision: 1,
+    revision: 2,
     catalog: true,
     tuning: "standard",
   };

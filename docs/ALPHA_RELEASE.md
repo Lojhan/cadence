@@ -1,19 +1,18 @@
-Cadence 0.1.0-alpha.20 is an MIT-licensed preview for self-hosting and integration.
+Cadence 0.1.0-alpha.21 is an MIT-licensed preview for self-hosting and integration.
 
-Changes since alpha.19:
+Changes since alpha.20:
 
-- Complete six-string ASCII tablature can be imported, displayed, practiced at
-  the player's pace, saved, and exported. Rust/WASM checks single absolute
-  pitches and simultaneous note groups. Unsupported technique notation and
-  rhythm scoring are outside this release.
-- Four original chord-voicing tab exercises join the shared starter catalog:
-  *Knockin' on Heaven's Door*, *Amazing Grace*, *When the Saints Go Marching In*,
-  and *Jingle Bells*. The Dylan exercise uses only a common chord loop and new
-  open-chord voicings. It includes no lyrics, melody, solo, or copied tab; the
-  composition remains copyrighted. Sources and scope are recorded in
-  `docs/catalog/tab-practices.md`.
-- The existing 51 chord-only catalog songs remain available. Personal chord
-  charts and existing archives continue to work.
+- Tablature is one continuous horizontal score. String names remain fixed over
+  a solid background and fading edge while the player scrolls freely. Audio
+  matches bring the current note group into view; fret numbers keep the app's
+  sans-serif type, while string and chord labels use its serif type.
+- Saved ASCII tab can carry optional chord changes and downstroke, upstroke or
+  pluck cues with note values. These are visual playing cues; Rust/WASM still
+  scores the notes, not stroke direction or rhythmic timing.
+- The four original starter tab exercises now show chord changes and original
+  down/up eighth-note practice cues. Their catalog revisions advance, so
+  earlier saved progress for those exercises resets to the beginning. Personal
+  charts, archives and the 51 chord-only catalog songs remain available.
 
 Recognition remains **experimental**. Synthetic tab tests, including the
 G–D–Am–C exercise, do not establish accuracy on a live guitar or mobile device.

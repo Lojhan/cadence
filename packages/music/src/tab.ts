@@ -1,6 +1,7 @@
 import {
   CadenceError,
   type TabDocument,
+  type TabEvent,
   type TabNote,
 } from "@cadence/contracts";
 import { getTuningPreset, normalizeTuningId } from "./tuning.js";
@@ -31,16 +32,38 @@ export function parseTab(text: string, tuningId = "standard"): TabDocument {
   let pending: string[] = [];
   let heading = "";
   let tuning = tabTuning(tuningId);
+  let chordTokens: string[] | undefined;
+  let rhythmTokens: string[] | undefined;
+  let currentChord = "";
   for (const [lineNumber, raw] of text.split(/\r?\n/).entries()) {
     const line = raw.trim();
     const tuningMatch = /^\{(?:tuning|tune):?\s*([^}]+)\}$/i.exec(line);
     if (tuningMatch) {
-      if (staves.length || pending.length)
+      if (staves.length || pending.length || chordTokens || rhythmTokens)
         throw new CadenceError(
           "INVALID_CHART",
           "Tab tuning must precede all staves",
         );
       tuning = tabTuning(tuningMatch[1] ?? "standard");
+      continue;
+    }
+    const annotation = /^\{(chords|rhythm):\s*([^}]+)\}$/i.exec(line);
+    if (annotation) {
+      if (pending.length)
+        throw new CadenceError(
+          "INVALID_CHART",
+          "Tab annotations must precede the six strings",
+        );
+      const tokens = (annotation[2] ?? "").trim().split(/\s+/);
+      if (annotation[1]?.toLowerCase() === "chords") {
+        if (chordTokens)
+          throw new CadenceError("INVALID_CHART", "Duplicate tab chords line");
+        chordTokens = tokens;
+      } else {
+        if (rhythmTokens)
+          throw new CadenceError("INVALID_CHART", "Duplicate tab rhythm line");
+        rhythmTokens = tokens;
+      }
       continue;
     }
     if (/^[eBGDAE]\|/.test(line)) {
@@ -98,15 +121,56 @@ export function parseTab(text: string, tuningId = "standard"): TabDocument {
           columns.set(column, notes);
         }
       }
-      for (const [column, notes] of [...columns.entries()].sort(
-        (a, b) => a[0] - b[0],
-      )) {
-        events.push({ staff, column, notes });
+      const staffEvents: TabEvent[] = [...columns.entries()]
+        .sort((a, b) => a[0] - b[0])
+        .map(([column, notes]) => ({ staff, column, notes }));
+      if (chordTokens && chordTokens.length !== staffEvents.length)
+        throw new CadenceError(
+          "INVALID_CHART",
+          "Tab chords must match the number of events",
+        );
+      if (rhythmTokens && rhythmTokens.length !== staffEvents.length)
+        throw new CadenceError(
+          "INVALID_CHART",
+          "Tab rhythm must match the number of events",
+        );
+      for (const [eventIndex, event] of staffEvents.entries()) {
+        const chord = chordTokens?.[eventIndex];
+        if (chord && chord !== "-") {
+          if (!/^[A-G][#b]?[A-Za-z0-9/+#-]{0,15}$/.test(chord))
+            throw new CadenceError(
+              "INVALID_CHART",
+              `Invalid tab chord: ${chord}`,
+            );
+          if (chord !== currentChord) event.chord = chord;
+          currentChord = chord;
+        }
+        const rhythm = rhythmTokens?.[eventIndex];
+        if (rhythm && rhythm !== "-") {
+          const match = /^([DUP])(?:(1|2|4|8|16))?$/.exec(rhythm);
+          if (!match)
+            throw new CadenceError(
+              "INVALID_CHART",
+              `Invalid tab rhythm: ${rhythm}`,
+            );
+          event.rhythm = {
+            stroke: { D: "down", U: "up", P: "pluck" }[match[1] ?? "D"] as
+              | "down"
+              | "up"
+              | "pluck",
+            ...(match[2]
+              ? { value: Number(match[2]) as 1 | 2 | 4 | 8 | 16 }
+              : {}),
+          };
+        }
+        events.push(event);
         if (events.length > 10_000)
           throw new CadenceError("INVALID_CHART", "Tab event limit exceeded");
       }
       pending = [];
       heading = "";
+      chordTokens = undefined;
+      rhythmTokens = undefined;
     } else if (line) {
       if (pending.length)
         throw new CadenceError(
@@ -121,6 +185,8 @@ export function parseTab(text: string, tuningId = "standard"): TabDocument {
       "INVALID_CHART",
       "Tab requires six strings per staff",
     );
+  if (chordTokens || rhythmTokens)
+    throw new CadenceError("INVALID_CHART", "Tab annotations need a staff");
   if (!events.length)
     throw new CadenceError("INVALID_CHART", "No tab notes found");
   return { staves, events, tuning };
