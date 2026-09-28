@@ -139,3 +139,79 @@ fn a_different_chord_does_not_require_a_silent_gap() {
         "a new chord at similar volume must not wait for silence"
     );
 }
+
+#[test]
+fn tablature_single_notes_match_exact_octave_once_per_attack() {
+    let rate = 48000.0;
+    let mut engine = Engine::new(rate, Profile::Balanced).unwrap();
+    engine.arm_note(43).unwrap(); // low G on the sixth string
+    assert_eq!(
+        feed(&mut engine, &chord(rate, &[55], 0.7)),
+        0,
+        "wrong octave"
+    );
+    assert_eq!(feed(&mut engine, &vec![0.0; 8192]), 0);
+    assert_eq!(feed(&mut engine, &chord(rate, &[43], 0.7)), 1);
+    engine.arm_note(43).unwrap();
+    assert_eq!(
+        feed(&mut engine, &chord(rate, &[43], 0.4)),
+        0,
+        "sustain is not a second note"
+    );
+    feed(&mut engine, &vec![0.0; 8192]);
+    assert_eq!(feed(&mut engine, &chord(rate, &[43], 0.7)), 1);
+    engine.arm_note(88).unwrap();
+    assert_eq!(feed(&mut engine, &chord(rate, &[88], 0.7)), 1, "high fret");
+    engine.arm_note(38).unwrap();
+    assert_eq!(
+        feed(&mut engine, &chord(rate, &[38], 0.7)),
+        1,
+        "drop D open string"
+    );
+    assert!(engine.arm_note(20).is_err());
+}
+
+#[test]
+fn tablature_two_note_targets_are_checked_in_rust() {
+    let rate = 48000.0;
+    let mut engine = Engine::new(rate, Profile::Balanced).unwrap();
+    engine.arm_notes(&[50, 57]).unwrap();
+    assert_eq!(feed(&mut engine, &chord(rate, &[50], 0.7)), 0);
+    assert_eq!(feed(&mut engine, &vec![0.0; 8192]), 0);
+    assert_eq!(
+        feed(&mut engine, &chord(rate, &[62, 69], 0.9)),
+        0,
+        "wrong octaves"
+    );
+    feed(&mut engine, &vec![0.0; 8192]);
+    assert_eq!(feed(&mut engine, &chord(rate, &[50, 57], 0.9)), 1);
+    engine.arm_notes(&[62, 69]).unwrap();
+    feed(&mut engine, &vec![0.0; 8192]);
+    assert_eq!(
+        feed(&mut engine, &chord(rate, &[50, 57], 0.9)),
+        0,
+        "lower octaves"
+    );
+}
+
+#[test]
+fn knocking_on_heavens_door_accompaniment_tab_advances_in_rust() {
+    let rate = 48000.0;
+    let mut engine = Engine::new(rate, Profile::Balanced).unwrap();
+    // Original tab accompaniment exercise: G, D, Am, C, then repeat.
+    let bars: &[&[u8]] = &[
+        &[43, 47, 50, 55, 59, 67],
+        &[50, 57, 62, 66],
+        &[45, 52, 57, 60, 64],
+        &[48, 52, 55, 60, 64],
+    ];
+    for notes in bars.iter().cycle().take(8) {
+        engine.arm_notes(notes).unwrap();
+        assert_eq!(
+            feed(&mut engine, &chord(rate, notes, 0.8)),
+            1,
+            "notes {notes:?}"
+        );
+        feed(&mut engine, &vec![0.0; 8192]);
+    }
+}

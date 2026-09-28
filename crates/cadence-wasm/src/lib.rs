@@ -29,6 +29,12 @@ impl RecognitionEngine {
     pub fn arm(&mut self, mask: u16) -> Result<(), JsError> {
         self.engine.arm(mask).map_err(JsError::new)
     }
+    pub fn arm_note(&mut self, midi: u8) -> Result<(), JsError> {
+        self.engine.arm_note(midi).map_err(JsError::new)
+    }
+    pub fn arm_notes(&mut self, notes: Vec<u8>) -> Result<(), JsError> {
+        self.engine.arm_notes(&notes).map_err(JsError::new)
+    }
     pub fn reset(&mut self) {
         self.engine.reset();
         self.report = Report::default();

@@ -23,11 +23,31 @@ export const songInputSchema = z
   })
   .strict();
 export type SongInput = z.infer<typeof songInputSchema>;
+export interface TabNote {
+  string: number;
+  fret: number;
+  midi: number;
+}
+export interface TabEvent {
+  staff: number;
+  column: number;
+  notes: TabNote[];
+}
+export interface TabStaff {
+  lines: string[];
+  heading: string;
+}
+export interface TabDocument {
+  staves: TabStaff[];
+  events: TabEvent[];
+  tuning: string;
+}
 export interface Song {
   sourceChart?: string;
   id: string;
   title: string;
   chords: string[];
+  tab?: TabDocument;
   attribution: string;
   revision: number;
   catalog: boolean;

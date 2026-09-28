@@ -22,6 +22,7 @@ interface Audio {
   devices(): Promise<MediaDeviceInfo[]>;
 }
 export class PracticeController {
+  private song: Song;
   private snapshot: { session: Session; busy: boolean; error: string };
   private meter = { level: 0, progress: 0 };
   private meterListeners = new Set<() => void>();
@@ -45,6 +46,7 @@ export class PracticeController {
       emit,
     ) => new Microphone(emit),
   ) {
+    this.song = song;
     this.snapshot = {
       session: {
         ...createSession(
@@ -71,6 +73,13 @@ export class PracticeController {
   }
   private target(): Target {
     const s = this.snapshot.session;
+    const tabEvent = this.song.tab?.events[s.index];
+    if (tabEvent)
+      return {
+        sessionId: s.sessionId,
+        epoch: s.epoch,
+        notes: tabEvent.notes.map((note) => note.midi),
+      };
     return {
       sessionId: s.sessionId,
       epoch: s.epoch,
@@ -182,6 +191,7 @@ export class PracticeController {
   }
   replace(song: Song, index = 0) {
     this.pause();
+    this.song = song;
     const session = createSession(
       song.id,
       song.revision,

@@ -45,7 +45,9 @@ export class FrameGuard {
     return gap ? "gap" : "ok";
   }
 }
-export type Target = { sessionId: string; epoch: number; mask: number };
+export type Target =
+  | { sessionId: string; epoch: number; mask: number; notes?: never }
+  | { sessionId: string; epoch: number; notes: number[]; mask?: never };
 export type AudioEvent =
   | { type: "armed"; sessionId: string; epoch: number }
   | { type: "matched"; sessionId: string; epoch: number; sequence: number }

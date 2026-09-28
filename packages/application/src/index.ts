@@ -12,7 +12,13 @@ import {
   savePreferencesSchema,
   saveSongSchema,
 } from "@cadence/contracts";
-import { defaultSongs, parseChart } from "@cadence/music";
+import {
+  defaultSongs,
+  isTab,
+  parseChart,
+  parseTab,
+  tabEventLabel,
+} from "@cadence/music";
 export interface Repository {
   createUser(id: string): Promise<void>;
   hasUser(id: string): Promise<boolean>;
@@ -39,6 +45,11 @@ export interface Store {
   close(): Promise<void>;
 }
 export function createApplication(store: Store, newId: () => string) {
+  function withTab(song: Song): Song {
+    if (!isTab(song.sourceChart ?? "")) return song;
+    const tab = parseTab(song.sourceChart ?? "", song.tuning);
+    return { ...song, tab, tuning: tab.tuning };
+  }
   function authorize(principal: Principal) {
     if (!principal.userId || !["local", "hosted"].includes(principal.mode))
       throw new CadenceError("UNAUTHORIZED", "Sign in to continue");
@@ -73,7 +84,9 @@ export function createApplication(store: Store, newId: () => string) {
       });
     },
     library(principal: Principal) {
-      return run(principal, (repo) => repo.listSongs(principal.userId));
+      return run(principal, async (repo) =>
+        (await repo.listSongs(principal.userId)).map(withTab),
+      );
     },
     preferences(principal: Principal) {
       return run(principal, (repo) => repo.getPreferences(principal.userId));
@@ -88,7 +101,14 @@ export function createApplication(store: Store, newId: () => string) {
     },
     async saveSong(principal: Principal, raw: unknown) {
       const input = saveSongSchema.parse(raw);
-      const { chords, tuning: chartTuning } = parseChart(input.chart);
+      const tab = isTab(input.chart)
+        ? parseTab(input.chart, input.tuning)
+        : undefined;
+      const parsed = tab ? undefined : parseChart(input.chart);
+      const chords = tab
+        ? tab.events.map((event) => tabEventLabel(event.notes))
+        : (parsed?.chords ?? []);
+      const chartTuning = tab?.tuning ?? parsed?.tuning ?? "standard";
       const tuning =
         input.tuning && input.tuning !== "standard"
           ? input.tuning
@@ -108,6 +128,7 @@ export function createApplication(store: Store, newId: () => string) {
           id: input.id ?? newId(),
           title: input.title,
           chords,
+          ...(tab ? { tab } : {}),
           attribution: input.attribution,
           revision: expected + 1,
           catalog: false,
@@ -196,10 +217,18 @@ export function createApplication(store: Store, newId: () => string) {
       if (new TextEncoder().encode(JSON.stringify(raw)).length > 10_485_760)
         throw new CadenceError("INVALID_CHART", "Archive exceeds 10 MB");
       const input = archiveSchema.parse(raw);
-      const songs = input.songs.map((song) => ({
-        ...song,
-        chords: parseChart(song.chart).chords,
-      }));
+      const songs = input.songs.map((song) => {
+        const tab = isTab(song.chart)
+          ? parseTab(song.chart, song.tuning)
+          : undefined;
+        return {
+          ...song,
+          chords: tab
+            ? tab.events.map((event) => tabEventLabel(event.notes))
+            : parseChart(song.chart).chords,
+          tab,
+        };
+      });
       return run(principal, async (repo) => {
         let lastSongId = input.preferences.lastSongId.startsWith("catalog:")
           ? input.preferences.lastSongId
@@ -220,6 +249,7 @@ export function createApplication(store: Store, newId: () => string) {
               title: song.title,
               attribution: song.attribution,
               chords: song.chords,
+              ...(song.tab ? { tab: song.tab } : {}),
               sourceChart: song.chart,
               revision: 1,
               catalog: false,

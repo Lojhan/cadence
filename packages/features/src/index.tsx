@@ -9,9 +9,12 @@ import type {
 import type { Session } from "@cadence/core";
 import {
   getTuningPreset,
+  isTab,
   parseChart,
   parseChord,
+  parseTab,
   TUNING_PRESETS,
+  tabEventLabel,
 } from "@cadence/music";
 import {
   Button,
@@ -28,6 +31,7 @@ import {
   Select,
   Tabs,
   TabsContent,
+  TabViewer,
   Textarea,
 } from "@cadence/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -187,16 +191,20 @@ export function PracticeApp({
   );
   const activeSong =
     library.data.find((song) => song.id === session.songId) ?? firstSong;
-  const chord = parseChord(
-    session.chords[session.index] ?? "C",
-    prefs.tuning || "standard",
-  );
+  const chord = activeSong.tab
+    ? null
+    : parseChord(
+        session.chords[session.index] ?? "C",
+        prefs.tuning || "standard",
+      );
   const recommendedPreset = getTuningPreset(activeSong.tuning || "standard");
   const currentPreset = getTuningPreset(prefs.tuning || "standard");
   const tuningMismatch = recommendedPreset.id !== currentPreset.id;
-  const shape =
-    chord.voicings.find((shape) => shape.id === prefs.voicings[chord.symbol]) ??
-    chord.voicings[0];
+  const shape = chord
+    ? (chord.voicings.find(
+        (shape) => shape.id === prefs.voicings[chord.symbol],
+      ) ?? chord.voicings[0])
+    : undefined;
   const listening =
     session.status === "listening" || session.status === "transitioning";
   const preferenceBusy = preferenceState.status === "saving";
@@ -463,7 +471,13 @@ export function PracticeApp({
   }
   function review() {
     try {
-      setPreview(parseChart(chart).chords);
+      setPreview(
+        isTab(chart)
+          ? parseTab(chart, editing?.tuning).events.map((event) =>
+              tabEventLabel(event.notes),
+            )
+          : parseChart(chart).chords,
+      );
       setFormError("");
     } catch (error) {
       setPreview([]);
@@ -530,35 +544,41 @@ export function PracticeApp({
           </IconButton>
         </div>
       </header>
-      <DirectionalGroup
-        transitionKey={`${session.sessionId}:${session.index}`}
-        direction={stepDirection}
-        className="practice-sequence pointer-events-none absolute inset-0"
-        frameClassName="sequence-frame pointer-events-none absolute inset-0 data-[current=false]:pointer-events-none"
-      >
-        <section
-          className={`stage flex h-[calc(100%-190px)] items-center justify-center gap-[clamp(40px,10vw,170px)] px-[70px] pt-[86px] max-[600px]:h-[calc(100%-180px-env(safe-area-inset-bottom))] max-[600px]:flex-col max-[600px]:gap-[18px] max-[600px]:px-5 max-[600px]:pt-[72px] max-[600px]:pb-2 short-landscape:h-[calc(100%-140px)] short-landscape:flex-row short-landscape:gap-[65px] short-landscape:px-[60px] short-landscape:pt-[35px] ${session.status === "transitioning" ? "matched animate-match" : ""}`}
-          aria-label="Practice stage"
+      {activeSong.tab ? (
+        <div className="absolute inset-x-20 top-24 bottom-40 max-[600px]:inset-x-3 max-[600px]:top-20 max-[600px]:bottom-36">
+          <TabViewer tab={activeSong.tab} index={session.index} />
+        </div>
+      ) : (
+        <DirectionalGroup
+          transitionKey={`${session.sessionId}:${session.index}`}
+          direction={stepDirection}
+          className="practice-sequence pointer-events-none absolute inset-0"
+          frameClassName="sequence-frame pointer-events-none absolute inset-0 data-[current=false]:pointer-events-none"
         >
-          <h1 className="chord min-w-[1.45em] pr-[0.08em] text-center font-[Georgia,serif] text-[clamp(110px,19vw,270px)] leading-none tracking-[-0.085em] [.matched_&]:text-[var(--success)] max-[600px]:min-w-0 max-[600px]:text-[clamp(76px,23vw,108px)] short-landscape:text-[130px]">
-            {chord.symbol}
-          </h1>
-          {shape ? (
-            <Fretboard
-              shape={shape}
-              symbol={chord.symbol}
-              hand={prefs.hand}
-              numbers={prefs.numbers}
-            />
-          ) : null}
-        </section>
-        <ChordTimeline chords={session.chords} index={session.index} />
-      </DirectionalGroup>
+          <section
+            className={`stage flex h-[calc(100%-190px)] items-center justify-center gap-[clamp(40px,10vw,170px)] px-[70px] pt-[86px] max-[600px]:h-[calc(100%-180px-env(safe-area-inset-bottom))] max-[600px]:flex-col max-[600px]:gap-[18px] max-[600px]:px-5 max-[600px]:pt-[72px] max-[600px]:pb-2 short-landscape:h-[calc(100%-140px)] short-landscape:flex-row short-landscape:gap-[65px] short-landscape:px-[60px] short-landscape:pt-[35px] ${session.status === "transitioning" ? "matched animate-match" : ""}`}
+            aria-label="Practice stage"
+          >
+            <h1 className="chord min-w-[1.45em] pr-[0.08em] text-center font-[Georgia,serif] text-[clamp(110px,19vw,270px)] leading-none tracking-[-0.085em] [.matched_&]:text-[var(--success)] max-[600px]:min-w-0 max-[600px]:text-[clamp(76px,23vw,108px)] short-landscape:text-[130px]">
+              {chord?.symbol}
+            </h1>
+            {shape ? (
+              <Fretboard
+                shape={shape}
+                symbol={chord?.symbol ?? ""}
+                hand={prefs.hand}
+                numbers={prefs.numbers}
+              />
+            ) : null}
+          </section>
+          <ChordTimeline chords={session.chords} index={session.index} />
+        </DirectionalGroup>
+      )}
       {session.index > 0 ? (
         <button
           type="button"
           className="step-arrow previous idle-ui absolute top-[calc((100%-130px)/2+30px)] left-8 grid size-[52px] -translate-y-1/2 place-items-center border-0 bg-transparent text-muted-foreground transition-[opacity,visibility] duration-650 hover:text-primary active:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [.is-idle_&]:pointer-events-none [.is-idle_&]:invisible [.is-idle_&]:opacity-0 max-[600px]:top-[calc((100%-122px)/2+28px)] max-[600px]:left-2 max-[600px]:size-11 short-landscape:left-8"
-          aria-label="Previous chord"
+          aria-label={activeSong.tab ? "Previous tab note" : "Previous chord"}
           onClick={() => {
             setStepDirection(-1);
             controller.navigate(session.index - 1);
@@ -571,7 +591,7 @@ export function PracticeApp({
         <button
           type="button"
           className="step-arrow next idle-ui absolute top-[calc((100%-130px)/2+30px)] right-8 grid size-[52px] -translate-y-1/2 place-items-center border-0 bg-transparent text-muted-foreground transition-[opacity,visibility] duration-650 hover:text-primary active:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [.is-idle_&]:pointer-events-none [.is-idle_&]:invisible [.is-idle_&]:opacity-0 max-[600px]:top-[calc((100%-122px)/2+28px)] max-[600px]:right-2 max-[600px]:size-11 short-landscape:right-8"
-          aria-label="Next chord"
+          aria-label={activeSong.tab ? "Next tab note" : "Next chord"}
           onClick={() => {
             setStepDirection(1);
             controller.navigate(session.index + 1);
@@ -759,7 +779,9 @@ export function PracticeApp({
       </Dialog>
 
       <div className="sr-only" aria-live="polite">
-        {chord.symbol}, chord {session.index + 1} of {session.chords.length}
+        {activeSong.tab
+          ? `Tab note ${session.index + 1} of ${session.chords.length}`
+          : `${chord?.symbol}, chord ${session.index + 1} of ${session.chords.length}`}
       </div>
       <Dialog
         open={confirmDelete !== null}
@@ -859,7 +881,9 @@ export function PracticeApp({
                             <strong>{song.title}</strong>
                             <small>
                               {song.catalog ? "Default · " : "Your music · "}
-                              {song.chords.slice(0, 8).join(" · ")}
+                              {song.tab
+                                ? `Tablature · ${song.tab.events.length} notes`
+                                : song.chords.slice(0, 8).join(" · ")}
                               {song.chords.length > 8 ? " …" : ""}
                             </small>
                           </button>
@@ -935,7 +959,7 @@ export function PracticeApp({
                           setChart(event.target.value);
                           setPreview([]);
                         }}
-                        placeholder="C G Am F"
+                        placeholder="C G Am F or e|--3--..."
                       />
                     </Field>
                     <Field label="Attribution">
@@ -948,15 +972,17 @@ export function PracticeApp({
                     <Field label="Or open a text / ChordPro file">
                       <Input
                         type="file"
-                        accept=".txt,.cho,.chopro,.chordpro,text/plain"
+                        accept=".txt,.tab,.cho,.chopro,.chordpro,text/plain"
                         onChange={(event) =>
                           void importFile(event.target.files?.[0], false)
                         }
                       />
                     </Field>
                     <p>
-                      Use chord names, bracketed chords in lyrics, or |: repeat
-                      sections :|. Unsupported chords are flagged before saving.
+                      Use chord names, bracketed chords, or aligned six-string
+                      ASCII tab (e, B, G, D, A, E). Tab advances when the Rust
+                      engine hears each note group. Unsupported notation is
+                      flagged before saving.
                     </p>
                     {preview.length ? (
                       <section
@@ -1125,7 +1151,7 @@ export function PracticeApp({
                         )
                       }
                     />
-                    {chord.voicings.length > 1 ? (
+                    {chord && chord.voicings.length > 1 ? (
                       <PreferenceRow
                         title={`${chord.symbol} fingering`}
                         detail="Recognition checks pitch content"

@@ -23,9 +23,10 @@ pub(crate) struct MultiPitch {
     magnitude: Vec<f32>,
     residual: Vec<f32>,
     peak_positions: Vec<f32>,
+    notes: [f32; 89],
 }
 impl MultiPitch {
-    pub fn new(rate: f32) -> Self {
+    pub fn new(rate: f32, minimum_midi: usize) -> Self {
         let hz = rate / WINDOW as f32;
         let center = |b: usize| 229.0 * (10.0_f32.powf((b as f32 + 1.0) / 21.4) - 1.0);
         let centers: [f32; BANDS] = std::array::from_fn(|b| center(b + 1));
@@ -44,7 +45,7 @@ impl MultiPitch {
             })
             .collect();
         let mut candidates = Vec::new();
-        for midi in 40..=88 {
+        for midi in minimum_midi..=88 {
             for tuning in -4..=4 {
                 let f = 440.0 * 2.0_f32.powf((midi as f32 - 69.0 + tuning as f32 * 0.1) / 12.0);
                 let partials = std::array::from_fn(|index| {
@@ -70,9 +71,14 @@ impl MultiPitch {
             magnitude: vec![0.0; size],
             residual: vec![0.0; size],
             peak_positions: vec![0.0; size],
+            notes: [0.0; 89],
         }
     }
+    pub fn notes(&self) -> &[f32; 89] {
+        &self.notes
+    }
     pub fn analyze(&mut self, spectrum: &[Complex<f32>]) -> [f32; 12] {
+        self.notes.fill(0.0);
         let mut energy = [0.0_f32; BANDS];
         for (k, value) in self.magnitude.iter_mut().enumerate() {
             *value = spectrum[k].norm();
@@ -144,6 +150,7 @@ impl MultiPitch {
             sum += score;
             let candidate = &self.candidates[best];
             selected[candidate.midi] = true;
+            self.notes[candidate.midi] += score;
             chroma[candidate.midi % 12] += score;
             for partial in candidate.partials.iter().filter(|p| p.weight > 0.0) {
                 let peak = (partial.low..=partial.high)

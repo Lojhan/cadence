@@ -1,46 +1,31 @@
-Cadence 0.1.0-alpha.19 is an MIT-licensed preview for self-hosting and integration.
-It includes the responsive tuner, local Rust/WASM recognition,
-SQLite/PostgreSQL persistence, and container backup tools.
+Cadence 0.1.0-alpha.20 is an MIT-licensed preview for self-hosting and integration.
 
-Changes since alpha.18:
+Changes since alpha.19:
 
-- Thirty-three additional chord-only songs join the shared starter catalog,
-  bringing it to 51. Source and transcription reviews are recorded in
-  `docs/catalog/imported-review.json`.
-- The other 49 candidates and their outstanding source or rights checks are
-  recorded in `docs/catalog/pending-review.json`.
+- Complete six-string ASCII tablature can be imported, displayed, practiced at
+  the player's pace, saved, and exported. Rust/WASM checks single absolute
+  pitches and simultaneous note groups. Unsupported technique notation and
+  rhythm scoring are outside this release.
+- Four original chord-voicing tab exercises join the shared starter catalog:
+  *Knockin' on Heaven's Door*, *Amazing Grace*, *When the Saints Go Marching In*,
+  and *Jingle Bells*. The Dylan exercise uses only a common chord loop and new
+  open-chord voicings. It includes no lyrics, melody, solo, or copied tab; the
+  composition remains copyrighted. Sources and scope are recorded in
+  `docs/catalog/tab-practices.md`.
+- The existing 51 chord-only catalog songs remain available. Personal chord
+  charts and existing archives continue to work.
 
-The new charts use the CC0 Public Domain Song Anthology and the CC0
-Public Domain Christmas Songs ChordPro collection. Source maintainers identify
-the underlying versions as public domain. The charts contain no lyrics,
-melody notation, or recordings. Physical guitar playthrough
-and country-specific rights review remain advisable before promoting this
-starter catalog beyond the current alpha audience.
-
-Per-input microphone boost can help quiet capture, but it also amplifies noise.
-The tuner and sound-check synthetic tests do not prove real-guitar accuracy or
-fix the reported iPhone/iPad Safari microphone level; physical-device retests remain necessary.
-
-Recognition remains **experimental**. No profile meets every release target.
-On the corrected calibration subset, Balanced recognizes 102/116 qualifying strums
-and incorrectly accepts 7/656 related targets. These are calibration comparisons,
-not held-out accuracy or end-to-end device latency. Broader Balanced results improve
-from 557 to 573 of 889 positives and from 5 to 2 false matches out of 676.
-Individual regressions remain and are listed in the evaluation report. Physical microphone and mobile
-validation remain outstanding. The private hosted distribution has verified
-development Clerk sign-in and Stripe sandbox purchase, refund and renewal journeys;
-these do not establish live payment readiness or recognition accuracy.
-See [audio evaluation](https://github.com/Lojhan/cadence/blob/main/docs/AUDIO_EVALUATION.md)
-for scope, historical measurements, and limitations.
+Recognition remains **experimental**. Synthetic tab tests, including the
+G–D–Am–C exercise, do not establish accuracy on a live guitar or mobile device.
+The existing chord calibration results and limitations remain in
+`docs/AUDIO_EVALUATION.md`; this release makes no new accuracy claim. Physical
+guitar playthrough, device checks, and country-specific rights review remain
+open. The hosted distribution's prior Clerk and Stripe sandbox checks do not
+establish live payment readiness.
 
 The release includes nine ESM packages with TypeScript declarations, matching
-WASM and migration assets, and SHA-256 checksums. `RELEASE.json` records the source
-commit, package hashes/versions, WASM hash and protocol, content-addressed catalog
-version, and required migration hashes for both databases. Companion dependencies are pinned
-to this release. Container images are tested on native AMD64 and ARM64 runners
-before their shared manifest is published.
-
-No database schema migrations were added since alpha.18. Back up before upgrading.
-Alpha.1 cannot import full version 2 archives; individual-song exports remain
-version 1. See [portability](https://github.com/Lojhan/cadence/blob/main/docs/PORTABILITY.md)
-and [operations](https://github.com/Lojhan/cadence/blob/main/docs/OPERATIONS.md).
+WASM and migration assets, and SHA-256 checksums. `RELEASE.json` records the
+source commit, package hashes and versions, WASM hash and protocol,
+content-addressed catalog version, and required migration hashes. No database
+schema migration is added. Back up an existing database before upgrading. See
+`docs/PORTABILITY.md` and `docs/OPERATIONS.md` for archive and upgrade details.

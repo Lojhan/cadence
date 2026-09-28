@@ -44,6 +44,7 @@ export {
 export type { ButtonProps, IconButtonProps } from "./primitives.tsx";
 export { Button, buttonVariants, IconButton } from "./primitives.tsx";
 export { ScrollArea } from "./scroll-area.tsx";
+export { TabViewer } from "./tab-viewer.tsx";
 export type { TabOption, TabsProps } from "./tabs.tsx";
 export { Tabs, TabsContent } from "./tabs.tsx";
 export { themeClassName } from "./theme.ts";

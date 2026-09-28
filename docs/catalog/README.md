@@ -4,6 +4,10 @@
 
 The imported charts come from the [Public Domain Song Anthology](https://commons.wikimedia.org/wiki/File:The_Public_Domain_Song_Anthology_with_Modern_and_Traditional_Harmonization.pdf) and the [Public Domain Christmas Songs ChordPro collection](https://github.com/pathawks/Christmas-Songs). `imported-review.json` identifies each source, chord count, key transposition, and chart adaptation. The anthology's new harmonizations are [released under CC0](https://aperio.press/news/2020-03-17-public-domain-song-anthology/). The ChordPro contributors also dedicate their markup to CC0. Source maintainers identify the underlying versions as public domain; review other jurisdictions before promoting the catalog globally. These charts contain no copied lyrics, melody notation, or recording. A guitarist should still play through each imported chart on a physical instrument to confirm that the sequence and difficulty suit a beginner lesson.
 
+Four original six-string tab exercises also join the shared catalog. They are
+maintained separately from the 100-candidate chord queue; see
+[tab-practices.md](tab-practices.md) for their scope and rights review.
+
 ## Free sourcing path
 
 1. Verify the composition and a specific historical source for each title. [PD Info](https://www.pdinfo.com/public-domain-music-list.php) explicitly says its lists are research leads, not proof of public-domain status, and that status varies by country. Keep the publication, date, and jurisdiction evidence with the review record. [Library of Congress's America Singing collection](https://www.loc.gov/collections/nineteenth-century-song-sheets/about-this-collection/rights-and-access/) is an example of a collection explicitly marked free to reuse.

@@ -42,7 +42,11 @@ scope.onmessage = async ({ data }) => {
               frame.epoch === target.epoch
             ) {
               guard.arm(generation, target.epoch);
-              engine?.arm(target.mask);
+              if (target.notes) {
+                if (target.notes.length === 1)
+                  engine?.arm_note(target.notes[0] ?? 0);
+                else engine?.arm_notes(new Uint8Array(target.notes));
+              } else engine?.arm(target.mask ?? 0);
               lastMeterOffset = -Infinity;
               scope.postMessage({
                 type: "armed",

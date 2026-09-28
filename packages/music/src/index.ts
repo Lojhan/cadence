@@ -98,12 +98,14 @@ const open: Record<string, [number[], number[]]> = {
 };
 
 import { curatedSongs } from "./catalog-curated.js";
+import { parseTab, tabEventLabel } from "./tab.js";
 import {
   adaptVoicingForTuning,
   getTuningPreset,
   normalizeTuningId,
 } from "./tuning.js";
 
+export * from "./tab.js";
 export * from "./tuning.js";
 
 const chordPattern = /^([A-G])([#b]?)(maj7|m7|sus2|sus4|add9|m|7)?$/;
@@ -276,6 +278,93 @@ export function parseChart(text: string): { chords: string[]; tuning: string } {
     throw new CadenceError("INVALID_CHART", "No chords found");
   return { chords, tuning: detectedTuning };
 }
+function tabPractice(
+  id: string,
+  title: string,
+  attribution: string,
+  sections: readonly { heading: string; chords: readonly string[] }[],
+): Song {
+  const strings = ["e", "B", "G", "D", "A", "E"];
+  const sourceChart = sections
+    .map(({ heading, chords }) => {
+      const voicings = chords.map((symbol) => {
+        const voicing = parseChord(symbol).voicings[0];
+        if (!voicing) throw new Error(`No voicing for ${symbol}`);
+        return voicing.frets;
+      });
+      return [
+        heading,
+        ...strings.map(
+          (string, index) =>
+            `${string}|${voicings
+              .map((frets) => {
+                const fret = frets[5 - index] ?? -1;
+                return `--${fret < 0 ? "-" : fret}--`;
+              })
+              .join("")}|`,
+        ),
+      ].join("\n");
+    })
+    .join("\n\n");
+  const tab = parseTab(sourceChart);
+  return {
+    id,
+    title: `${title} — tab practice`,
+    attribution,
+    sourceChart,
+    chords: tab.events.map((event) => tabEventLabel(event.notes)),
+    tab,
+    revision: 1,
+    catalog: true,
+    tuning: "standard",
+  };
+}
+const tabPractices: readonly Song[] = [
+  tabPractice(
+    "catalog:tab:knockin",
+    "Knockin' on Heaven's Door",
+    "Bob Dylan · original chord-voicing exercise · no melody or lyrics",
+    Array.from({ length: 6 }, (_, index) => ({
+      heading: `Pass ${index + 1}`,
+      chords: Array.from(
+        { length: 4 },
+        (_, offset) =>
+          ["G", "D", "Am", "G", "D", "C"][(index * 4 + offset) % 6] ?? "G",
+      ),
+    })),
+  ),
+  tabPractice(
+    "catalog:tab:amazing-grace",
+    "Amazing Grace",
+    "John Newton · original tab accompaniment from public-domain harmony",
+    [
+      { heading: "Opening", chords: ["G", "D", "G", "G"] },
+      { heading: "Middle", chords: ["C", "G", "Em", "G"] },
+      { heading: "Ending", chords: ["D", "G", "C", "G"] },
+    ],
+  ),
+  tabPractice(
+    "catalog:tab:saints",
+    "When the Saints Go Marching In",
+    "American traditional · original tab accompaniment from public-domain harmony",
+    [
+      { heading: "Opening", chords: ["C", "C", "G", "G"] },
+      { heading: "Middle 1", chords: ["C", "C", "F", "F"] },
+      { heading: "Middle 2", chords: ["C", "Am", "G", "G"] },
+      { heading: "Ending", chords: ["C", "F", "G", "C"] },
+    ],
+  ),
+  tabPractice(
+    "catalog:tab:jingle-bells",
+    "Jingle Bells",
+    "James Lord Pierpont · original tab accompaniment from public-domain harmony",
+    [
+      { heading: "Opening", chords: ["G", "G", "C", "C"] },
+      { heading: "Middle", chords: ["G", "D", "G", "G"] },
+      { heading: "Ending", chords: ["C", "G", "D", "G"] },
+    ],
+  ),
+];
 export const defaultSongs: readonly Song[] = [
   {
     id: "catalog:four",
@@ -314,4 +403,5 @@ export const defaultSongs: readonly Song[] = [
     tuning: "standard",
   },
   ...curatedSongs,
+  ...tabPractices,
 ];

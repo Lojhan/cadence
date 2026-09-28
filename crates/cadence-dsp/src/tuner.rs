@@ -2,7 +2,7 @@
 const WINDOW: usize = 4096;
 const HOP: usize = 2048;
 const MIN_HZ: f32 = 60.0;
-const MAX_HZ: f32 = 500.0;
+const MAX_HZ: f32 = 1400.0;
 const MIN_RMS: f32 = 0.006;
 const MIN_CONFIDENCE: f32 = 0.68;
 const AGREEMENT_CENTS: f32 = 30.0;

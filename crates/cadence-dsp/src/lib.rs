@@ -30,12 +30,18 @@ impl Analyzer {
         Self::with_detector(rate, Detector::Whitened)
     }
     pub fn with_detector(rate: f32, detector: Detector) -> Self {
+        Self::with_minimum_midi(rate, detector, 40)
+    }
+    pub fn for_tablature(rate: f32) -> Self {
+        Self::with_minimum_midi(rate, Detector::Whitened, 36)
+    }
+    fn with_minimum_midi(rate: f32, detector: Detector, minimum_midi: usize) -> Self {
         let fft = FftPlanner::new().plan_fft_forward(WINDOW);
         let scratch = vec![Complex::default(); fft.get_inplace_scratch_len()];
         Self {
             detector: match detector {
                 Detector::Spectral => None,
-                Detector::Whitened => Some(multipitch::MultiPitch::new(rate)),
+                Detector::Whitened => Some(multipitch::MultiPitch::new(rate, minimum_midi)),
             },
             rate,
             ring: vec![0.0; WINDOW],
@@ -55,6 +61,26 @@ impl Analyzer {
         self.filled = 0;
         self.hop = 0;
         self.position = 0;
+    }
+    pub fn notes(&self) -> Option<&[f32; 89]> {
+        self.detector.as_ref().map(|detector| detector.notes())
+    }
+    pub fn fundamental_energy(&self, midi: u8) -> f32 {
+        let frequency = 440.0 * 2.0_f32.powf((f32::from(midi) - 69.0) / 12.0);
+        let bin = (frequency * WINDOW as f32 / self.rate).round() as usize;
+        if bin < 2 || bin + 2 >= self.spectrum.len() / 2 {
+            return 0.0;
+        }
+        self.spectrum[bin - 2..=bin + 2]
+            .iter()
+            .map(|value| value.norm())
+            .fold(0.0_f32, f32::max)
+    }
+    pub fn peak_energy(&self) -> f32 {
+        self.spectrum[1..self.spectrum.len() / 2]
+            .iter()
+            .map(|value| value.norm())
+            .fold(0.0_f32, f32::max)
     }
     pub fn push(&mut self, sample: f32) -> Option<[f32; 12]> {
         self.ring[self.position] = sample;

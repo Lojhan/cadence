@@ -1,6 +1,6 @@
 //! Target-aware chord confirmation. No clocks, browser APIs, or database dependencies.
 pub use cadence_dsp::Detector;
-use cadence_dsp::{Analyzer, HOP};
+use cadence_dsp::{Analyzer, Tuner, HOP};
 #[derive(Clone, Copy)]
 pub enum Profile {
     Gentle,
@@ -19,9 +19,13 @@ pub struct Report {
 }
 pub struct Engine {
     analyzer: Analyzer,
+    tab_analyzer: Option<Analyzer>,
+    tuner: Tuner,
     rate: f32,
     profile: Profile,
     target: u16,
+    note_target: Option<u8>,
+    tab_notes: Vec<u8>,
     confirmed: bool,
     needs_attack: bool,
     released: usize,
@@ -42,9 +46,13 @@ impl Engine {
         }
         Ok(Self {
             analyzer: Analyzer::with_detector(rate, detector),
+            tab_analyzer: None,
+            tuner: Tuner::new(rate)?,
             rate,
             profile,
             target: 0,
+            note_target: None,
+            tab_notes: Vec::new(),
             confirmed: false,
             needs_attack: false,
             released: 0,
@@ -56,16 +64,68 @@ impl Engine {
         if mask & !0xfff != 0 || mask.count_ones() < 3 {
             return Err("Invalid chord mask");
         }
-        self.needs_attack = mask == self.target && (self.needs_attack || self.confirmed);
+        self.needs_attack = self.note_target.is_none()
+            && self.tab_notes.is_empty()
+            && mask == self.target
+            && (self.needs_attack || self.confirmed);
         self.analyzer.clear();
+        if let Some(analyzer) = &mut self.tab_analyzer {
+            analyzer.clear();
+        }
+        self.tuner.reset();
         self.target = mask;
+        self.note_target = None;
+        self.tab_notes.clear();
+        self.confirmed = false;
+        self.stable = 0;
+        Ok(())
+    }
+    pub fn arm_note(&mut self, midi: u8) -> Result<(), &'static str> {
+        if !(36..=88).contains(&midi) {
+            return Err("Tab note is outside supported guitar range");
+        }
+        self.needs_attack = self.note_target == Some(midi) && (self.needs_attack || self.confirmed);
+        self.analyzer.clear();
+        if let Some(analyzer) = &mut self.tab_analyzer {
+            analyzer.clear();
+        }
+        self.tuner.reset();
+        self.target = 0;
+        self.note_target = Some(midi);
+        self.tab_notes.clear();
+        self.confirmed = false;
+        self.stable = 0;
+        Ok(())
+    }
+    pub fn arm_notes(&mut self, notes: &[u8]) -> Result<(), &'static str> {
+        if !(2..=6).contains(&notes.len()) || notes.iter().any(|note| !(36..=88).contains(note)) {
+            return Err("Invalid tab note group");
+        }
+        let mask = notes
+            .iter()
+            .fold(0_u16, |mask, note| mask | (1 << (note % 12)));
+        self.needs_attack = self.tab_notes == notes && (self.needs_attack || self.confirmed);
+        self.analyzer.clear();
+        self.tab_analyzer
+            .get_or_insert_with(|| Analyzer::for_tablature(self.rate))
+            .clear();
+        self.tuner.reset();
+        self.target = mask;
+        self.note_target = None;
+        self.tab_notes = notes.to_vec();
         self.confirmed = false;
         self.stable = 0;
         Ok(())
     }
     pub fn reset(&mut self) {
         self.analyzer.clear();
+        if let Some(analyzer) = &mut self.tab_analyzer {
+            analyzer.clear();
+        }
+        self.tuner.reset();
         self.target = 0;
+        self.note_target = None;
+        self.tab_notes.clear();
         self.confirmed = false;
         self.needs_attack = false;
         self.released = 0;
@@ -79,6 +139,10 @@ impl Engine {
         }
         if samples.iter().any(|s| !s.is_finite() || s.abs() >= 0.999) {
             self.analyzer.clear();
+            if let Some(analyzer) = &mut self.tab_analyzer {
+                analyzer.clear();
+            }
+            self.tuner.reset();
             self.stable = 0;
             return report;
         }
@@ -87,6 +151,10 @@ impl Engine {
             self.released += samples.len();
             self.stable = 0;
             self.analyzer.clear();
+            if let Some(analyzer) = &mut self.tab_analyzer {
+                analyzer.clear();
+            }
+            self.tuner.reset();
             if self.released as f32 >= self.rate * 0.08 {
                 self.needs_attack = false;
             }
@@ -97,6 +165,10 @@ impl Engine {
             self.needs_attack = false;
             self.stable = 0;
             self.analyzer.clear();
+            if let Some(analyzer) = &mut self.tab_analyzer {
+                analyzer.clear();
+            }
+            self.tuner.reset();
         }
         self.previous_level = report.level;
         self.released = 0;
@@ -105,8 +177,37 @@ impl Engine {
             Profile::Balanced => (0.82, 0.18),
             Profile::Precise => (0.92, 0.25),
         };
+        if let Some(note) = self.note_target {
+            self.tuner.process(samples);
+            if self.confirmed || self.needs_attack {
+                return report;
+            }
+            let expected = 440.0 * 2.0_f32.powf((f32::from(note) - 69.0) / 12.0);
+            let correct = self.tuner.reading().is_some_and(|reading| {
+                reading.confidence >= 0.68
+                    && (1200.0 * (reading.frequency / expected).log2()).abs() <= 35.0
+            });
+            self.stable = if correct {
+                self.stable + samples.len()
+            } else {
+                0
+            };
+            report.score = if correct { 1.0 } else { 0.0 };
+            report.progress = (self.stable as f32 / (self.rate * hold)).min(1.0);
+            if report.progress >= 1.0 {
+                self.confirmed = true;
+                report.matched = true;
+            }
+            return report;
+        }
         for sample in samples {
-            let Some(chroma) = self.analyzer.push(*sample) else {
+            let Some(chroma) = (if self.tab_notes.is_empty() {
+                self.analyzer.push(*sample)
+            } else {
+                self.tab_analyzer
+                    .as_mut()
+                    .and_then(|analyzer| analyzer.push(*sample))
+            }) else {
                 continue;
             };
             #[cfg(feature = "diagnostics")]
@@ -114,6 +215,44 @@ impl Engine {
                 report.chroma = Some(chroma);
             }
             if self.target == 0 || self.confirmed || self.needs_attack {
+                continue;
+            }
+            if !self.tab_notes.is_empty() {
+                let Some(analyzer) = &self.tab_analyzer else {
+                    continue;
+                };
+                let Some(detected) = analyzer.notes() else {
+                    continue;
+                };
+                let peak = analyzer.peak_energy();
+                let fundamentals = self
+                    .tab_notes
+                    .iter()
+                    .all(|note| analyzer.fundamental_energy(*note) > peak * 0.035);
+                let total: f32 = chroma.iter().sum();
+                let inside: f32 = chroma
+                    .iter()
+                    .enumerate()
+                    .filter(|(pitch_class, _)| self.target & (1 << pitch_class) != 0)
+                    .map(|(_, energy)| energy)
+                    .sum();
+                let wrong_octave = detected.iter().enumerate().any(|(midi, energy)| {
+                    *energy > 0.0
+                        && self.target & (1 << (midi % 12)) != 0
+                        && !self.tab_notes.contains(&(midi as u8))
+                        && analyzer.fundamental_energy(midi as u8) > peak * 0.2
+                });
+                report.score = if total > 0.0 { inside / total } else { 0.0 };
+                if fundamentals && !wrong_octave && report.score >= minimum - 0.08 {
+                    self.stable += HOP;
+                } else {
+                    self.stable = 0;
+                }
+                report.progress = (self.stable as f32 / (self.rate * hold)).min(1.0);
+                if report.progress >= 1.0 {
+                    self.confirmed = true;
+                    report.matched = true;
+                }
                 continue;
             }
             let total: f32 = chroma.iter().sum();
