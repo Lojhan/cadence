@@ -1,18 +1,13 @@
-Cadence 0.1.0-alpha.21 is an MIT-licensed preview for self-hosting and integration.
+Cadence 0.1.0-alpha.22 is an MIT-licensed preview for self-hosting and integration.
 
-Changes since alpha.20:
+Changes since alpha.21:
 
-- Tablature is one continuous horizontal score. String names remain fixed over
-  a solid background and fading edge while the player scrolls freely. Audio
-  matches bring the current note group into view; fret numbers keep the app's
-  sans-serif type, while string and chord labels use its serif type.
-- Saved ASCII tab can carry optional chord changes and downstroke, upstroke or
-  pluck cues with note values. These are visual playing cues; Rust/WASM still
-  scores the notes, not stroke direction or rhythmic timing.
-- The four original starter tab exercises now show chord changes and original
-  down/up eighth-note practice cues. Their catalog revisions advance, so
-  earlier saved progress for those exercises resets to the beginning. Personal
-  charts, archives and the 51 chord-only catalog songs remain available.
+- The fixed string labels no longer paint a flat color over the app's radial
+  background. The scrolling score fades out beneath them in both themes.
+- Short landscape viewports fit and center all six strings, chord labels, and
+  rhythm cues. The continuous horizontal score and audio-driven scroll remain.
+- Catalog data, recognition behavior, saved charts, and database schema are
+  unchanged from alpha.21.
 
 Recognition remains **experimental**. Synthetic tab tests, including the
 G–D–Am–C exercise, do not establish accuracy on a live guitar or mobile device.

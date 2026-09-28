@@ -61,14 +61,14 @@ export function TabViewer({
     >
       <div
         data-tab-labels=""
-        className="pointer-events-none absolute top-1/2 left-0 z-20 flex w-12 -translate-y-1/2 flex-col bg-background pl-4 font-[Georgia,serif] text-sm font-medium text-muted-foreground after:absolute after:inset-y-0 after:left-full after:w-8 after:bg-gradient-to-r after:from-background after:to-transparent after:content-[''] max-[600px]:pl-2 max-[600px]:text-xs"
+        className="pointer-events-none absolute top-1/2 left-0 z-20 flex w-12 -translate-y-1/2 flex-col pl-4 font-[Georgia,serif] text-sm font-medium text-muted-foreground max-[600px]:pl-2 max-[600px]:text-xs"
       >
-        {showChords ? <div className="h-8" /> : null}
-        {showRhythm ? <div className="h-7" /> : null}
+        {showChords ? <div className="h-8 short-landscape:h-6" /> : null}
+        {showRhythm ? <div className="h-7 short-landscape:h-5" /> : null}
         {strings.map((string, stringIndex) => (
           <div
             key={stringIndex}
-            className="flex h-9 items-center max-[600px]:h-8"
+            className="flex h-9 items-center max-[600px]:h-8 short-landscape:h-6"
           >
             {string}
           </div>
@@ -78,10 +78,15 @@ export function TabViewer({
         ref={viewport}
         data-tab-scroll=""
         className="flex h-full items-center overflow-x-auto overflow-y-hidden"
+        style={{
+          maskImage: "linear-gradient(to right, transparent 60px, black 100px)",
+          WebkitMaskImage:
+            "linear-gradient(to right, transparent 60px, black 100px)",
+        }}
       >
         <div
           data-tab-row={0}
-          className="flex w-max min-w-full items-stretch pr-4 pl-16 max-[600px]:pr-2 max-[600px]:pl-12"
+          className="flex w-max min-w-full items-stretch pr-4 pl-20 max-[600px]:pr-2"
         >
           <div
             className="min-w-0 flex-1"
@@ -89,7 +94,7 @@ export function TabViewer({
           >
             {showChords ? (
               <div
-                className="grid h-8 items-center text-center font-[Georgia,serif] text-lg text-foreground"
+                className="grid h-8 items-center text-center font-[Georgia,serif] text-lg text-foreground short-landscape:h-6"
                 style={{
                   gridTemplateColumns: `repeat(${events.length}, minmax(0, 1fr))`,
                 }}
@@ -115,7 +120,7 @@ export function TabViewer({
             ) : null}
             {showRhythm ? (
               <div
-                className="grid h-7 items-center text-center font-sans text-muted-foreground"
+                className="grid h-7 items-center text-center font-sans text-muted-foreground short-landscape:h-5"
                 style={{
                   gridTemplateColumns: `repeat(${events.length}, minmax(0, 1fr))`,
                 }}
@@ -165,14 +170,14 @@ export function TabViewer({
                       return (
                         <div
                           key={stringIndex}
-                          className="flex h-9 min-w-0 items-center justify-center max-[600px]:h-8"
+                          className="flex h-9 min-w-0 items-center justify-center max-[600px]:h-8 short-landscape:h-6"
                         >
                           {note ? (
                             <>
                               <span className="h-px min-w-0 flex-1 bg-border" />
                               <span
                                 data-tab-fret=""
-                                className={`mx-1.5 rounded-md px-1.5 py-0.5 font-sans text-base font-semibold leading-6 tabular-nums max-[600px]:text-sm ${active ? "bg-primary/15 text-primary" : "text-foreground"}`}
+                                className={`mx-1.5 rounded-md px-1.5 py-0.5 font-sans text-base font-semibold leading-6 tabular-nums max-[600px]:text-sm short-landscape:py-0 short-landscape:text-sm short-landscape:leading-5 ${active ? "bg-primary/15 text-primary" : "text-foreground"}`}
                               >
                                 {note.fret}
                               </span>

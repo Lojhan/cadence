@@ -545,7 +545,7 @@ export function PracticeApp({
         </div>
       </header>
       {activeSong.tab ? (
-        <div className="absolute inset-x-20 top-24 bottom-40 max-[600px]:inset-x-3 max-[600px]:top-20 max-[600px]:bottom-36">
+        <div className="absolute inset-x-20 top-24 bottom-40 max-[600px]:inset-x-3 max-[600px]:top-20 max-[600px]:bottom-36 short-landscape:inset-x-4 short-landscape:top-12 short-landscape:bottom-16">
           <TabViewer
             tab={activeSong.tab}
             index={session.index}

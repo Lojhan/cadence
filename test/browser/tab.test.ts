@@ -177,7 +177,7 @@ E|--3--------------|`);
     await page.screenshot({
       path: join(screenshotDirectory, "desktop-continuation.png"),
     });
-  if (screenshotDirectory) {
+  {
     const mobilePage = await browser.newPage({
       viewport: { width: 390, height: 844 },
     });
@@ -192,9 +192,10 @@ E|--3--------------|`);
       .click();
     await mobilePage.getByText("Your practice").waitFor({ state: "hidden" });
     assert.equal(await mobilePage.locator("[data-tab-row]").count(), 1);
-    await mobilePage.screenshot({
-      path: join(screenshotDirectory, "mobile-knockin.png"),
-    });
+    if (screenshotDirectory)
+      await mobilePage.screenshot({
+        path: join(screenshotDirectory, "mobile-knockin.png"),
+      });
     await mobilePage.locator("[data-tab-scroll]").evaluate((element) => {
       element.scrollLeft = element.scrollWidth;
     });
@@ -209,9 +210,45 @@ E|--3--------------|`);
       mobileLastEvent.x < 390 && mobileLastEvent.x + mobileLastEvent.width > 80,
       "the end of the score is visible after scrolling on mobile",
     );
-    await mobilePage.screenshot({
-      path: join(screenshotDirectory, "mobile-continuation.png"),
+    if (screenshotDirectory)
+      await mobilePage.screenshot({
+        path: join(screenshotDirectory, "mobile-continuation.png"),
+      });
+    await mobilePage.evaluate(() => {
+      document.documentElement.dataset.theme = "dark";
     });
+    if (screenshotDirectory)
+      await mobilePage.screenshot({
+        path: join(screenshotDirectory, "mobile-dark.png"),
+      });
+    await mobilePage.setViewportSize({ width: 844, height: 390 });
+    if (screenshotDirectory)
+      await mobilePage.screenshot({
+        path: join(screenshotDirectory, "landscape-dark.png"),
+      });
+    const landscapeTab = await mobilePage
+      .getByRole("region", { name: "Guitar tablature" })
+      .boundingBox();
+    const lastStringLabel = await mobilePage
+      .locator("[data-tab-labels] > div")
+      .last()
+      .boundingBox();
+    const lastStringRow = await mobilePage
+      .locator('[data-tab-event="0"] > div')
+      .last()
+      .boundingBox();
+    if (!landscapeTab || !lastStringLabel || !lastStringRow)
+      throw new Error("Landscape tablature bounds are unavailable");
+    assert.ok(
+      lastStringLabel.y + lastStringLabel.height <=
+        landscapeTab.y + landscapeTab.height,
+      "all six string labels fit in the landscape tab viewport",
+    );
+    assert.ok(
+      lastStringRow.y + lastStringRow.height <=
+        landscapeTab.y + landscapeTab.height,
+      "all six string rows fit in the landscape tab viewport",
+    );
     await mobilePage.close();
   }
 } finally {
