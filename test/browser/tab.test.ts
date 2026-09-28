@@ -149,6 +149,55 @@ E|--3--------------|`);
     await page.screenshot({
       path: join(screenshotDirectory, "desktop-knockin.png"),
     });
+  await page.getByRole("button", { name: "Open settings" }).click();
+  const firstChord = await page
+    .locator("[data-tab-chord]")
+    .first()
+    .boundingBox();
+  if (!firstChord) throw new Error("Tab chord bounds are unavailable");
+  const chordCovered = await page.evaluate(
+    ({ x, y }) => {
+      const top = document.elementFromPoint(x, y);
+      return !!top?.closest(
+        '[data-slot="dialog"], [data-slot="dialog-overlay"]',
+      );
+    },
+    {
+      x: firstChord.x + firstChord.width / 2,
+      y: firstChord.y + firstChord.height / 2,
+    },
+  );
+  assert.ok(chordCovered, "open practice modal covers tablature chord labels");
+  const modalLayer = await page.evaluate(() => {
+    const overlay = document.querySelector('[data-slot="dialog-overlay"]');
+    const labels = document.querySelector("[data-tab-labels]");
+    if (!overlay || !labels) throw new Error("Modal layer is unavailable");
+    return {
+      overlay: Number.parseInt(getComputedStyle(overlay).zIndex, 10),
+      labels: Number.parseInt(getComputedStyle(labels).zIndex, 10),
+    };
+  });
+  assert.ok(
+    modalLayer.overlay > modalLayer.labels,
+    "modal backdrop sits above the fixed tablature labels",
+  );
+  if (screenshotDirectory)
+    await page.screenshot({
+      path: join(screenshotDirectory, "desktop-modal.png"),
+    });
+  const modalTabs = page.locator(
+    '[data-slot="dialog"] [data-slot="tabs-trigger"]',
+  );
+  assert.equal(await modalTabs.count(), 4);
+  for (const modalTab of await modalTabs.all()) {
+    assert.equal(
+      (await modalTab.textContent())?.trim(),
+      "",
+      "modal tabs show icons only",
+    );
+    assert.equal(await modalTab.locator("svg").count(), 1);
+  }
+  await page.getByRole("button", { name: "Close", exact: true }).click();
   const scroll = tab.locator("[data-tab-scroll]");
   const labelsBefore = await tab.locator("[data-tab-labels]").boundingBox();
   const manualPosition = await scroll.evaluate((element) => {
@@ -192,6 +241,17 @@ E|--3--------------|`);
       .click();
     await mobilePage.getByText("Your practice").waitFor({ state: "hidden" });
     assert.equal(await mobilePage.locator("[data-tab-row]").count(), 1);
+    await mobilePage.evaluate(() => {
+      document.documentElement.dataset.theme = "dark";
+    });
+    await mobilePage.getByRole("button", { name: "Open settings" }).click();
+    if (screenshotDirectory)
+      await mobilePage.screenshot({
+        path: join(screenshotDirectory, "mobile-modal-dark.png"),
+      });
+    await mobilePage
+      .getByRole("button", { name: "Close", exact: true })
+      .click();
     if (screenshotDirectory)
       await mobilePage.screenshot({
         path: join(screenshotDirectory, "mobile-knockin.png"),

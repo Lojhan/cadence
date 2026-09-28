@@ -64,14 +64,14 @@ function Modal({
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay
-          className="modal-overlay fixed inset-0 z-10 bg-[#273e3540] backdrop-blur-[9px]"
+          className="modal-overlay fixed inset-0 z-40 bg-[#273e3540] backdrop-blur-[9px]"
           data-slot="dialog-overlay"
         />
         <DialogPrimitive.Content
           data-slot={side ? "sheet" : "dialog"}
           data-side={side}
           className={cn(
-            "modal-panel fixed top-1/2 left-1/2 z-11 flex max-h-[calc(100dvh-48px)] w-[min(600px,calc(100vw-32px))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[28px] border border-border bg-[var(--white)] text-foreground shadow-[0_24px_90px_#0002] max-[480px]:max-h-[calc(100dvh-32px)] max-[480px]:w-[calc(100vw-24px)] max-[480px]:rounded-3xl",
+            "modal-panel fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-48px)] w-[min(600px,calc(100vw-32px))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[28px] border border-border bg-[var(--white)] text-foreground shadow-[0_24px_90px_#0002] max-[480px]:max-h-[calc(100dvh-32px)] max-[480px]:w-[calc(100vw-24px)] max-[480px]:rounded-3xl",
             side &&
               "cadence-sheet !top-0 !right-0 !bottom-0 !left-auto !h-dvh !max-h-dvh !w-[min(460px,100vw)] !translate-0 !rounded-[24px_0_0_24px] data-[side=left]:!right-auto data-[side=left]:!left-0 data-[side=left]:!rounded-[0_24px_24px_0]",
           )}
@@ -138,7 +138,7 @@ export function Popover({
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Content
           data-slot="popover"
-          className="cadence-popover z-12 max-h-[min(50dvh,420px)] w-[min(340px,calc(100vw-32px))] overflow-auto rounded-[20px] border border-border bg-[var(--white)] p-5 text-foreground shadow-[0_18px_45px_#0002] [&_.cadence-select-control]:w-full [&_label]:mb-3 [&_label]:block [&_label]:text-[13px]"
+          className="cadence-popover z-60 max-h-[min(50dvh,420px)] w-[min(340px,calc(100vw-32px))] overflow-auto rounded-[20px] border border-border bg-[var(--white)] p-5 text-foreground shadow-[0_18px_45px_#0002] [&_.cadence-select-control]:w-full [&_label]:mb-3 [&_label]:block [&_label]:text-[13px]"
           align={align}
           side={side}
           sideOffset={10}

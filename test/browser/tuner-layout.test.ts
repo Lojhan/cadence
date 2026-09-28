@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { chromium, webkit } from "playwright";
@@ -136,13 +136,102 @@ try {
   assert.ok(label.clipped, "long preset text is actually clipped");
   await page.close();
 
+  const screenshotDirectory = process.env.CADENCE_TUNER_SCREENSHOT_DIR;
+  if (screenshotDirectory)
+    await mkdir(screenshotDirectory, { recursive: true });
+  const desktop = await browser.newPage({
+    viewport: { width: 1440, height: 900 },
+  });
+  await desktop.goto(`${origin}/tuning`);
+  const stringBoard = desktop.locator(".tuner-string-board");
+  const stringButtons = stringBoard.getByRole("button", {
+    name: /^Select .* string$/,
+  });
+  assert.equal(await stringButtons.count(), 6);
+  for (const button of await stringButtons.all()) {
+    const bounds = await button.boundingBox();
+    assert.ok(
+      bounds && bounds.width >= 48 && bounds.height >= 48,
+      "desktop strings remain visible and selectable",
+    );
+  }
+  const horizontalWires = stringBoard.locator(".tuner-wire-horizontal");
+  for (const wire of await horizontalWires.all()) {
+    const bounds = await wire.boundingBox();
+    assert.ok(
+      bounds && bounds.width > 80 && bounds.height > 0,
+      "desktop string wire is visibly drawn",
+    );
+  }
+  if (screenshotDirectory)
+    await desktop.screenshot({
+      path: join(screenshotDirectory, "tuner-desktop-strings.png"),
+    });
+  await desktop.setViewportSize({ width: 900, height: 600 });
+  const compactStage = await desktop
+    .locator(".tuner-experience-stage")
+    .boundingBox();
+  const compactButtons = await stringButtons.all();
+  const compactFirst = await compactButtons[0]?.boundingBox();
+  const compactLast = await compactButtons[5]?.boundingBox();
+  if (!compactStage || !compactFirst || !compactLast)
+    throw new Error("Compact desktop string bounds are unavailable");
+  if (screenshotDirectory)
+    await desktop.screenshot({
+      path: join(screenshotDirectory, "tuner-compact-desktop-strings.png"),
+    });
+  assert.ok(
+    compactFirst.y >= compactStage.y &&
+      compactLast.y + compactLast.height <=
+        compactStage.y + compactStage.height,
+    "all six desktop strings fit in a short laptop viewport",
+  );
+  await desktop.close();
+
   const safari = await webkit.launch();
   try {
+    const safariDesktop = await safari.newPage({
+      viewport: { width: 1440, height: 900 },
+    });
+    await safariDesktop.goto(`${origin}/tuning`);
+    const safariWires = safariDesktop.locator(".tuner-wire-horizontal");
+    assert.equal(await safariWires.count(), 6);
+    for (const wire of await safariWires.all()) {
+      const bounds = await wire.boundingBox();
+      assert.ok(
+        bounds && bounds.width > 80 && bounds.height > 0,
+        "Safari desktop string wire is visible",
+      );
+    }
+    if (screenshotDirectory)
+      await safariDesktop.screenshot({
+        path: join(screenshotDirectory, "tuner-safari-desktop-strings.png"),
+      });
+    await safariDesktop.close();
     const phone = await safari.newPage({
       viewport: { width: 390, height: 844 },
     });
     await phone.goto(`${origin}/tuning`);
+    await phone.locator(".tuner-preset-trigger").click();
+    await phone.getByRole("button", { name: "Standard", exact: true }).click();
+    await phone.getByRole("button", { name: "Switch to dark theme" }).click();
+    await phone.waitForFunction(
+      () =>
+        getComputedStyle(
+          document.querySelector(
+            '[data-slot="tabs-trigger"][data-state="active"]',
+          ) ?? document.documentElement,
+        ).backgroundColor === "rgb(176, 207, 161)",
+    );
+    if (screenshotDirectory)
+      await phone.screenshot({
+        path: join(screenshotDirectory, "tuner-mobile-strings.png"),
+      });
     await phone.getByRole("tab", { name: "Chromatic" }).click();
+    if (screenshotDirectory)
+      await phone.screenshot({
+        path: join(screenshotDirectory, "tuner-mobile-chromatic.png"),
+      });
     await phone.keyboard.press("ArrowLeft");
     assert.equal(
       await phone

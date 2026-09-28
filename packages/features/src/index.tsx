@@ -824,8 +824,9 @@ export function PracticeApp({
       >
         <Tabs
           label="Practice settings"
+          iconOnly
           className="h-[min(740px,calc(100dvh-140px))] shrink-0"
-          listClassName="tabs mx-7 mb-6 max-[480px]:mx-5 max-[480px]:mb-6 max-[480px]:[&_[data-slot=tabs-trigger]]:min-h-[60px] max-[480px]:[&_[data-slot=tabs-trigger]]:flex-col max-[480px]:[&_[data-slot=tabs-trigger]]:gap-1.5 max-[480px]:[&_[data-slot=tabs-trigger]]:px-[3px] max-[480px]:[&_[data-slot=tabs-trigger]]:py-2.5 max-[480px]:[&_[data-slot=tabs-trigger]]:text-[11px]"
+          listClassName="tabs mx-7 mb-6 max-[480px]:mx-5 max-[480px]:mb-6 [&_[data-slot=tabs-trigger]_svg]:size-5"
           value={panel ?? "library"}
           options={[
             { value: "library", label: "Music", icon: Library },

@@ -1,12 +1,13 @@
-Cadence 0.1.0-alpha.23 is an MIT-licensed preview for self-hosting and integration.
+Cadence 0.1.0-alpha.24 is an MIT-licensed preview for self-hosting and integration.
 
-Changes since alpha.22:
+Changes since alpha.23:
 
-- Landscape tablature respects the device's left and right CSS safe-area
-  insets. String labels and notes clear an iPhone notch in either orientation.
-  Devices without side insets retain the ordinary 16px edge spacing.
+- The practice modal now covers tablature annotations and uses icon-only tabs
+  with accessible labels.
+- Both tuner modes sit slightly higher on mobile. The string-by-string tuner
+  fits all six strings in shorter desktop windows.
 - The score, catalog data, recognition behavior, saved charts, and database
-  schema are unchanged from alpha.22.
+  schema are unchanged from alpha.23.
 
 Recognition remains **experimental**. Synthetic tab tests, including the
 G–D–Am–C exercise, do not establish accuracy on a live guitar or mobile device.

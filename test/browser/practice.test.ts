@@ -381,10 +381,11 @@ try {
   await page.getByRole("button", { name: "Open settings" }).click();
   await page.getByRole("tab", { name: "Setup" }).click();
   await page.keyboard.press("ArrowRight");
-  await page.waitForFunction(() =>
-    document
-      .querySelector('[role="tab"][data-state="active"]')
-      ?.textContent?.includes("Account"),
+  await page.waitForFunction(
+    () =>
+      document
+        .querySelector('[role="tab"][aria-label="Account"]')
+        ?.getAttribute("aria-selected") === "true",
   );
   assert.equal(
     await page
@@ -394,10 +395,11 @@ try {
     "arrow keys switch modal tabs",
   );
   await page.keyboard.press("ArrowLeft");
-  await page.waitForFunction(() =>
-    document
-      .querySelector('[role="tab"][data-state="active"]')
-      ?.textContent?.includes("Setup"),
+  await page.waitForFunction(
+    () =>
+      document
+        .querySelector('[role="tab"][aria-label="Setup"]')
+        ?.getAttribute("aria-selected") === "true",
   );
   const mobilePreferenceLayout = await page.evaluate(() => {
     const select = document.querySelector<HTMLSelectElement>(

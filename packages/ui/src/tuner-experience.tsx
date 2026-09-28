@@ -422,13 +422,13 @@ export function TunerExperience(props: TunerExperienceProps) {
         listClassName="tuner-mode-switch mt-4 justify-self-center [&_[data-slot=tabs-trigger]]:min-w-[124px]"
       >
         <TabsContent value={props.mode} asChild>
-          <main className="tuner-experience-stage grid min-h-0 w-full place-items-center">
+          <main className="tuner-experience-stage grid min-h-0 w-full -translate-y-3 place-items-center min-[700px]:translate-y-2">
             {props.mode === "strings" ? (
               <section
-                className="tuner-experience-view tuner-strings-view flex h-full min-h-0 w-[min(100%,1140px)] flex-col pt-[clamp(16px,3vh,34px)] min-[700px]:items-center min-[700px]:gap-[clamp(16px,2vh,28px)] min-[700px]:px-[max(12px,3vw)] min-[700px]:pt-0 min-[1000px]:flex-row min-[1000px]:gap-[clamp(35px,6vw,100px)] short-phone:pt-[9px]"
+                className="tuner-experience-view tuner-strings-view flex h-full min-h-0 w-[min(100%,1140px)] flex-col pt-[clamp(16px,3vh,34px)] min-[700px]:flex-row min-[700px]:items-center min-[700px]:gap-[clamp(35px,6vw,100px)] min-[700px]:px-[max(12px,3vw)] min-[700px]:pt-0 short-phone:pt-[9px]"
                 aria-label="String by string tuner"
               >
-                <div className="tuner-experience-intro flex-none text-center min-[700px]:w-full min-[1000px]:w-[clamp(230px,25%,360px)] min-[1000px]:text-left">
+                <div className="tuner-experience-intro flex-none text-center min-[700px]:w-[clamp(230px,25%,360px)] min-[700px]:text-left">
                   <div className="tuner-target-note mt-[5px] font-[Georgia,serif] text-[76px] leading-[0.95] tracking-[-0.065em] min-[700px]:text-[clamp(76px,10vw,140px)] short-phone:text-[58px]">
                     <TunerNote note={selected.note} />
                   </div>

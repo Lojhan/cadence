@@ -16,6 +16,7 @@ export interface TabsProps {
   children?: ReactNode;
   className?: string;
   listClassName?: string;
+  iconOnly?: boolean;
 }
 
 export function Tabs({
@@ -26,6 +27,7 @@ export function Tabs({
   children,
   className,
   listClassName,
+  iconOnly = false,
 }: TabsProps) {
   return (
     <TabsPrimitive.Root
@@ -48,11 +50,12 @@ export function Tabs({
             <TabsPrimitive.Trigger
               key={option.value}
               value={option.value}
+              aria-label={iconOnly ? option.label : undefined}
               className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
               data-slot="tabs-trigger"
             >
               {Icon && <Icon aria-hidden={true} />}
-              {option.label}
+              {!iconOnly && option.label}
             </TabsPrimitive.Trigger>
           );
         })}
