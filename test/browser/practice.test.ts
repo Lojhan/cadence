@@ -208,6 +208,55 @@ try {
   }, process.env.CADENCE_NATIVE_MIC === "1");
   await page.goto("http://localhost:3100");
   await page.getByRole("heading", { name: "C", exact: true }).waitFor();
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await page.getByRole("button", { name: "Open metronome controls" }).click();
+    await page.getByRole("button", { name: "Start metronome" }).click();
+    await page.getByRole("button", { name: "Stop metronome" }).waitFor();
+    await page.getByRole("button", { name: "Stop metronome" }).click();
+    await page.getByRole("button", { name: "Start metronome" }).waitFor();
+    await page.keyboard.press("Escape");
+  }
+  await page.getByRole("button", { name: "Open metronome controls" }).click();
+  await page.getByRole("spinbutton", { name: "Tempo (BPM)" }).fill("144");
+  await page
+    .getByRole("combobox", { name: "Beats per measure" })
+    .selectOption("3");
+  await page.getByRole("button", { name: "Start metronome" }).click();
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Open music library" }).click();
+  await page
+    .getByRole("button", { name: "Metronome running, open controls" })
+    .waitFor({ state: "hidden" });
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Open metronome controls" }).waitFor();
+  assert.equal(
+    await page.evaluate(() =>
+      (
+        window as unknown as { cadenceTestAudioContexts: AudioContext[] }
+      ).cadenceTestAudioContexts.every((context) => context.state === "closed"),
+    ),
+    true,
+    "repeated toggles and library navigation release metronome audio",
+  );
+  await page.getByRole("button", { name: "Open metronome controls" }).click();
+  await page.getByRole("button", { name: "Start metronome" }).click();
+  await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", {
+      configurable: true,
+      value: true,
+    });
+    document.dispatchEvent(new Event("visibilitychange"));
+    Reflect.deleteProperty(document, "hidden");
+  });
+  await page.getByRole("button", { name: "Start metronome" }).waitFor();
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Open metronome controls" }).click();
+  await page.getByRole("button", { name: "Start metronome" }).click();
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Guitar tuner" }).click();
+  await page.getByRole("button", { name: "Close tuner" }).click();
+  await page.getByRole("heading", { name: "C", exact: true }).waitFor();
+  await page.getByRole("button", { name: "Open metronome controls" }).waitFor();
   assert.equal(
     await page.evaluate(
       () => document.documentElement.scrollHeight <= window.innerHeight,
@@ -517,6 +566,9 @@ try {
   await page
     .getByRole("button", { name: "Previous chord", exact: true })
     .click();
+  await page.getByRole("button", { name: "Open metronome controls" }).click();
+  await page.getByRole("button", { name: "Start metronome" }).click();
+  await page.keyboard.press("Escape");
   await page
     .getByRole("button", { name: "Unmute microphone", exact: true })
     .click();
@@ -530,6 +582,11 @@ try {
   await page
     .getByRole("button", { name: "Mute microphone", exact: true })
     .click();
+  await page
+    .getByRole("button", { name: "Metronome running, open controls" })
+    .click();
+  await page.getByRole("button", { name: "Stop metronome" }).click();
+  await page.keyboard.press("Escape");
   assert.equal(
     await page.getByRole("heading", { name: "Am", exact: true }).count(),
     1,

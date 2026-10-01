@@ -1,5 +1,20 @@
 # Audio evaluation
 
+## Built-in metronome and recognition
+
+The practice metronome uses a separate output-only Web Audio graph and schedules
+short clicks on its `AudioContext.currentTime`. It never connects to microphone
+capture or the recognition worker. The clicks are quiet and above the supported
+guitar note range; the practice controls recommend headphones while recognition
+is active. Playback stops on practice panels, page exit or backgrounding, audio
+interruption and session completion. Browser checks exercise metronome playback
+alongside the synthetic microphone → worklet → worker → WASM practice flow.
+
+These checks do not simulate an acoustic speaker feeding the microphone. A real
+speaker click could still trigger the recognizer's repeated-attack gate while a
+chord sustains. Test that case with a physical guitar, speaker and microphone on
+supported devices before claiming click rejection or recommending speaker use.
+
 Recognition remains experimental. Synthetic tests verify engineering behavior;
 they do not establish that the app reliably recognizes a beginner's instrument.
 The stable-release targets in `design/TECHNICAL_SPEC.md` remain unmet.
