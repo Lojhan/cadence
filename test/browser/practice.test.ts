@@ -124,6 +124,19 @@ try {
     // This fixture replaces only the physical microphone boundary. The application
     // still uses its actual MediaStream source, AudioWorklet, worker and WASM.
     if (!nativeCapture) {
+      let sessionType = "auto";
+      Object.defineProperty(navigator, "audioSession", {
+        configurable: true,
+        value: {
+          get type() {
+            return sessionType;
+          },
+          set type(next: string) {
+            sessionType = next;
+            events.push({ type: "audio-session", mode: next });
+          },
+        },
+      });
       const OriginalContext = window.AudioContext;
       window.AudioContext = class extends OriginalContext {
         constructor(options?: AudioContextOptions) {
@@ -151,6 +164,8 @@ try {
           : [];
       };
       navigator.mediaDevices.getUserMedia = async () => {
+        if (sessionType !== "play-and-record")
+          throw new DOMException("Wrong audio session", "InvalidStateError");
         if (
           (window as unknown as { cadenceTestDenyMicrophone: boolean })
             .cadenceTestDenyMicrophone
@@ -208,15 +223,53 @@ try {
   }, process.env.CADENCE_NATIVE_MIC === "1");
   await page.goto("http://localhost:3100");
   await page.getByRole("heading", { name: "C", exact: true }).waitFor();
+  if (process.env.CADENCE_NATIVE_MIC !== "1") {
+    assert.equal(
+      await page.evaluate(
+        () =>
+          (window as unknown as { cadenceTestStreams: MediaStream[] })
+            .cadenceTestStreams.length,
+      ),
+      0,
+      "metronome starts before the first microphone request",
+    );
+  }
   for (let attempt = 0; attempt < 3; attempt++) {
     await page.getByRole("button", { name: "Open metronome controls" }).click();
     await page.getByRole("button", { name: "Start metronome" }).click();
     await page.getByRole("button", { name: "Stop metronome" }).waitFor();
+    if (process.env.CADENCE_NATIVE_MIC !== "1")
+      assert.equal(
+        await page.evaluate(
+          () =>
+            (navigator as Navigator & { audioSession: { type: string } })
+              .audioSession.type,
+        ),
+        "playback",
+        "output uses the playback session without microphone permission",
+      );
     await page.getByRole("button", { name: "Stop metronome" }).click();
     await page.getByRole("button", { name: "Start metronome" }).waitFor();
+    if (process.env.CADENCE_NATIVE_MIC !== "1")
+      assert.equal(
+        await page.evaluate(
+          () =>
+            (navigator as Navigator & { audioSession: { type: string } })
+              .audioSession.type,
+        ),
+        "auto",
+        "stopping restores the previous output session",
+      );
     await page.keyboard.press("Escape");
   }
   await page.getByRole("button", { name: "Open metronome controls" }).click();
+  const volume = page.getByRole("slider", { name: "Volume" });
+  assert.equal(await volume.getAttribute("aria-valuetext"), "70%");
+  await volume.focus();
+  await page.keyboard.press("ArrowRight");
+  assert.equal(await volume.getAttribute("aria-valuetext"), "80%");
+  await page.keyboard.press("ArrowLeft");
+  assert.equal(await volume.getAttribute("aria-valuetext"), "70%");
   await page.getByRole("spinbutton", { name: "Tempo (BPM)" }).fill("144");
   const accent = page.getByRole("checkbox", { name: "Accent first beat" });
   await accent.focus();
@@ -243,6 +296,15 @@ try {
   const startBox = await page
     .getByRole("button", { name: "Start metronome" })
     .boundingBox();
+  const volumeBox = await volume.boundingBox();
+  assert.ok(
+    volumeBox &&
+      startBox &&
+      volumeBox.x >= startBox.x &&
+      volumeBox.x + volumeBox.width <= startBox.x + startBox.width &&
+      volumeBox.width >= 100,
+    "the volume slider fits the mobile metronome panel",
+  );
   assert.ok(
     accentLayout.centered <= 1,
     "accent copy is vertically centered with its checkbox",
@@ -262,8 +324,18 @@ try {
     "accent row and start button share a right edge",
   );
   assert.ok(
-    Math.abs((tempoBox?.x ?? 0) - (beatsBox?.x ?? 0)) <= 1,
-    "tempo and beat inputs share a left edge",
+    tempoBox &&
+      beatsBox &&
+      Math.abs(tempoBox.y - beatsBox.y) <= 1 &&
+      tempoBox.x + tempoBox.width + 8 <= beatsBox.x,
+    "tempo and beat inputs share a compact row",
+  );
+  const popoverBox = await page.locator(".cadence-popover").boundingBox();
+  assert.ok(
+    popoverBox &&
+      startBox &&
+      startBox.y + startBox.height <= popoverBox.y + popoverBox.height,
+    "the Start button is fully visible without scrolling the phone panel",
   );
   assert.ok(
     ((await accent.boundingBox())?.width ?? 0) >= 20,
@@ -426,6 +498,15 @@ try {
       ),
       0,
       "denied permission creates no stream",
+    );
+    assert.equal(
+      await page.evaluate(
+        () =>
+          (navigator as Navigator & { audioSession: { type: string } })
+            .audioSession.type,
+      ),
+      "auto",
+      "denied permission restores the previous audio session",
     );
     await page.evaluate(() =>
       Object.assign(window, { cadenceTestDenyMicrophone: false }),
@@ -641,6 +722,19 @@ try {
     .getByRole("button", { name: "Unmute microphone", exact: true })
     .click();
   await page
+    .getByRole("button", { name: "Mute microphone", exact: true })
+    .waitFor();
+  if (process.env.CADENCE_NATIVE_MIC !== "1")
+    assert.equal(
+      await page.evaluate(
+        () =>
+          (navigator as Navigator & { audioSession: { type: string } })
+            .audioSession.type,
+      ),
+      "play-and-record",
+      "microphone capture keeps its recording audio session",
+    );
+  await page
     .getByRole("heading", { name: "G", exact: true })
     .waitFor({ timeout: 15000 });
   await page
@@ -650,6 +744,16 @@ try {
   await page
     .getByRole("button", { name: "Mute microphone", exact: true })
     .click();
+  if (process.env.CADENCE_NATIVE_MIC !== "1")
+    assert.equal(
+      await page.evaluate(
+        () =>
+          (navigator as Navigator & { audioSession: { type: string } })
+            .audioSession.type,
+      ),
+      "play-and-record",
+      "the retained microphone track keeps capture available",
+    );
   await page
     .getByRole("button", { name: "Metronome running, open controls" })
     .click();
