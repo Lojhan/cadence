@@ -2,6 +2,8 @@ Cadence 0.1.0-alpha.26 is an MIT-licensed preview for self-hosting and integrati
 
 Changes since alpha.25:
 
+- The web app updates TanStack Start to 1.168.60, React Router to 1.170.41,
+  and the resolved Start server core to 1.169.39 for the upstream XSS fix.
 - Single-note tab practice now confirms from two fresh agreeing pitch analyses
   instead of waiting for the tuner's display reading and an additional hold.
   The display tuner retains its smoothing.
