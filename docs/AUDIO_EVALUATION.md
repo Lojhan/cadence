@@ -4,11 +4,23 @@
 
 The practice metronome uses a separate output-only Web Audio graph and schedules
 short clicks on its `AudioContext.currentTime`. It never connects to microphone
-capture or the recognition worker. The clicks are quiet and above the supported
-guitar note range; the practice controls recommend headphones while recognition
-is active. Playback stops on practice panels, page exit or backgrounding, audio
+capture or the recognition worker. The clicks are above the supported guitar
+note range, default to 70% of a capped output gain, and have a 10–100% volume
+control; the practice controls recommend headphones while recognition is active.
+On browsers with the Audio Session API, output uses `playback` before microphone
+access and switches to `play-and-record` for capture. Playback stops on practice
+panels, page exit or backgrounding, audio
 interruption and session completion. Browser checks exercise metronome playback
 alongside the synthetic microphone → worklet → worker → WASM practice flow.
+Mac WebKit checks start and stop output before any microphone request. They do
+not measure sound pressure or reproduce physical iPhone audio routing; a real
+iOS Safari retest of start latency and volume remains required.
+
+An iPhone field report described clicks that were barely audible and only became
+noticeable after the microphone was enabled, with several seconds of apparent
+startup delay. The 70% default, first-click scheduling before resume completes,
+and coordinated audio session modes address plausible causes; the report has not
+yet been retested on that device.
 
 These checks do not simulate an acoustic speaker feeding the microphone. A real
 speaker click could still trigger the recognizer's repeated-attack gate while a

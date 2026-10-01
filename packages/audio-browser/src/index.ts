@@ -1,6 +1,7 @@
 export { Metronome } from "./metronome.ts";
 export { type TunerAudioEvent, TunerMicrophone } from "./tuner.ts";
 
+import { browserAudioSession } from "./audio-session.ts";
 import type { AudioEvent, Target } from "./protocol.ts";
 
 export type { AudioEvent, Target } from "./protocol.ts";
@@ -18,6 +19,7 @@ export class Microphone {
   private cancelInit: (() => void) | undefined;
   private disposed = false;
   private listening = false;
+  private releaseCapture: (() => void) | undefined;
   constructor(private readonly emit: (event: AudioEvent) => void) {}
   async devices() {
     return (await navigator.mediaDevices.enumerateDevices()).filter(
@@ -32,6 +34,8 @@ export class Microphone {
     const request = ++this.generation;
     if (!navigator.mediaDevices?.getUserMedia || !window.isSecureContext)
       throw new Error("Microphone access requires HTTPS or localhost.");
+    const releaseCapture = browserAudioSession.capture();
+    this.releaseCapture = releaseCapture;
     let stream: MediaStream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({
@@ -44,10 +48,17 @@ export class Microphone {
         video: false,
       });
     } catch (error) {
+      if (this.releaseCapture === releaseCapture) {
+        this.releaseCapture = undefined;
+        releaseCapture();
+      }
       throw new Error(captureErrorMessage(error), { cause: error });
     }
     if (request !== this.generation || this.disposed) {
       for (const track of stream.getTracks()) track.stop();
+      releaseCapture();
+      if (this.releaseCapture === releaseCapture)
+        this.releaseCapture = undefined;
       return;
     }
     this.stream = stream;
@@ -213,6 +224,8 @@ export class Microphone {
     this.capture = undefined;
     this.worker = undefined;
     this.context = undefined;
+    this.releaseCapture?.();
+    this.releaseCapture = undefined;
   }
   dispose() {
     this.disposed = true;

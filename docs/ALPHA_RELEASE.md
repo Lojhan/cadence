@@ -4,6 +4,9 @@ Changes since alpha.25:
 
 - The web app updates TanStack Start to 1.168.60, React Router to 1.170.41,
   and the resolved Start server core to 1.169.39 for the upstream XSS fix.
+- The metronome starts its first click during the Start tap, uses a louder 70%
+  default with a 10–100% volume control, and coordinates Safari playback and
+  microphone audio session modes. Startup can be canceled or times out cleanly.
 - Single-note tab practice now confirms from two fresh agreeing pitch analyses
   instead of waiting for the tuner's display reading and an additional hold.
   The display tuner retains its smoothing.
@@ -19,7 +22,8 @@ Changes since alpha.25:
   unchanged from alpha.25.
 
 Recognition remains **experimental**. Physical guitar playthrough, speaker-to-
-microphone bleed, device checks, held-out recordings, and country-specific
+microphone bleed, iPhone Safari audio retesting, device checks, held-out
+recordings, and country-specific
 rights review remain open. The hosted distribution's prior Clerk and Stripe
 sandbox checks do not establish live payment readiness.
 

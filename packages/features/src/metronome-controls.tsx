@@ -1,10 +1,12 @@
 import { Metronome } from "@cadence/audio-browser";
 import { Button, DockButtonMenu, Field, Input, Select } from "@cadence/ui";
 import { Check, Timer } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function MetronomeControls({ enabled }: { enabled: boolean }) {
   const [running, setRunning] = useState(false);
+  const [starting, setStarting] = useState(false);
+  const startRequest = useRef(0);
   const [metronome] = useState(
     () =>
       new Metronome(undefined, undefined, undefined, () => setRunning(false)),
@@ -12,10 +14,15 @@ export function MetronomeControls({ enabled }: { enabled: boolean }) {
   const [bpm, setBpm] = useState(100);
   const [beats, setBeats] = useState(4);
   const [accent, setAccent] = useState(true);
+  const [volume, setVolume] = useState(70);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!enabled) metronome.stop();
+    if (!enabled) {
+      startRequest.current++;
+      metronome.stop();
+      setStarting(false);
+    }
   }, [enabled, metronome]);
   useEffect(() => {
     const stopWhenHidden = () => {
@@ -25,6 +32,7 @@ export function MetronomeControls({ enabled }: { enabled: boolean }) {
     document.addEventListener("visibilitychange", stopWhenHidden);
     window.addEventListener("pagehide", stopOnLeave);
     return () => {
+      startRequest.current++;
       document.removeEventListener("visibilitychange", stopWhenHidden);
       window.removeEventListener("pagehide", stopOnLeave);
       metronome.stop();
@@ -32,14 +40,20 @@ export function MetronomeControls({ enabled }: { enabled: boolean }) {
   }, [metronome]);
 
   async function start() {
+    const request = ++startRequest.current;
     setError("");
+    setStarting(true);
     try {
-      await metronome.start(bpm, beats, accent);
+      await metronome.start(bpm, beats, accent, volume);
+      if (request !== startRequest.current) return;
       setRunning(metronome.running);
     } catch (cause) {
+      if (request !== startRequest.current) return;
       setError(
         cause instanceof Error ? cause.message : "Audio output is unavailable.",
       );
+    } finally {
+      if (request === startRequest.current) setStarting(false);
     }
   }
 
@@ -48,7 +62,7 @@ export function MetronomeControls({ enabled }: { enabled: boolean }) {
     setBeats(nextBeats);
     setAccent(nextAccent);
     if (running) {
-      void metronome.start(nextBpm, nextBeats, nextAccent).then(
+      void metronome.start(nextBpm, nextBeats, nextAccent, volume).then(
         () => setRunning(metronome.running),
         (cause: unknown) =>
           setError(
@@ -70,38 +84,58 @@ export function MetronomeControls({ enabled }: { enabled: boolean }) {
     >
       <div className="grid gap-2 p-2 text-foreground">
         <strong className="text-sm">Metronome</strong>
-        <Field label="Tempo (BPM)" htmlFor="metronome-bpm" className="!my-1">
-          <Input
-            id="metronome-bpm"
-            type="number"
-            min={40}
-            max={240}
-            step={1}
-            value={bpm}
-            onChange={(event) =>
-              change(Number(event.target.value), beats, accent)
-            }
-          />
-        </Field>
-        <Field
-          label="Beats per measure"
-          htmlFor="metronome-beats"
-          className="!my-1"
-        >
-          <Select
-            id="metronome-beats"
-            label="Beats per measure"
-            value={beats}
-            onChange={(event) =>
-              change(bpm, Number(event.target.value), accent)
-            }
-          >
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((count) => (
-              <option key={count} value={count}>
-                {count}
-              </option>
-            ))}
-          </Select>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Tempo (BPM)" htmlFor="metronome-bpm" className="!my-1">
+            <Input
+              id="metronome-bpm"
+              type="number"
+              min={40}
+              max={240}
+              step={1}
+              value={bpm}
+              onChange={(event) =>
+                change(Number(event.target.value), beats, accent)
+              }
+            />
+          </Field>
+          <Field label="Beats" htmlFor="metronome-beats" className="!my-1">
+            <Select
+              id="metronome-beats"
+              label="Beats per measure"
+              value={beats}
+              onChange={(event) =>
+                change(bpm, Number(event.target.value), accent)
+              }
+            >
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((count) => (
+                <option key={count} value={count}>
+                  {count}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        </div>
+        <Field label="Volume" htmlFor="metronome-volume" className="!my-1">
+          <span className="flex min-h-11 items-center gap-3">
+            <input
+              id="metronome-volume"
+              type="range"
+              min={10}
+              max={100}
+              step={10}
+              value={volume}
+              aria-valuetext={`${volume}%`}
+              className="h-11 min-w-0 flex-1 cursor-pointer accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              onChange={(event) => {
+                const next = Number(event.target.value);
+                setVolume(next);
+                metronome.setVolume(next);
+              }}
+            />
+            <span className="w-10 text-right text-sm tabular-nums text-muted-foreground">
+              {volume}%
+            </span>
+          </span>
         </Field>
         <label className="!flex min-h-11 cursor-pointer items-center gap-3 rounded-xl text-sm transition-colors hover:bg-secondary">
           <span className="relative size-5 shrink-0">
@@ -122,12 +156,25 @@ export function MetronomeControls({ enabled }: { enabled: boolean }) {
         </label>
         <Button
           onClick={() => {
-            if (running) metronome.stop();
-            else void start();
+            if (running || starting) {
+              startRequest.current++;
+              metronome.stop();
+              setStarting(false);
+              setRunning(false);
+            } else void start();
           }}
         >
-          {running ? "Stop metronome" : "Start metronome"}
+          {starting
+            ? "Cancel start"
+            : running
+              ? "Stop metronome"
+              : "Start metronome"}
         </Button>
+        {starting ? (
+          <span role="status" className="text-xs text-muted-foreground">
+            Starting audio…
+          </span>
+        ) : null}
         {error ? (
           <span role="alert" className="text-xs text-destructive">
             {error}

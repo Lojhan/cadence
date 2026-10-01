@@ -92,3 +92,77 @@ if (!contexts[1]) throw new Error("Restarted context missing");
 contexts[1].state = "suspended";
 contexts[1].onstatechange?.();
 assert.equal(contexts[1]?.closed, true, "interrupted audio stops playback");
+
+let acknowledgeResume: (() => void) | undefined;
+const delayedContext = () => {
+  const context = makeContext();
+  context.state = "suspended";
+  context.resume = () =>
+    new Promise<void>((resolve) => {
+      acknowledgeResume = () => {
+        context.state = "running";
+        resolve();
+      };
+    });
+  return context;
+};
+const audible = new Metronome(
+  delayedContext as never,
+  ((callback: () => void) => {
+    timer = callback;
+    return 1;
+  }) as never,
+  (() => {
+    timer = undefined;
+  }) as never,
+);
+const beforeStart = ticks.length;
+const pendingStart = audible.start(120, 4, true, 70);
+assert.equal(
+  ticks.length,
+  beforeStart + 1,
+  "first beat is scheduled without waiting for resume acknowledgement",
+);
+assert.equal(ticks.at(-1)?.level, 0.35, "default accent is clearly audible");
+acknowledgeResume?.();
+await pendingStart;
+audible.setVolume(20);
+const context = contexts.at(-1);
+if (!context) throw new Error("Delayed context missing");
+context.currentTime = 0.45;
+timer?.();
+assert.ok(
+  Math.abs((ticks.at(-1)?.level ?? 0) - 0.07) < 1e-8,
+  "volume adjusts future beats",
+);
+audible.setVolume(100);
+context.currentTime = 0.95;
+timer?.();
+assert.equal(ticks.at(-1)?.level, 0.35, "loudest beat retains headroom");
+await assert.rejects(() => audible.start(100, 4, true, 101));
+audible.stop();
+
+const neverResuming = () => {
+  const context = makeContext();
+  context.state = "suspended";
+  context.resume = () => new Promise<void>(() => {});
+  return context;
+};
+const stalled = new Metronome(
+  neverResuming as never,
+  (() => 1) as never,
+  (() => {}) as never,
+  () => {},
+  10,
+);
+await assert.rejects(() => stalled.start(100, 4), /Audio output did not start/);
+assert.equal(contexts.at(-1)?.closed, true, "a stalled start releases audio");
+const canceled = new Metronome(
+  neverResuming as never,
+  (() => 1) as never,
+  (() => {}) as never,
+);
+const pendingCancel = canceled.start(100, 4);
+canceled.stop();
+await pendingCancel;
+assert.equal(canceled.running, false, "cancel cannot autoplay later");
