@@ -172,6 +172,101 @@ fn tablature_single_notes_match_exact_octave_once_per_attack() {
 }
 
 #[test]
+fn short_tablature_notes_match_before_release_without_accepting_wrong_octave() {
+    for rate in [44_100.0, 48_000.0] {
+        for midi in [40, 43] {
+            let sound = chord(rate, &[midi], 0.19);
+            let mut correct = Engine::new(rate, Profile::Balanced).unwrap();
+            correct.arm_note(midi).unwrap();
+            assert_eq!(feed(&mut correct, &sound), 1, "{midi} at {rate} Hz");
+            let mut wrong = Engine::new(rate, Profile::Balanced).unwrap();
+            wrong.arm_note(midi + 12).unwrap();
+            assert_eq!(feed(&mut wrong, &sound), 0, "wrong octave at {rate} Hz");
+        }
+    }
+}
+
+#[test]
+fn short_low_e_does_not_confirm_its_strong_third_harmonic_as_b3() {
+    let rate = 48_000.0;
+    let hz = 82.4069;
+    let sound: Vec<f32> = (0..(rate * 0.19) as usize)
+        .map(|i| {
+            let phase = std::f32::consts::TAU * hz * i as f32 / rate;
+            0.012 * phase.sin() + 0.022 * (phase * 2.0).sin() + 0.14 * (phase * 3.0).sin()
+        })
+        .collect();
+    let mut wrong = Engine::new(rate, Profile::Balanced).unwrap();
+    wrong.arm_note(59).unwrap();
+    assert_eq!(feed(&mut wrong, &sound), 0);
+    let mut correct = Engine::new(rate, Profile::Balanced).unwrap();
+    correct.arm_note(40).unwrap();
+    assert_eq!(feed(&mut correct, &sound), 1);
+}
+
+#[test]
+fn short_b3_matches_with_weak_fundamental_and_ringing_low_e() {
+    let b3 = 246.9417;
+    let e2 = 82.4069;
+    for rate in [44_100.0, 48_000.0] {
+        for fundamental in [0.0, 0.005, 0.025] {
+            for low_ring in [0.0, 0.01, 0.02] {
+                let sound: Vec<f32> = (0..(rate * 0.19) as usize)
+                    .map(|i| {
+                        let b_phase = std::f32::consts::TAU * b3 * i as f32 / rate;
+                        let e_phase = std::f32::consts::TAU * e2 * i as f32 / rate;
+                        fundamental * b_phase.sin()
+                            + 0.045 * (b_phase * 2.0).sin()
+                            + 0.02 * (b_phase * 3.0).sin()
+                            + low_ring * (e_phase.sin() + 0.4 * (e_phase * 2.0).sin())
+                    })
+                    .collect();
+                let mut engine = Engine::new(rate, Profile::Balanced).unwrap();
+                engine.arm_note(59).unwrap();
+                assert_eq!(
+                    feed(&mut engine, &sound),
+                    1,
+                    "rate {rate}, fundamental {fundamental}, ring {low_ring}"
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn repeated_short_notes_require_new_plucks_and_progress_in_order() {
+    let rate = 48_000.0;
+    let hz = 82.4069;
+    let sound: Vec<f32> = (0..(rate * 0.7) as usize)
+        .map(|i| {
+            let time = i as f32 / rate;
+            let onset = (time / 0.22).floor() * 0.22;
+            let age = time - onset;
+            if age >= 0.18 || onset > 0.44 {
+                0.0
+            } else {
+                let phase = std::f32::consts::TAU * hz * age;
+                (-age * 4.0).exp() * (0.02 * phase.sin() + 0.08 * (phase * 3.0).sin())
+            }
+        })
+        .collect();
+    let mut engine = Engine::new(rate, Profile::Balanced).unwrap();
+    engine.arm_note(40).unwrap();
+    let mut matches = Vec::new();
+    for (block, frame) in sound.chunks(2048).enumerate() {
+        if engine.process(frame).matched {
+            matches.push((block + 1) * 2048);
+            engine.arm_note(40).unwrap();
+        }
+    }
+    assert_eq!(matches.len(), 3, "each pluck advances once: {matches:?}");
+    for (index, sample) in matches.iter().enumerate() {
+        let onset = (index as f32 * 0.22 * rate) as usize;
+        assert!(*sample >= onset && *sample < onset + (0.20 * rate) as usize);
+    }
+}
+
+#[test]
 fn tablature_two_note_targets_are_checked_in_rust() {
     let rate = 48000.0;
     let mut engine = Engine::new(rate, Profile::Balanced).unwrap();

@@ -1,0 +1,20 @@
+{
+  "source": "https://zenodo.org/records/11406378",
+  "license": "CC BY 4.0",
+  "selection": "One sustained F2 and eight rapid E2/G2 events preselected from EGSet12 JAMS notes before recognition changes. Exact 141–234 ms note intervals are evaluated as cropped audio; the eight rapid targets also progress immediately after each match on the continuous recording.",
+  "files": {
+    "01.wav": "2eb739c5fb73e6327bb47267afe3eddf",
+    "02.wav": "69b8701ea9a81428a6346e0d3d4b9b85"
+  },
+  "cases": [
+    { "file": "01.wav", "start": 28.502, "duration": 1.2, "midi": 41 },
+    { "file": "02.wav", "start": 0.054, "duration": 0.141, "midi": 40 },
+    { "file": "02.wav", "start": 0.237, "duration": 0.186, "midi": 40 },
+    { "file": "02.wav", "start": 0.441, "duration": 0.201, "midi": 40 },
+    { "file": "02.wav", "start": 0.651, "duration": 0.234, "midi": 40 },
+    { "file": "02.wav", "start": 1.74, "duration": 0.183, "midi": 43 },
+    { "file": "02.wav", "start": 1.935, "duration": 0.18, "midi": 43 },
+    { "file": "02.wav", "start": 2.145, "duration": 0.195, "midi": 43 },
+    { "file": "02.wav", "start": 2.364, "duration": 0.186, "midi": 43 }
+  ]
+}

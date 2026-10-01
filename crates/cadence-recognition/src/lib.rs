@@ -31,6 +31,7 @@ pub struct Engine {
     released: usize,
     stable: usize,
     previous_level: f32,
+    previous_note_sublevel: f32,
 }
 impl Engine {
     pub fn new(rate: f32, profile: Profile) -> Result<Self, &'static str> {
@@ -58,6 +59,7 @@ impl Engine {
             released: 0,
             stable: 0,
             previous_level: 0.0,
+            previous_note_sublevel: 0.0,
         })
     }
     pub fn arm(&mut self, mask: u16) -> Result<(), &'static str> {
@@ -131,6 +133,7 @@ impl Engine {
         self.released = 0;
         self.stable = 0;
         self.previous_level = 0.0;
+        self.previous_note_sublevel = 0.0;
     }
     pub fn process(&mut self, samples: &[f32]) -> Report {
         let mut report = Report::default();
@@ -159,9 +162,13 @@ impl Engine {
                 self.needs_attack = false;
             }
             self.previous_level = report.level;
+            self.previous_note_sublevel = report.level;
             return report;
         }
-        if self.needs_attack && report.level > self.previous_level.max(0.02) * 2.5 {
+        if self.note_target.is_none()
+            && self.needs_attack
+            && report.level > self.previous_level.max(0.02) * 2.5
+        {
             self.needs_attack = false;
             self.stable = 0;
             self.analyzer.clear();
@@ -178,23 +185,49 @@ impl Engine {
             Profile::Precise => (0.92, 0.25),
         };
         if let Some(note) = self.note_target {
-            self.tuner.process(samples);
+            // Follow short subframes even while the last note is confirmed.
+            // A new pluck can begin inside a 2048-sample worklet block, and a
+            // whole-block RMS can hide it under the previous note's sustain.
+            let mut new_attack_at = None;
+            for (index, frame) in samples.chunks(1024).enumerate() {
+                let level = (frame.iter().map(|x| x * x).sum::<f32>() / frame.len() as f32).sqrt();
+                if self.needs_attack
+                    && new_attack_at.is_none()
+                    && level > self.previous_note_sublevel.max(0.015) * 1.7
+                    && level >= 0.025
+                {
+                    new_attack_at = Some(index * 1024);
+                }
+                self.previous_note_sublevel = level;
+            }
+            if new_attack_at.is_some() {
+                self.needs_attack = false;
+                self.stable = 0;
+                self.tuner.reset();
+            }
+            let analyzed = self.tuner.process(&samples[new_attack_at.unwrap_or(0)..]);
             if self.confirmed || self.needs_attack {
                 return report;
             }
             let expected = 440.0 * 2.0_f32.powf((f32::from(note) - 69.0) / 12.0);
-            let correct = self.tuner.reading().is_some_and(|reading| {
-                reading.confidence >= 0.68
-                    && (1200.0 * (reading.frequency / expected).log2()).abs() <= 35.0
-            });
-            self.stable = if correct {
-                self.stable + samples.len()
-            } else {
-                0
-            };
+            let correct = analyzed
+                && self.tuner.candidate_reading().is_some_and(|reading| {
+                    let cents = (1200.0 * (reading.frequency / expected).log2()).abs();
+                    let third_cents =
+                        (1200.0 * (reading.frequency / (expected * 3.0)).log2()).abs();
+                    let lower_third_cents =
+                        (1200.0 * (reading.frequency * 3.0 / expected).log2()).abs();
+                    let lower_series = (cents <= 35.0 || third_cents <= 35.0)
+                        && self.tuner.has_lower_third_harmonics(reading.frequency);
+                    reading.confidence >= 0.8
+                        && ((cents <= 35.0 && !lower_series)
+                            || (third_cents <= 35.0 && lower_series)
+                            || (lower_third_cents <= 35.0
+                                && self.tuner.has_upper_harmonics(expected)))
+                });
             report.score = if correct { 1.0 } else { 0.0 };
-            report.progress = (self.stable as f32 / (self.rate * hold)).min(1.0);
-            if report.progress >= 1.0 {
+            report.progress = if correct { 1.0 } else { 0.0 };
+            if correct {
                 self.confirmed = true;
                 report.matched = true;
             }

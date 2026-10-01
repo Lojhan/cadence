@@ -80,6 +80,58 @@ impl Tuner {
         self.reading
     }
 
+    /// The latest pitch estimate after two agreeing analysis windows. Unlike
+    /// `reading`, this does not hold a previous pitch across a new attack.
+    /// Only consume it when `process` reports a fresh analysis.
+    pub fn candidate_reading(&self) -> Option<TunerReading> {
+        if self.agreements >= 2 {
+            self.candidate
+        } else {
+            None
+        }
+    }
+
+    /// Distinguish a high overtone from an independent note by comparing the
+    /// lower and higher harmonic series around the estimated frequency.
+    pub fn has_lower_third_harmonics(&self, frequency: f32) -> bool {
+        if frequency < 180.0 || self.filled < WINDOW {
+            return false;
+        }
+        let energy = |hz| self.spectral_energy(hz);
+        let candidate = energy(frequency);
+        let lower =
+            energy(frequency / 3.0) + energy(frequency * 2.0 / 3.0) + energy(frequency * 4.0 / 3.0);
+        let higher = energy(frequency * 2.0) + energy(frequency * 3.0);
+        candidate > 0.0 && lower > candidate * 0.18 && lower > higher * 3.5
+    }
+
+    /// A pitched high note can coexist with a lower ringing string. Require
+    /// its own upper harmonics before accepting it over a lower pitch reading.
+    pub fn has_upper_harmonics(&self, frequency: f32) -> bool {
+        if self.filled < WINDOW {
+            return false;
+        }
+        let energy = |hz| self.spectral_energy(hz);
+        let upper = energy(frequency * 2.0) + energy(frequency * 3.0);
+        let lower =
+            energy(frequency / 3.0) + energy(frequency * 2.0 / 3.0) + energy(frequency * 4.0 / 3.0);
+        upper > energy(frequency) * 0.25 && upper > lower * 1.5
+    }
+
+    fn spectral_energy(&self, hz: f32) -> f32 {
+        let mut real = 0.0;
+        let mut imaginary = 0.0;
+        for index in 0..WINDOW {
+            let phase = std::f32::consts::TAU * hz * index as f32 / self.rate;
+            let window =
+                0.5 - 0.5 * (std::f32::consts::TAU * index as f32 / (WINDOW - 1) as f32).cos();
+            let sample = self.ring[(self.cursor + index) % WINDOW] * window;
+            real += sample * phase.cos();
+            imaginary += sample * phase.sin();
+        }
+        (real * real + imaginary * imaginary).sqrt()
+    }
+
     fn analyze(&mut self) {
         for (index, value) in self.ordered.iter_mut().enumerate() {
             *value = self.ring[(self.cursor + index) % WINDOW];
