@@ -1,22 +1,25 @@
-Cadence 0.1.0-alpha.25 is an MIT-licensed preview for self-hosting and integration.
+Cadence 0.1.0-alpha.26 is an MIT-licensed preview for self-hosting and integration.
 
-Changes since alpha.24:
+Changes since alpha.25:
 
-- Practice now includes a metronome with 40–240 BPM, 1–8 beats per measure,
-  and an optional accented first beat. It uses Web Audio clock scheduling and
-  stops on practice navigation, backgrounding, and audio interruption.
-- The accented-beat checkbox follows Cadence's light/dark controls and retains
-  keyboard focus and native checkbox semantics.
-- A small replay of checksum-verified EGSet12 electric-guitar performances is
-  documented in `docs/AUDIO_EVALUATION.md`. It exposed short-note misses and a
-  late match; the recognition engine is unchanged from alpha.24.
-- Saved charts, catalog data, and the database schema are unchanged from alpha.24.
+- Single-note tab practice now confirms from two fresh agreeing pitch analyses
+  instead of waiting for the tuner's display reading and an additional hold.
+  The display tuner retains its smoothing.
+- Short subframe attack detection supports quick repetitions of the same note.
+  Harmonic-series checks distinguish a weak low fundamental from a strong third
+  overtone and support a higher note while a lower string rings.
+- A checksum-verified EGSet12 electric-guitar replay and its frozen note cases
+  are documented in `docs/evaluation/egset12-notes.md`. On this small selected
+  probe, 9/9 isolated notes matched and 0/468 wrong targets were accepted;
+  7/8 rapid notes matched by annotated release. These calibration results are
+  not held-out accuracy or device-latency claims.
+- The chord algorithm, saved charts, catalog data, and database schema are
+  unchanged from alpha.25.
 
-Recognition remains **experimental**. The EGSet12 smoke result is not a release
-accuracy claim. Physical guitar playthrough, metronome speaker-to-microphone
-bleed, device checks, and country-specific rights review remain open. The hosted
-distribution's prior Clerk and Stripe sandbox checks do not establish live
-payment readiness.
+Recognition remains **experimental**. Physical guitar playthrough, speaker-to-
+microphone bleed, device checks, held-out recordings, and country-specific
+rights review remain open. The hosted distribution's prior Clerk and Stripe
+sandbox checks do not establish live payment readiness.
 
 The release includes nine ESM packages with TypeScript declarations, matching
 WASM and migration assets, and SHA-256 checksums. `RELEASE.json` records the
