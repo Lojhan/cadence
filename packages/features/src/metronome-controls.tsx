@@ -39,16 +39,17 @@ export function MetronomeControls({ enabled }: { enabled: boolean }) {
     };
   }, [metronome]);
 
-  async function start() {
+  async function start(nextBpm = bpm, nextBeats = beats, nextAccent = accent) {
     const request = ++startRequest.current;
     setError("");
     setStarting(true);
     try {
-      await metronome.start(bpm, beats, accent, volume);
+      await metronome.start(nextBpm, nextBeats, nextAccent, volume);
       if (request !== startRequest.current) return;
       setRunning(metronome.running);
     } catch (cause) {
       if (request !== startRequest.current) return;
+      setRunning(metronome.running);
       setError(
         cause instanceof Error ? cause.message : "Audio output is unavailable.",
       );
@@ -61,17 +62,7 @@ export function MetronomeControls({ enabled }: { enabled: boolean }) {
     setBpm(nextBpm);
     setBeats(nextBeats);
     setAccent(nextAccent);
-    if (running) {
-      void metronome.start(nextBpm, nextBeats, nextAccent, volume).then(
-        () => setRunning(metronome.running),
-        (cause: unknown) =>
-          setError(
-            cause instanceof Error
-              ? cause.message
-              : "Audio output is unavailable.",
-          ),
-      );
-    }
+    if (metronome.running) void start(nextBpm, nextBeats, nextAccent);
   }
 
   return (
@@ -156,7 +147,7 @@ export function MetronomeControls({ enabled }: { enabled: boolean }) {
         </label>
         <Button
           onClick={() => {
-            if (running || starting) {
+            if (metronome.running || starting) {
               startRequest.current++;
               metronome.stop();
               setStarting(false);

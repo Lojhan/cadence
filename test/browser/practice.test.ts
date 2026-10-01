@@ -262,6 +262,90 @@ try {
       );
     await page.keyboard.press("Escape");
   }
+  await page.evaluate(`(() => {
+    const OriginalContext = window.AudioContext;
+    const probe = {
+      releases: [],
+      closes: 0,
+      restore: () => { window.AudioContext = OriginalContext; },
+    };
+    window.AudioContext = class extends OriginalContext {
+      acknowledged = false;
+      get state() {
+        const state = super.state;
+        return state === "closed" || this.acknowledged ? state : "suspended";
+      }
+      resume() {
+        return new Promise((resolve, reject) => {
+          probe.releases.push(() => {
+            this.acknowledged = true;
+            super.resume().then(resolve, reject);
+          });
+        });
+      }
+      close() { probe.closes++; return super.close(); }
+    };
+    window.cadenceDelayedMetronome = probe;
+  })()`);
+  await page.getByRole("button", { name: "Open metronome controls" }).click();
+  await page.getByRole("button", { name: "Start metronome" }).click();
+  await page.getByRole("button", { name: "Cancel start" }).waitFor();
+  await page.getByRole("spinbutton", { name: "Tempo (BPM)" }).fill("160");
+  await page.waitForFunction(
+    () =>
+      (
+        window as unknown as {
+          cadenceDelayedMetronome: { releases: Array<() => void> };
+        }
+      ).cadenceDelayedMetronome.releases.length === 2,
+  );
+  assert.equal(
+    await page.getByRole("button", { name: "Cancel start" }).count(),
+    1,
+    "changing tempo while pending keeps a cancellable start",
+  );
+  await page.evaluate(() =>
+    (
+      window as unknown as {
+        cadenceDelayedMetronome: { releases: Array<() => void> };
+      }
+    ).cadenceDelayedMetronome.releases[1]?.(),
+  );
+  await page.getByRole("button", { name: "Stop metronome" }).waitFor();
+  assert.equal(
+    await page.getByRole("spinbutton", { name: "Tempo (BPM)" }).inputValue(),
+    "160",
+  );
+  await page
+    .getByRole("combobox", { name: "Beats per measure" })
+    .selectOption("3");
+  await page.waitForFunction(
+    () =>
+      (
+        window as unknown as {
+          cadenceDelayedMetronome: { releases: Array<() => void> };
+        }
+      ).cadenceDelayedMetronome.releases.length === 3,
+  );
+  await page.getByRole("button", { name: "Cancel start" }).waitFor();
+  await page.getByRole("button", { name: "Cancel start" }).click();
+  await page.getByRole("button", { name: "Start metronome" }).waitFor();
+  assert.ok(
+    await page.evaluate(
+      () =>
+        (window as unknown as { cadenceDelayedMetronome: { closes: number } })
+          .cadenceDelayedMetronome.closes >= 3,
+    ),
+    "pending starts and a delayed settings restart close their contexts",
+  );
+  await page.evaluate(() =>
+    (
+      window as unknown as {
+        cadenceDelayedMetronome: { restore: () => void };
+      }
+    ).cadenceDelayedMetronome.restore(),
+  );
+  await page.keyboard.press("Escape");
   await page.getByRole("button", { name: "Open metronome controls" }).click();
   const volume = page.getByRole("slider", { name: "Volume" });
   assert.equal(await volume.getAttribute("aria-valuetext"), "70%");
