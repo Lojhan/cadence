@@ -38,6 +38,19 @@ fn transient_wrong_note_does_not_replace_stable_note_or_trigger_warning() {
 }
 
 #[test]
+fn candidate_pitch_is_fresh_while_display_pitch_holds() {
+    let mut tuner = Tuner::new(48_000.0).unwrap();
+    feed(&mut tuner, 48_000.0, 110.0, 8);
+    assert!(tuner.candidate_reading().is_some());
+    // A single disagreeing frame must not be used for target confirmation.
+    feed(&mut tuner, 48_000.0, 146.83, 2);
+    assert!(tuner.candidate_reading().is_none());
+    assert!((tuner.reading().unwrap().frequency - 110.0).abs() < 2.0);
+    feed(&mut tuner, 48_000.0, 146.83, 3);
+    assert!((tuner.candidate_reading().unwrap().frequency - 146.83).abs() < 2.0);
+}
+
+#[test]
 fn silence_clears_stale_reading_after_a_short_hold() {
     let mut tuner = Tuner::new(48_000.0).unwrap();
     feed(&mut tuner, 48_000.0, 82.41, 8);

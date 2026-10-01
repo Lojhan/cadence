@@ -44,6 +44,12 @@ boundaries. In continuous replay, one E2 target matched at 1,024 ms, 139 ms
 wrong-octave targets was accepted in the cropped probe. Short-note delay and
 late advancement need broader validation before claiming reliable tab practice.
 
+The later note-path candidate is evaluated separately in
+[`evaluation/egset12-notes.md`](evaluation/egset12-notes.md). That report keeps
+the same frozen note intervals, scans every supported wrong-note target, and
+distinguishes isolated matches from immediate next-target progression on the
+continuous performance.
+
 In a separate digital mix, three 25 ms clicks at the metronome's frequencies
 and nominal output amplitudes did not match a click-only Gmaj7 target. A recorded
 sustained Gmaj7 matched at 341 ms; rearming that same target produced no second
