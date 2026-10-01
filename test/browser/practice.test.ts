@@ -208,6 +208,123 @@ try {
   }, process.env.CADENCE_NATIVE_MIC === "1");
   await page.goto("http://localhost:3100");
   await page.getByRole("heading", { name: "C", exact: true }).waitFor();
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await page.getByRole("button", { name: "Open metronome controls" }).click();
+    await page.getByRole("button", { name: "Start metronome" }).click();
+    await page.getByRole("button", { name: "Stop metronome" }).waitFor();
+    await page.getByRole("button", { name: "Stop metronome" }).click();
+    await page.getByRole("button", { name: "Start metronome" }).waitFor();
+    await page.keyboard.press("Escape");
+  }
+  await page.getByRole("button", { name: "Open metronome controls" }).click();
+  await page.getByRole("spinbutton", { name: "Tempo (BPM)" }).fill("144");
+  const accent = page.getByRole("checkbox", { name: "Accent first beat" });
+  await accent.focus();
+  const accentLayout = await accent.evaluate((element) => {
+    const row = element.closest("label");
+    const text = element.parentElement?.nextElementSibling;
+    if (!row || !text) throw new Error("Accent control is incomplete");
+    const box = element.getBoundingClientRect();
+    const copy = text.getBoundingClientRect();
+    const outer = row.getBoundingClientRect();
+    return {
+      centered: Math.abs((box.top + box.bottom - copy.top - copy.bottom) / 2),
+      boxLeft: box.left,
+      outerLeft: outer.left,
+      outerRight: outer.right,
+    };
+  });
+  const tempoBox = await page
+    .getByRole("spinbutton", { name: "Tempo (BPM)" })
+    .boundingBox();
+  const beatsBox = await page
+    .getByRole("combobox", { name: "Beats per measure" })
+    .boundingBox();
+  const startBox = await page
+    .getByRole("button", { name: "Start metronome" })
+    .boundingBox();
+  assert.ok(
+    accentLayout.centered <= 1,
+    "accent copy is vertically centered with its checkbox",
+  );
+  assert.ok(
+    Math.abs(accentLayout.boxLeft - (tempoBox?.x ?? 0)) <= 1,
+    "accent aligns with the other inputs",
+  );
+  assert.ok(
+    Math.abs(accentLayout.outerLeft - (startBox?.x ?? 0)) <= 1,
+    "accent row and start button share a left edge",
+  );
+  assert.ok(
+    Math.abs(
+      accentLayout.outerRight - ((startBox?.x ?? 0) + (startBox?.width ?? 0)),
+    ) <= 1,
+    "accent row and start button share a right edge",
+  );
+  assert.ok(
+    Math.abs((tempoBox?.x ?? 0) - (beatsBox?.x ?? 0)) <= 1,
+    "tempo and beat inputs share a left edge",
+  );
+  assert.ok(
+    ((await accent.boundingBox())?.width ?? 0) >= 20,
+    "accent has a comfortable visual target",
+  );
+  assert.notEqual(
+    await accent.evaluate((element) => getComputedStyle(element).outlineStyle),
+    "none",
+    "keyboard focus is visible on the accent control",
+  );
+  await page.keyboard.press("Space");
+  assert.equal(
+    await accent.isChecked(),
+    false,
+    "accent toggles from the keyboard",
+  );
+  await page.keyboard.press("Space");
+  assert.equal(
+    await accent.isChecked(),
+    true,
+    "accent can be restored from the keyboard",
+  );
+  await page
+    .getByRole("combobox", { name: "Beats per measure" })
+    .selectOption("3");
+  await page.getByRole("button", { name: "Start metronome" }).click();
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Open music library" }).click();
+  await page
+    .getByRole("button", { name: "Metronome running, open controls" })
+    .waitFor({ state: "hidden" });
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Open metronome controls" }).waitFor();
+  assert.equal(
+    await page.evaluate(() =>
+      (
+        window as unknown as { cadenceTestAudioContexts: AudioContext[] }
+      ).cadenceTestAudioContexts.every((context) => context.state === "closed"),
+    ),
+    true,
+    "repeated toggles and library navigation release metronome audio",
+  );
+  await page.getByRole("button", { name: "Open metronome controls" }).click();
+  await page.getByRole("button", { name: "Start metronome" }).click();
+  await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", {
+      configurable: true,
+      value: true,
+    });
+    document.dispatchEvent(new Event("visibilitychange"));
+    Reflect.deleteProperty(document, "hidden");
+  });
+  await page.getByRole("button", { name: "Start metronome" }).waitFor();
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Open metronome controls" }).click();
+  await page.getByRole("button", { name: "Start metronome" }).click();
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Guitar tuner" }).click();
+  await page.getByRole("button", { name: "Close tuner" }).click();
+  await page.getByRole("heading", { name: "C", exact: true }).waitFor();
+  await page.getByRole("button", { name: "Open metronome controls" }).waitFor();
   assert.equal(
     await page.evaluate(
       () => document.documentElement.scrollHeight <= window.innerHeight,
@@ -517,6 +634,9 @@ try {
   await page
     .getByRole("button", { name: "Previous chord", exact: true })
     .click();
+  await page.getByRole("button", { name: "Open metronome controls" }).click();
+  await page.getByRole("button", { name: "Start metronome" }).click();
+  await page.keyboard.press("Escape");
   await page
     .getByRole("button", { name: "Unmute microphone", exact: true })
     .click();
@@ -530,6 +650,11 @@ try {
   await page
     .getByRole("button", { name: "Mute microphone", exact: true })
     .click();
+  await page
+    .getByRole("button", { name: "Metronome running, open controls" })
+    .click();
+  await page.getByRole("button", { name: "Stop metronome" }).click();
+  await page.keyboard.press("Escape");
   assert.equal(
     await page.getByRole("heading", { name: "Am", exact: true }).count(),
     1,

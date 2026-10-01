@@ -213,6 +213,7 @@ export function ChordTimeline({
 export function PracticeDock({
   listening,
   busy,
+  metronome,
   devicesOpen,
   onToggle,
   onDevices,
@@ -224,6 +225,7 @@ export function PracticeDock({
 }: {
   listening: boolean;
   busy: boolean;
+  metronome?: ReactNode;
   devicesOpen: boolean;
   onToggle: () => void;
   onDevices: () => void;
@@ -234,7 +236,16 @@ export function PracticeDock({
   tuningTitle?: string;
 }) {
   return (
-    <ControlDock label="Practice controls" active={listening}>
+    <ControlDock
+      label="Practice controls"
+      active={listening}
+      {...(metronome
+        ? {
+            className:
+              "!w-[min(345px,calc(100vw-32px))] max-[600px]:!w-[min(325px,calc(100vw-32px))]",
+          }
+        : {})}
+    >
       <MicrophoneDockControls
         listening={listening}
         busy={busy}
@@ -246,6 +257,12 @@ export function PracticeDock({
       >
         {deviceContent}
       </MicrophoneDockControls>
+      {metronome ? (
+        <>
+          <DockDivider />
+          {metronome}
+        </>
+      ) : null}
       <DockDivider />
       <DockButton label="Open music library" onClick={onLibrary}>
         <Music2 />

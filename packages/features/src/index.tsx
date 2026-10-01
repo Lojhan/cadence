@@ -59,6 +59,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { PracticeController } from "./controller.ts";
+import { MetronomeControls } from "./metronome-controls.tsx";
 import { useMicrophoneCheck } from "./microphone-check.ts";
 import {
   InputBoost,
@@ -643,6 +644,11 @@ export function PracticeApp({
       <PracticeDock
         listening={listening}
         busy={busy}
+        metronome={
+          <MetronomeControls
+            enabled={!panel && !setupOpen && session.status !== "completed"}
+          />
+        }
         devicesOpen={devicesOpen}
         onToggle={() => {
           setDevicesOpen(false);

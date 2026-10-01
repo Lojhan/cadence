@@ -1,5 +1,56 @@
 # Audio evaluation
 
+## Built-in metronome and recognition
+
+The practice metronome uses a separate output-only Web Audio graph and schedules
+short clicks on its `AudioContext.currentTime`. It never connects to microphone
+capture or the recognition worker. The clicks are quiet and above the supported
+guitar note range; the practice controls recommend headphones while recognition
+is active. Playback stops on practice panels, page exit or backgrounding, audio
+interruption and session completion. Browser checks exercise metronome playback
+alongside the synthetic microphone → worklet → worker → WASM practice flow.
+
+These checks do not simulate an acoustic speaker feeding the microphone. A real
+speaker click could still trigger the recognizer's repeated-attack gate while a
+chord sustains. Test that case with a physical guitar, speaker and microphone on
+supported devices before claiming click rejection or recommending speaker use.
+
+### Small real-performance replay: EGSet12
+
+Three [EGSet12](https://zenodo.org/records/11406378) v1 solo electric-guitar
+recordings (`01.wav`–`03.wav`) and their JAMS note annotations were downloaded
+from the official record and verified against all six published MD5 checksums.
+Attribution: Hegel Pedroza, Wallace Abreu, Ryan Corey, and Iran Roman (2024),
+CC BY 4.0. Files remain in ignored local `artifacts/egset12/`; no audio is
+bundled with the app. Chord names below are derived from simultaneous annotated
+notes; EGSet12 does not supply chord labels.
+
+Before inspecting outcomes, six sustained windows were selected: F#m at
+`01:13.504`, Em at `01:16.506`, Am7 at `03:2.042`, Gmaj7 at `03:4.020`, Cm7 at
+`03:10.021`, and Bbmaj7 at `03:11.981`. Each received its correct target and
+one related wrong-quality target on the same recording interval. The unchanged
+production WASM Balanced engine matched 6/6 correct targets and 0/6 wrong
+targets. Matched-case sample latency ranged from 341 to 1,109 ms (p95 1,109
+ms). These timings start at an annotation and exclude the browser, capture, and
+hardware paths. The sample is far too small or selective for an accuracy claim.
+
+The note probe preselected one isolated 1.2-second F2 in `01` and eight isolated
+E2/G2 events lasting 141–234 ms in the rapid `02` performance. The sustained F2
+matched at 341 ms; none of the eight short notes matched before annotated note
+release, whether each was replayed as a fresh crop or the complete first 2.6
+seconds was processed continuously with targets armed on 2,048-sample block
+boundaries. In continuous replay, one E2 target matched at 1,024 ms, 139 ms
+*after* its annotated release; the other seven did not match. None of nine
+wrong-octave targets was accepted in the cropped probe. Short-note delay and
+late advancement need broader validation before claiming reliable tab practice.
+
+In a separate digital mix, three 25 ms clicks at the metronome's frequencies
+and nominal output amplitudes did not match a click-only Gmaj7 target. A recorded
+sustained Gmaj7 matched at 341 ms; rearming that same target produced no second
+match in the unmodified recording or with clicks mixed at amplitudes 0.03,
+0.075, and 0.12. The mix level is not calibrated speaker-to-microphone gain.
+These checks do not establish acoustic click immunity on any device.
+
 Recognition remains experimental. Synthetic tests verify engineering behavior;
 they do not establish that the app reliably recognizes a beginner's instrument.
 The stable-release targets in `design/TECHNICAL_SPEC.md` remain unmet.
