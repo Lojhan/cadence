@@ -220,6 +220,51 @@ try {
   await page.getByRole("spinbutton", { name: "Tempo (BPM)" }).fill("144");
   const accent = page.getByRole("checkbox", { name: "Accent first beat" });
   await accent.focus();
+  const accentLayout = await accent.evaluate((element) => {
+    const row = element.closest("label");
+    const text = element.parentElement?.nextElementSibling;
+    if (!row || !text) throw new Error("Accent control is incomplete");
+    const box = element.getBoundingClientRect();
+    const copy = text.getBoundingClientRect();
+    const outer = row.getBoundingClientRect();
+    return {
+      centered: Math.abs((box.top + box.bottom - copy.top - copy.bottom) / 2),
+      boxLeft: box.left,
+      outerLeft: outer.left,
+      outerRight: outer.right,
+    };
+  });
+  const tempoBox = await page
+    .getByRole("spinbutton", { name: "Tempo (BPM)" })
+    .boundingBox();
+  const beatsBox = await page
+    .getByRole("combobox", { name: "Beats per measure" })
+    .boundingBox();
+  const startBox = await page
+    .getByRole("button", { name: "Start metronome" })
+    .boundingBox();
+  assert.ok(
+    accentLayout.centered <= 1,
+    "accent copy is vertically centered with its checkbox",
+  );
+  assert.ok(
+    Math.abs(accentLayout.boxLeft - (tempoBox?.x ?? 0)) <= 1,
+    "accent aligns with the other inputs",
+  );
+  assert.ok(
+    Math.abs(accentLayout.outerLeft - (startBox?.x ?? 0)) <= 1,
+    "accent row and start button share a left edge",
+  );
+  assert.ok(
+    Math.abs(
+      accentLayout.outerRight - ((startBox?.x ?? 0) + (startBox?.width ?? 0)),
+    ) <= 1,
+    "accent row and start button share a right edge",
+  );
+  assert.ok(
+    Math.abs((tempoBox?.x ?? 0) - (beatsBox?.x ?? 0)) <= 1,
+    "tempo and beat inputs share a left edge",
+  );
   assert.ok(
     ((await accent.boundingBox())?.width ?? 0) >= 20,
     "accent has a comfortable visual target",

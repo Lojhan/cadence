@@ -103,7 +103,7 @@ export function MetronomeControls({ enabled }: { enabled: boolean }) {
             ))}
           </Select>
         </Field>
-        <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl px-2.5 text-sm transition-colors hover:bg-secondary">
+        <label className="!flex min-h-11 cursor-pointer items-center gap-3 rounded-xl text-sm transition-colors hover:bg-secondary">
           <span className="relative size-5 shrink-0">
             <input
               type="checkbox"
