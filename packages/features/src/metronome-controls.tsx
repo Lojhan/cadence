@@ -1,6 +1,6 @@
 import { Metronome } from "@cadence/audio-browser";
 import { Button, DockButtonMenu, Field, Input, Select } from "@cadence/ui";
-import { Timer } from "lucide-react";
+import { Check, Timer } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function MetronomeControls({ enabled }: { enabled: boolean }) {
@@ -103,13 +103,22 @@ export function MetronomeControls({ enabled }: { enabled: boolean }) {
             ))}
           </Select>
         </Field>
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={accent}
-            onChange={(event) => change(bpm, beats, event.target.checked)}
-          />
-          Accent first beat
+        <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl px-2.5 text-sm transition-colors hover:bg-secondary">
+          <span className="relative size-5 shrink-0">
+            <input
+              type="checkbox"
+              className="m-0 block size-5 cursor-pointer appearance-none rounded-[6px] border border-border bg-background transition-colors checked:border-primary checked:bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              checked={accent}
+              onChange={(event) => change(bpm, beats, event.target.checked)}
+            />
+            {accent ? (
+              <Check
+                className="pointer-events-none absolute inset-0 size-5 p-[3px] text-primary-foreground"
+                aria-hidden="true"
+              />
+            ) : null}
+          </span>
+          <span>Accent first beat</span>
         </label>
         <Button
           onClick={() => {

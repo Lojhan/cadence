@@ -218,6 +218,29 @@ try {
   }
   await page.getByRole("button", { name: "Open metronome controls" }).click();
   await page.getByRole("spinbutton", { name: "Tempo (BPM)" }).fill("144");
+  const accent = page.getByRole("checkbox", { name: "Accent first beat" });
+  await accent.focus();
+  assert.ok(
+    ((await accent.boundingBox())?.width ?? 0) >= 20,
+    "accent has a comfortable visual target",
+  );
+  assert.notEqual(
+    await accent.evaluate((element) => getComputedStyle(element).outlineStyle),
+    "none",
+    "keyboard focus is visible on the accent control",
+  );
+  await page.keyboard.press("Space");
+  assert.equal(
+    await accent.isChecked(),
+    false,
+    "accent toggles from the keyboard",
+  );
+  await page.keyboard.press("Space");
+  assert.equal(
+    await accent.isChecked(),
+    true,
+    "accent can be restored from the keyboard",
+  );
   await page
     .getByRole("combobox", { name: "Beats per measure" })
     .selectOption("3");
