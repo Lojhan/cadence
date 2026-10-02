@@ -107,4 +107,43 @@ state = transition(state, {
   epoch: state.epoch,
 }).state;
 assert.equal(state.status, "completed");
+const completedEpoch = state.epoch;
+state = transition(state, { type: "navigate", index: 1 }).state;
+assert.equal(
+  state.status,
+  "paused",
+  "seeking from completion dismisses completion",
+);
+assert.equal(state.index, 1);
+assert.ok(state.epoch > completedEpoch);
+const firstSeekEpoch = state.epoch;
+state = transition(state, { type: "navigate", index: 1 }).state;
+assert.ok(state.epoch > firstSeekEpoch, "repeated seek gets a fresh epoch");
+assert.equal(
+  transition(state, {
+    type: "matched",
+    sessionId: state.sessionId,
+    epoch: firstSeekEpoch,
+    sequence: 4,
+  }).state,
+  state,
+  "stale recognition cannot confirm a repeated seek",
+);
+state = transition(state, { type: "start" }).state;
+state = transition(state, { type: "armed", epoch: state.epoch }).state;
+state = transition(state, {
+  type: "matched",
+  sessionId: state.sessionId,
+  epoch: state.epoch,
+  sequence: 4,
+}).state;
+const interruptedEpoch = state.epoch;
+state = transition(state, { type: "navigate", index: 0 }).state;
+assert.equal(state.status, "listening");
+assert.equal(
+  transition(state, { type: "transition-ended", epoch: interruptedEpoch })
+    .state,
+  state,
+  "interrupted confirmation cannot advance after seeking backward",
+);
 assert.throws(() => createSession("empty", 1, [], "s"), /empty/);

@@ -145,6 +145,47 @@ E|--3--------------|`);
     await tab.locator("[data-tab-chord]").first().textContent(),
     "G",
   );
+  const currentColumn = tab.locator('[data-tab-event][aria-current="step"]');
+  await tab.getByRole("button", { name: "Show G fingering" }).first().click();
+  const gFingering = page.locator('[data-tab-fingering="G"]');
+  await gFingering.waitFor();
+  assert.equal(await currentColumn.getAttribute("data-tab-event"), "0");
+  assert.ok(
+    await gFingering.getByRole("img", { name: /G, right-handed/ }).isVisible(),
+    "preview reuses the chord diagram",
+  );
+  if (screenshotDirectory)
+    await page.screenshot({
+      path: join(screenshotDirectory, "desktop-chord-preview.png"),
+    });
+  await tab.getByRole("button", { name: "Show D fingering" }).first().click();
+  await page.locator('[data-tab-fingering="D"]').waitFor();
+  assert.equal(await page.locator("[data-tab-fingering]").count(), 1);
+  assert.equal(await currentColumn.getAttribute("data-tab-event"), "0");
+  await page.keyboard.press("Escape");
+  await page.locator("[data-tab-fingering]").waitFor({ state: "hidden" });
+  await tab.getByRole("button", { name: "Show G fingering" }).first().click();
+  await tab.locator('[data-tab-event="3"]').click();
+  assert.equal(await currentColumn.getAttribute("data-tab-event"), "3");
+  await page.locator("[data-tab-fingering]").waitFor({ state: "hidden" });
+  if (screenshotDirectory)
+    await page.screenshot({
+      path: join(screenshotDirectory, "desktop-column-seek.png"),
+    });
+  await tab.locator('[data-tab-event="0"]').click();
+  assert.equal(await currentColumn.getAttribute("data-tab-event"), "0");
+  await tab.locator('[data-tab-event="0"]').click();
+  assert.equal(await currentColumn.getAttribute("data-tab-event"), "0");
+  await tab.getByRole("button", { name: "Seek to tab note 5 of 48" }).focus();
+  await page.keyboard.press("Enter");
+  assert.equal(await currentColumn.getAttribute("data-tab-event"), "4");
+  await tab.getByRole("button", { name: "Show G fingering" }).first().focus();
+  await page.keyboard.press("Space");
+  await gFingering.waitFor();
+  assert.equal(await currentColumn.getAttribute("data-tab-event"), "4");
+  await page.waitForTimeout(100);
+  await page.mouse.click(50, 50);
+  await page.locator("[data-tab-fingering]").waitFor({ state: "hidden" });
   if (screenshotDirectory)
     await page.screenshot({
       path: join(screenshotDirectory, "desktop-knockin.png"),
@@ -229,6 +270,7 @@ E|--3--------------|`);
   {
     const mobilePage = await browser.newPage({
       viewport: { width: 390, height: 844 },
+      hasTouch: true,
     });
     await mobilePage.goto(`http://localhost:${port}`);
     await mobilePage
@@ -241,6 +283,26 @@ E|--3--------------|`);
       .click();
     await mobilePage.getByText("Your practice").waitFor({ state: "hidden" });
     assert.equal(await mobilePage.locator("[data-tab-row]").count(), 1);
+    await mobilePage
+      .getByRole("button", { name: "Show G fingering" })
+      .first()
+      .tap();
+    await mobilePage.locator('[data-tab-fingering="G"]').waitFor();
+    if (screenshotDirectory)
+      await mobilePage.screenshot({
+        path: join(screenshotDirectory, "mobile-chord-preview.png"),
+      });
+    await mobilePage.locator('[data-tab-event="1"]').tap();
+    assert.equal(
+      await mobilePage
+        .locator('[data-tab-event][aria-current="step"]')
+        .getAttribute("data-tab-event"),
+      "1",
+    );
+    if (screenshotDirectory)
+      await mobilePage.screenshot({
+        path: join(screenshotDirectory, "mobile-column-seek.png"),
+      });
     await mobilePage.evaluate(() => {
       document.documentElement.dataset.theme = "dark";
     });

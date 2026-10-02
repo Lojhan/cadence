@@ -1,5 +1,7 @@
 import type { TabDocument, TabEvent } from "@cadence/contracts";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { type DiagramShape, Fretboard } from "./fretboard.tsx";
+import { Popover } from "./overlays.tsx";
 
 const strokeMarks = { down: "↓", up: "↑", pluck: "P" } as const;
 const strokeNames = {
@@ -24,13 +26,22 @@ export function TabViewer({
   index,
   strings,
   anchorRevision,
+  chordShapes,
+  hand,
+  numbers,
+  onSeek,
 }: {
   tab: TabDocument;
   index: number;
   strings: readonly string[];
   anchorRevision: number;
+  chordShapes: Readonly<Record<string, DiagramShape>>;
+  hand: "left" | "right";
+  numbers: boolean;
+  onSeek: (index: number) => void;
 }) {
   const viewport = useRef<HTMLDivElement>(null);
+  const [openChord, setOpenChord] = useState<number | null>(null);
 
   useEffect(() => {
     const element = viewport.current;
@@ -101,6 +112,8 @@ export function TabViewer({
               >
                 {events.map((event, eventIndex) => {
                   if (!event.chord) return null;
+                  const symbol = event.chord;
+                  const shape = chordShapes[symbol];
                   const next = events.findIndex(
                     (candidate, index) => index > eventIndex && candidate.chord,
                   );
@@ -112,7 +125,44 @@ export function TabViewer({
                         gridColumn: `${eventIndex + 1} / span ${(next < 0 ? events.length : next) - eventIndex}`,
                       }}
                     >
-                      {event.chord}
+                      {shape ? (
+                        <Popover
+                          open={openChord === eventIndex}
+                          onOpenChange={(open) =>
+                            setOpenChord(open ? eventIndex : null)
+                          }
+                          side="top"
+                          sideOffset={0}
+                          className="!w-[240px] !p-3"
+                          trigger={
+                            <button
+                              type="button"
+                              className="mx-auto flex min-h-8 min-w-11 items-center justify-center rounded-lg border-0 bg-transparent px-2 font-[Georgia,serif] text-lg text-foreground hover:bg-primary/10 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary short-landscape:min-h-6"
+                              aria-label={`Show ${symbol} fingering`}
+                            >
+                              {symbol}
+                            </button>
+                          }
+                        >
+                          <div
+                            className="flex flex-col items-center gap-1"
+                            data-tab-fingering={symbol}
+                          >
+                            <p className="m-0 font-[Georgia,serif] text-xl leading-none">
+                              {symbol}
+                            </p>
+                            <Fretboard
+                              shape={shape}
+                              symbol={symbol}
+                              hand={hand}
+                              numbers={numbers}
+                              compact
+                            />
+                          </div>
+                        </Popover>
+                      ) : (
+                        symbol
+                      )}
                     </span>
                   );
                 })}
@@ -157,11 +207,17 @@ export function TabViewer({
                 const eventNumber = eventIndex;
                 const active = eventNumber === index;
                 return (
-                  <div
+                  <button
+                    type="button"
                     key={eventNumber}
                     data-tab-event={eventNumber}
                     aria-current={active ? "step" : undefined}
-                    className="min-w-0"
+                    aria-label={`Seek to tab note ${eventNumber + 1} of ${events.length}`}
+                    className={`min-w-0 rounded-lg border-0 p-0 text-inherit transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary ${active ? "bg-primary/5" : "bg-transparent hover:bg-primary/5"}`}
+                    onClick={() => {
+                      setOpenChord(null);
+                      onSeek(eventNumber);
+                    }}
                   >
                     {strings.map((_, stringIndex) => {
                       const note = event.notes.find(
@@ -189,7 +245,7 @@ export function TabViewer({
                         </div>
                       );
                     })}
-                  </div>
+                  </button>
                 );
               })}
             </div>

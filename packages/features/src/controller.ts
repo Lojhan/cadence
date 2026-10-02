@@ -98,11 +98,15 @@ export class PracticeController {
       event.type === "transition-ended" &&
       this.snapshot.session.status === "transitioning" &&
       result.state.index !== this.snapshot.session.index;
+    const tabSeek =
+      event.type === "navigate" &&
+      !!this.song.tab &&
+      result.state !== this.snapshot.session;
     this.snapshot = {
       ...this.snapshot,
       session: result.state,
       anchorRevision:
-        this.snapshot.anchorRevision + (recognizedAdvance ? 1 : 0),
+        this.snapshot.anchorRevision + (recognizedAdvance || tabSeek ? 1 : 0),
     };
     for (const effect of result.effects) {
       if (effect.type === "arm") this.audio?.arm(this.target());
@@ -157,7 +161,15 @@ export class PracticeController {
       }
       if (operation !== this.operation || this.disposed) return;
       this.dispatch({ type: "start" });
-      await this.audio.unmute(this.target());
+      const target = this.target();
+      await this.audio.unmute(target);
+      if (
+        operation === this.operation &&
+        !this.disposed &&
+        this.snapshot.session.status === "listening" &&
+        this.snapshot.session.epoch !== target.epoch
+      )
+        this.audio.arm(this.target());
     } catch (error) {
       this.configuration = "";
       this.pause();

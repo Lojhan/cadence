@@ -19,6 +19,7 @@ import {
 import {
   Button,
   ChordTimeline,
+  type DiagramShape,
   Dialog,
   DialogBody,
   DirectionalGroup,
@@ -206,6 +207,14 @@ export function PracticeApp({
         (shape) => shape.id === prefs.voicings[chord.symbol],
       ) ?? chord.voicings[0])
     : undefined;
+  const tabShapes: Record<string, DiagramShape> = {};
+  for (const event of activeSong.tab?.events ?? []) {
+    if (event.chord && !tabShapes[event.chord]) {
+      const defaultShape = parseChord(event.chord, activeSong.tab?.tuning)
+        .voicings[0];
+      if (defaultShape) tabShapes[event.chord] = defaultShape;
+    }
+  }
   const listening =
     session.status === "listening" || session.status === "transitioning";
   const preferenceBusy = preferenceState.status === "saving";
@@ -548,9 +557,14 @@ export function PracticeApp({
       {activeSong.tab ? (
         <div className="absolute inset-x-20 top-24 bottom-40 max-[600px]:inset-x-3 max-[600px]:top-20 max-[600px]:bottom-36 short-landscape:inset-x-4 short-landscape:top-12 short-landscape:bottom-16 short-landscape:left-[max(16px,env(safe-area-inset-left))] short-landscape:right-[max(16px,env(safe-area-inset-right))]">
           <TabViewer
+            key={`${activeSong.id}:${activeSong.revision}`}
             tab={activeSong.tab}
             index={session.index}
             anchorRevision={anchorRevision}
+            chordShapes={tabShapes}
+            hand={prefs.hand}
+            numbers={prefs.numbers}
+            onSeek={(index) => controller.navigate(index)}
             strings={Array.from(getTuningPreset(activeSong.tab.tuning).strings)
               .reverse()
               .map((string) => string.noteName)}

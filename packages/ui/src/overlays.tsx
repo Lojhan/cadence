@@ -119,6 +119,8 @@ export interface PopoverProps {
   children: ReactNode;
   align?: "start" | "center" | "end";
   side?: "top" | "right" | "bottom" | "left";
+  sideOffset?: number;
+  className?: string;
 }
 
 export function Popover({
@@ -128,6 +130,8 @@ export function Popover({
   children,
   align = "center",
   side = "top",
+  sideOffset = 10,
+  className,
 }: PopoverProps) {
   return (
     <PopoverPrimitive.Root
@@ -138,10 +142,13 @@ export function Popover({
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Content
           data-slot="popover"
-          className="cadence-popover z-60 max-h-[min(50dvh,420px)] w-[min(340px,calc(100vw-32px))] overflow-auto rounded-[20px] border border-border bg-[var(--white)] p-5 text-foreground shadow-[0_18px_45px_#0002] [&_.cadence-select-control]:w-full [&_label]:mb-3 [&_label]:block [&_label]:text-[13px]"
+          className={cn(
+            "cadence-popover z-60 max-h-[min(50dvh,420px)] w-[min(340px,calc(100vw-32px))] overflow-auto rounded-[20px] border border-border bg-[var(--white)] p-5 text-foreground shadow-[0_18px_45px_#0002] [&_.cadence-select-control]:w-full [&_label]:mb-3 [&_label]:block [&_label]:text-[13px]",
+            className,
+          )}
           align={align}
           side={side}
-          sideOffset={10}
+          sideOffset={sideOffset}
         >
           {children}
         </PopoverPrimitive.Content>
