@@ -1,25 +1,15 @@
-Cadence 0.1.0-alpha.26 is an MIT-licensed preview for self-hosting and integration.
+Cadence 0.1.0-alpha.27 is an MIT-licensed preview for self-hosting and integration.
 
-Changes since alpha.25:
+Changes since alpha.26:
 
-- The web app updates TanStack Start to 1.168.60, React Router to 1.170.41,
-  and the resolved Start server core to 1.169.39 for the upstream XSS fix.
-- The metronome starts its first click during the Start tap, uses a louder 70%
-  default with a 10–100% volume control, and coordinates Safari playback and
-  microphone audio session modes. Startup can be canceled or times out cleanly.
-- Single-note tab practice now confirms from two fresh agreeing pitch analyses
-  instead of waiting for the tuner's display reading and an additional hold.
-  The display tuner retains its smoothing.
-- Short subframe attack detection supports quick repetitions of the same note.
-  Harmonic-series checks distinguish a weak low fundamental from a strong third
-  overtone and support a higher note while a lower string rings.
-- A checksum-verified EGSet12 electric-guitar replay and its frozen note cases
-  are documented in `docs/evaluation/egset12-notes.md`. On this small selected
-  probe, 9/9 isolated notes matched and 0/468 wrong targets were accepted;
-  7/8 rapid notes matched by annotated release. These calibration results are
-  not held-out accuracy or device-latency claims.
-- The chord algorithm, saved charts, catalog data, and database schema are
-  unchanged from alpha.25.
+- Chord names above tablature open a compact preview of the default fingering.
+  The preview uses the existing chord diagram, song tuning, handedness, and
+  finger-number preference.
+- Tapping a tablature column seeks practice to that note in either direction.
+  Keyboard activation works as well. Repeated seeks and interrupted recognition
+  confirmations use a fresh target epoch so stale matches cannot advance practice.
+- The microphone and metronome controls, recognition algorithm, saved charts,
+  catalog data, and database schema are unchanged from alpha.26.
 
 Recognition remains **experimental**. Physical guitar playthrough, speaker-to-
 microphone bleed, iPhone Safari audio retesting, device checks, held-out
